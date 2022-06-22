@@ -54,3 +54,5 @@ def preprocessing_DataAugmentation_Biclass():
     Labels.append(NOLabels_Tumor)
 
     return Images, Labels
+
+preprocessing_DataAugmentation_Biclass()

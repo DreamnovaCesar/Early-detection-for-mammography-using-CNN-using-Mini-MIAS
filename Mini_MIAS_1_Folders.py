@@ -17,7 +17,7 @@ Multiclass_Data_Model = "D:\Mini-MIAS\Mini-MIAS Final\Multiclass_Data_Models"
 Multiclass_Data_Model_Esp = "D:\Mini-MIAS\Mini-MIAS Final\Multiclass_Data_Models_Esp"
 
 ALLpgm = 'D:\Mini-MIAS\Mini-MIAS Final\Allpgm'
-ALLpgmMod = 'D:\Mini-MIAS\Mini-MIAS Final\Allpgm2'
+ALLpgmMod = 'D:\Mini-MIAS\Mini-MIAS Final\AllpgmMod'
 ALLpng = 'D:\Mini-MIAS\Mini-MIAS Final\Allpng'
 ALLtiff = 'D:\Mini-MIAS\Mini-MIAS Final\Alltiff'
 

@@ -133,6 +133,8 @@ class dataAugmentation:
     Images = [] 
     Labels = [] 
 
+    Rotation_initial_value = -120
+    Sampling = 24
     png = ".png"
 
     # Reading the folder that is used.
@@ -175,9 +177,11 @@ class dataAugmentation:
 
         # 1.a) Rotation
 
-        for i in range(self.sampling):
+        for i in range(Sampling):
 
-          Imagen_transformed = self.Rotation(random.randint(-120, 120), Resize_Imagen)
+          Imagen_transformed = self.Rotation(Rotation_initial_value, Resize_Imagen)
+
+          Rotation_initial_value += 10
 
           Images.append(Imagen_transformed)
           Labels.append(self.label)
@@ -190,11 +194,11 @@ class dataAugmentation:
             dstPath = os.path.join(self.newfolder, dst)
             io.imsave(dstPath, Imagen_transformed)
 
-        # 1.b) Flip Horizontal
+        # 1.b) Flip Vertical
 
-        Imagen_transformed = self.FlipVertical(Resize_Imagen)
+        vertical_transformed = self.FlipVertical(Resize_Imagen)
 
-        Images.append(Imagen_transformed)
+        Images.append(vertical_transformed)
         Labels.append(self.label)
 
         if self.nfsave == True:
@@ -203,9 +207,26 @@ class dataAugmentation:
           dst = FilenamesREFNUM + png
 
           dstPath = os.path.join(self.newfolder, dst)
-          io.imsave(dstPath, Imagen_transformed)
+          io.imsave(dstPath, vertical_transformed)
 
-        # 1.c) Flip Vertical 
+        for i in range(Sampling):
+
+          Imagen_transformed = self.Rotation(Rotation_initial_value, vertical_transformed)
+
+          Rotation_initial_value += 10
+
+          Images.append(Imagen_transformed)
+          Labels.append(self.label)
+
+          if self.nfsave == True:
+
+            FilenamesREFNUM = filename + '_' + str(i) + '_Rotation' + '_FlipVertical' + '_Augmentation'
+            dst = FilenamesREFNUM + png
+
+            dstPath = os.path.join(self.newfolder, dst)
+            io.imsave(dstPath, Imagen_transformed)
+
+        # 1.c) Flip Horizontal 
 
         Imagen_transformed = self.FlipHorizontal(Resize_Imagen)
 
@@ -221,5 +242,6 @@ class dataAugmentation:
 
           dstPath = os.path.join(self.newfolder, dst)
           io.imsave(dstPath, Imagen_transformed)
-
+        
+        
     return Images, Labels

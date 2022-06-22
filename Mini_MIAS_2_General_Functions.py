@@ -63,8 +63,6 @@ def Removeallfiles(Folder_Path):
 		print(f"Removing {filename} ✅")
 		os.remove(os.path.join(Folder_Path, File))
 
-# Transform Pgm to Png
-
 class changeExtension:
   
   def __init__(self, **kwargs):
@@ -119,6 +117,8 @@ class changeExtension:
     print("\n")
     print(f"COMPLETE {count} of {images} TRANSFORMED ✅")
 
+# Concat multiple dataframes
+
 def DataframeSave(*dfs, **kwargs):
 
     folder = kwargs.get('folder', None)
@@ -145,6 +145,8 @@ def DataframeSave(*dfs, **kwargs):
     dstPath = os.path.join(folder, dst)
 
     DataFrame.to_csv(dstPath)
+
+# Configuration of each DCNN model
 
 def ConfigurationModels(MainKeys, Arguments, Folder_Save, Folder_Save_Esp):
 
@@ -249,3 +251,59 @@ def UpdateCSV(Score, df, column_names, path, row):
     df.to_csv(path, index = False)
   
     print(df)
+
+# Transform initial format to another. (PGM to PNG) / (PGM to TIFF)
+
+class changeExtension:
+  
+  def __init__(self, **kwargs):
+    
+    self.folder = kwargs.get('folder', None)
+    self.newfolder = kwargs.get('newfolder', None)
+    self.extension = kwargs.get('extension', None)
+    self.newextension = kwargs.get('newextension', None)
+
+    if self.folder == None:
+      raise ValueError("Folder does not exist")
+
+    elif self.newfolder == None:
+      raise ValueError("Destination Folder does not exist")
+
+    elif self.extension == None:
+      raise ValueError("Extension does not exist")
+
+    elif self.newextension == None:
+      raise ValueError("New extension does not exist")
+
+  def ChangeExtension(self):
+
+    os.chdir(self.folder)
+
+    print(os.getcwd())
+
+    sorted_files, images = SortImages(self.folder)
+    count = 0
+  
+    for File in sorted_files:
+      if File.endswith(self.extension): # Read png files
+
+        try:
+            filename, extension  = os.path.splitext(File)
+            print(f"Working with {count} of {images} {self.extension} images, {filename} ------- {self.newextension} ✅")
+            count += 1
+            
+            Path_File = os.path.join(self.folder, File)
+            Imagen = cv2.imread(Path_File)         
+            #Imagen = cv2.cvtColor(Imagen, cv2.COLOR_BGR2GRAY)
+            
+            dst_name = filename + self.newextension
+            dstPath_name = os.path.join(self.newfolder, dst_name)
+
+            cv2.imwrite(dstPath_name, Imagen)
+            #FilenamesREFNUM.append(filename)
+
+        except OSError:
+            print('Cannot convert %s ❌' % File)
+
+    print("\n")
+    print(f"COMPLETE {count} of {images} TRANSFORMED ✅")
