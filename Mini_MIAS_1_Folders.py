@@ -31,4 +31,24 @@ NOCropped_Images_Benign = r"D:\Mini-MIAS\Mini-MIAS Final\NO_Cropped_Images_Benig
 NOCropped_Images_Malignant = r"D:\Mini-MIAS\Mini-MIAS Final\NO_Cropped_Images_Malignant"
 NOCropped_Images_Normal = r"D:\Mini-MIAS\Mini-MIAS Final\NO_Cropped_Images_Normal"
 
+CLAHECropped_Images_Tumor = r"D:\Mini-MIAS\Mini-MIAS Final\CLAHE_Cropped_Images_Tumor"
+CLAHECropped_Images_Benign = r"D:\Mini-MIAS\Mini-MIAS Final\CLAHE_Cropped_Images_Benign"
+CLAHECropped_Images_Malignant = r"D:\Mini-MIAS\Mini-MIAS Final\CLAHE_Cropped_Images_Malignant"
+CLAHECropped_Images_Normal = r"D:\Mini-MIAS\Mini-MIAS Final\CLAHE_Cropped_Images_Normal"
+
+HECropped_Images_Tumor = r"D:\Mini-MIAS\Mini-MIAS Final\HE_Cropped_Images_Tumor"
+HECropped_Images_Benign = r"D:\Mini-MIAS\Mini-MIAS Final\HE_Cropped_Images_Benign"
+HECropped_Images_Malignant = r"D:\Mini-MIAS\Mini-MIAS Final\HE_Cropped_Images_Malignant"
+HECropped_Images_Normal = r"D:\Mini-MIAS\Mini-MIAS Final\HE_Cropped_Images_Normal"
+
+UMCropped_Images_Tumor = r"D:\Mini-MIAS\Mini-MIAS Final\UM_Cropped_Images_Tumor"
+UMCropped_Images_Benign = r"D:\Mini-MIAS\Mini-MIAS Final\UM_Cropped_Images_Benign"
+UMCropped_Images_Malignant = r"D:\Mini-MIAS\Mini-MIAS Final\UM_Cropped_Images_Malignant"
+UMCropped_Images_Normal = r"D:\Mini-MIAS\Mini-MIAS Final\UM_Cropped_Images_Normal"
+
+CSCropped_Images_Tumor = r"D:\Mini-MIAS\Mini-MIAS Final\CS_Cropped_Images_Tumor"
+CSCropped_Images_Benign = r"D:\Mini-MIAS\Mini-MIAS Final\CS_Cropped_Images_Benign"
+CSCropped_Images_Malignant = r"D:\Mini-MIAS\Mini-MIAS Final\CS_Cropped_Images_Malignant"
+CSCropped_Images_Normal = r"D:\Mini-MIAS\Mini-MIAS Final\CS_Cropped_Images_Normal"
+
 ########## ########## ########## ########## ########## ########## ########## ########## ########## ##########
