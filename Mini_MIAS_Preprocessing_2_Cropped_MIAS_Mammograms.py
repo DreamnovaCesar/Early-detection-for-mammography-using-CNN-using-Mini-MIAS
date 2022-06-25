@@ -1,27 +1,30 @@
 
-from Mini_MIAS_1_Folders import ALLpng
-from Mini_MIAS_1_Folders import NTCropped_Images_Normal
-from Mini_MIAS_1_Folders import NTCropped_Images_Tumor
-from Mini_MIAS_1_Folders import NTCropped_Images_Benign
-from Mini_MIAS_1_Folders import NTCropped_Images_Malignant
-#from Mini_MIAS_1_Folders import GeneralFolder
+from Mini_MIAS_1_Folders import Mini_MIAS_PNG
+from Mini_MIAS_1_Folders import Mini_MIAS_NT_Cropped_Images_Normal
+from Mini_MIAS_1_Folders import Mini_MIAS_NT_Cropped_Images_Tumor
+from Mini_MIAS_1_Folders import Mini_MIAS_NT_Cropped_Images_Benign
+from Mini_MIAS_1_Folders import Mini_MIAS_NT_Cropped_Images_Malignant
 
-from Mini_MIAS_5_Crop_Images import MIASCSV
-from Mini_MIAS_5_Crop_Images import MeanImages
+from Mini_MIAS_5_Crop_Images import mias_csv
+from Mini_MIAS_5_Crop_Images import extract_mean_from_images
 
 from Mini_MIAS_5_Crop_Images import cropImages
 
 def preprocessing_Cropped_MIAS_Mammograms():
 
-    CSV_NIAS = "D:\Mini-MIAS\Mini-MIAS Final\Mini_MIAS_CSV_DATA.csv"
-    Dataframe_MIAS = MIASCSV(CSV_NIAS)
+    x_column = 4
+    y_column = 5
+    cropped_images_shape = 112
 
-    xmean = MeanImages(MIASdf, 4)
-    ymean = MeanImages(MIASdf, 5)
+    mini_mias_csv = "D:\Mini-MIAS\Mini-MIAS Final\Mini_MIAS_CSV_DATA.csv"
+    mini_mias_csv_clean = mias_csv(mini_mias_csv)
 
-    MIAS = cropImages(  folder = ALLpng, 
-                        normalfolder = NTCropped_Images_Normal, tumorfolder = NTCropped_Images_Tumor, 
-                        benignfolder = NTCropped_Images_Benign, malignantfolder = NTCropped_Images_Malignant, 
-                        df = Dataframe_MIAS, shape = 112, Xmean = xmean, Ymean = ymean )
+    x_mean = extract_mean_from_images(mini_mias_csv_clean, x_column)
+    y_mean = extract_mean_from_images(mini_mias_csv_clean, y_column)
+
+    MIAS = cropImages(  folder = Mini_MIAS_PNG, 
+                        normalfolder = Mini_MIAS_NT_Cropped_Images_Normal, tumorfolder = Mini_MIAS_NT_Cropped_Images_Tumor, 
+                        benignfolder = Mini_MIAS_NT_Cropped_Images_Benign, malignantfolder = Mini_MIAS_NT_Cropped_Images_Malignant, 
+                        df = mini_mias_csv_clean, shape = cropped_images_shape, Xmean = x_mean, Ymean = y_mean )
 
     MIAS.CropMIAS()

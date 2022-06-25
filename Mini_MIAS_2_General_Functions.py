@@ -2,14 +2,31 @@ import os
 import cv2
 import numpy as np
 import pandas as pd
+import tensorflow as tf
 
 from sklearn.model_selection import train_test_split
 
 from Mini_MIAS_7_CNN_Architectures import PreTrainedModels
 
+# Detect fi GPU exist in your PC for CNN
+
+def detect_GPU():
+
+  GPU_name = tf.test.gpu_device_name()
+  GPU_available = tf.test.is_gpu_available()
+
+  print(GPU_available)
+
+  if GPU_available == True:
+      print("GPU device is available")
+
+  if "GPU" not in GPU_name:
+      print("GPU device not found")
+  print('Found GPU at: {}'.format(GPU_name))
+
 # Sort Files
 
-def SortImages(Folder_Path): 
+def sort_images(Folder_Path): 
 
 	"""
 	Read all images in a folder and sort them.
@@ -45,7 +62,7 @@ def SortImages(Folder_Path):
 
 # Remove all files in folder
 
-def Removeallfiles(Folder_Path):
+def remove_all_files(Folder_Path):
 
 	"""
 	Remove all images inside the folder chosen
@@ -63,63 +80,72 @@ def Removeallfiles(Folder_Path):
 		print(f"Removing {filename} ✅")
 		os.remove(os.path.join(Folder_Path, File))
 
-class changeExtension:
-  
-  def __init__(self, **kwargs):
-    
-    self.folder = kwargs.get('folder', None)
-    self.newfolder = kwargs.get('newfolder', None)
-    self.extension = kwargs.get('extension', None)
-    self.newextension = kwargs.get('newextension', None)
+def mean_images(Dataframe, Column):
 
-    if self.folder == None:
-      raise ValueError("Folder does not exist")
+    """
+	  Obtaining the mean value of the mammograms
 
-    elif self.newfolder == None:
-      raise ValueError("Destination Folder does not exist")
+    Parameters:
+    argument1 (dataframe): dataframe that will be use to acquire the values
+    argument2 (int): the column number to get the mean value
 
-    elif self.extension == None:
-      raise ValueError("Extension does not exist")
+    Returns:
+	  float:Returning the mean value
+    """
 
-    elif self.newextension == None:
-      raise ValueError("New extension does not exist")
+    Data = []
 
-  def ChangeExtension(self):
+    for i in range(Dataframe.shape[0]):
+        if Dataframe.iloc[i - 1, Column] > 0:
+            Data.append(Dataframe.iloc[i - 1, Column])
 
-    os.chdir(self.folder)
+    Mean = int(np.mean(Data))
 
-    print(os.getcwd())
+    print(Data)
+    print(Mean)
 
-    sorted_files, images = SortImages(self.folder)
-    count = 0
-  
-    for File in sorted_files:
-      if File.endswith(self.extension): # Read png files
+    return Mean
 
-        try:
-            filename, extension  = os.path.splitext(File)
-            print(f"Working with {count} of {images} {self.extension} images, {filename} ------- {self.newextension} ✅")
-            count += 1
-            
-            Path_File = os.path.join(self.folder, File)
-            Imagen = cv2.imread(Path_File)         
-            #Imagen = cv2.cvtColor(Imagen, cv2.COLOR_BGR2GRAY)
-            
-            dst_name = filename + self.newextension
-            dstPath_name = os.path.join(self.newfolder, dst_name)
+def mias_csv(Csv_Path):
 
-            cv2.imwrite(dstPath_name, Imagen)
-            #FilenamesREFNUM.append(filename)
+    col_list = ["REFNUM", "BG", "CLASS", "SEVERITY", "X", "Y", "RADIUS"]
+    df = pd.read_csv(Csv_Path, usecols = col_list)
 
-        except OSError:
-            print('Cannot convert %s ❌' % File)
+    pd.set_option('display.max_rows', df.shape[0] + 1)
+    print(df)
 
-    print("\n")
-    print(f"COMPLETE {count} of {images} TRANSFORMED ✅")
+    df_T = mias_csv_clean(df)
+
+    pd.set_option('display.max_rows', df_T.shape[0] + 1)
+    print(df_T)
+
+    return df_T
+
+def mias_csv_clean(Dataframe):
+
+    Dataframe.iloc[:, 3].values
+    LE = LabelEncoder()
+    Dataframe.iloc[:, 3] = LE.fit_transform(Dataframe.iloc[:, 3])
+
+    Dataframe['X'] = Dataframe['X'].fillna(0)
+    Dataframe['Y'] = Dataframe['Y'].fillna(0)
+    Dataframe['RADIUS'] = Dataframe['RADIUS'].fillna(0)
+
+
+    #df_M["X"].replace({"*NOTE": 0}, inplace = True)
+    #df_M["Y"].replace({"3*": 0}, inplace = True)
+
+    Dataframe['X'] = Dataframe['X'].astype(int)
+    Dataframe['Y'] = Dataframe['Y'].astype(int)
+
+    Dataframe['SEVERITY'] = Dataframe['SEVERITY'].astype(int)
+    Dataframe['RADIUS'] = Dataframe['RADIUS'].astype(int)
+
+    return Dataframe
 
 # Concat multiple dataframes
 
-def DataframeSave(*dfs, **kwargs):
+def dataframe_csv(*dfs, **kwargs):
 
     folder = kwargs.get('folder', None)
     Class = kwargs.get('Class', None)
@@ -148,7 +174,7 @@ def DataframeSave(*dfs, **kwargs):
 
 # Configuration of each DCNN model
 
-def ConfigurationModels(MainKeys, Arguments, Folder_Save, Folder_Save_Esp):
+def configuration_models(MainKeys, Arguments, Folder_Save, Folder_Save_Esp):
 
     TotalImage = []
     TotalLabel = []
@@ -231,7 +257,7 @@ def ConfigurationModels(MainKeys, Arguments, Folder_Save, Folder_Save_Esp):
 
 # Update CSV changing value
 
-def UpdateCSV(Score, df, column_names, path, row):
+def update_csv_row(Score, df, column_names, path, row):
 
     """
 	  Printing amount of images with data augmentation 
@@ -281,7 +307,7 @@ class changeExtension:
 
     print(os.getcwd())
 
-    sorted_files, images = SortImages(self.folder)
+    sorted_files, images = sort_images(self.folder)
     count = 0
   
     for File in sorted_files:

@@ -23,8 +23,8 @@ from skimage.exposure import rescale_intensity
 
 from skimage.filters import unsharp_mask
 
-from Mini_MIAS_2_General_Functions import SortImages
-from Mini_MIAS_2_General_Functions import Removeallfiles
+from Mini_MIAS_2_General_Functions import sort_images
+from Mini_MIAS_2_General_Functions import remove_all_files
 
 class ImageProcessing:
 
@@ -49,7 +49,18 @@ class ImageProcessing:
     if self.folder == None:
       raise ValueError("Folder does not exist")
 
-  def Resize(self):
+    if self.folder == None:
+      raise ValueError("New folder destination does not exist")
+
+    if self.folder == None:
+      raise ValueError("Assign the severity")
+
+    if self.folder == None:
+      raise ValueError("Assign the interpolation that will be used")
+
+  # Resize technique.
+
+  def resize_technique(self):
 
     Images = [] 
 
@@ -58,7 +69,7 @@ class ImageProcessing:
     print(os.getcwd())
     print("\n")
 
-    sorted_files, images = SortImages(self.folder)
+    sorted_files, images = sort_images(self.folder)
     count = 1
 
     for File in sorted_files:
@@ -91,9 +102,9 @@ class ImageProcessing:
     print("\n")
     print(f"COMPLETE {count} of {images} RESIZED ✅")
 
-  # Folder_Path, New_Folder_Path, Severity, Xsize, Ysize, Label
+  # Normalization technique.
 
-  def Normalization(self):
+  def normalize_technique(self):
 
     """
 	  Get the values from median filter images and save them into a dataframe.
@@ -110,7 +121,7 @@ class ImageProcessing:
 	  int:Returning dataframe with all data.
     
     """
-    Removeallfiles(self.newfolder)
+    remove_all_files(self.newfolder)
 
     #Images = [] 
     Labels = []
@@ -128,7 +139,7 @@ class ImageProcessing:
 
     os.chdir(self.folder)
 
-    sorted_files, images = SortImages(self.folder)
+    sorted_files, images = sort_images(self.folder)
     Count = 1
 
     for File in sorted_files:
@@ -188,9 +199,9 @@ class ImageProcessing:
 
     return Dataframe
 
-  # Median filter
+  # Median filter technique.
 
-  def MedianFilter(self):
+  def median_filter_technique(self):
 
       """
       Get the values from median filter images and save them into a dataframe.
@@ -209,7 +220,7 @@ class ImageProcessing:
       """
       # Remove images of the folder chosen
 
-      Removeallfiles(self.newfolder)
+      remove_all_files(self.newfolder)
       
       # General lists
 
@@ -231,7 +242,7 @@ class ImageProcessing:
 
       os.chdir(self.folder)
 
-      sorted_files, images = SortImages(self.folder)
+      sorted_files, images = sort_images(self.folder)
       Count = 1
 
       # For each file sorted.
@@ -291,9 +302,9 @@ class ImageProcessing:
 
       return DataFrame
 
-  # CLAHE
+  # CLAHE technique.
 
-  def CLAHE(self):
+  def CLAHE_technique(self):
 
       """
       Get the values from CLAHE images and save them into a dataframe.
@@ -312,7 +323,7 @@ class ImageProcessing:
 
       # Remove images of the folder chosen
 
-      Removeallfiles(self.newfolder)
+      remove_all_files(self.newfolder)
       
       # General lists
 
@@ -334,7 +345,7 @@ class ImageProcessing:
 
       os.chdir(self.folder)
 
-      sorted_files, images = SortImages(self.folder)
+      sorted_files, images = sort_images(self.folder)
       Count = 1
 
       # For each file sorted.
@@ -402,8 +413,7 @@ class ImageProcessing:
 
       return DataFrame
 
-  # Histogram equalization
-
+  # Histogram equalization technique.
 
   def HistogramEqualization(self):
 
@@ -423,7 +433,7 @@ class ImageProcessing:
 
       # Remove images of the folder chosen
 
-      Removeallfiles(self.newfolder)
+      remove_all_files(self.newfolder)
       
       # General lists
 
@@ -445,7 +455,7 @@ class ImageProcessing:
 
       os.chdir(self.folder)
 
-      sorted_files, images = SortImages(self.folder)
+      sorted_files, images = sort_images(self.folder)
       Count = 1
 
       # For each file sorted.
@@ -507,7 +517,7 @@ class ImageProcessing:
 
       return DataFrame
 
-  # Unsharp masking
+  # Unsharp masking technique.
 
   def UnsharpMasking(self):
 
@@ -529,7 +539,7 @@ class ImageProcessing:
 
       # Remove images of the folder chosen
 
-      Removeallfiles(self.newfolder)
+      remove_all_files(self.newfolder)
       
       # General lists
 
@@ -551,7 +561,7 @@ class ImageProcessing:
 
       os.chdir(self.folder)
 
-      sorted_files, images = SortImages(self.folder)
+      sorted_files, images = sort_images(self.folder)
       Count = 1
 
       # For each file sorted.
@@ -613,7 +623,7 @@ class ImageProcessing:
 
       return Dataframe
 
-  # Contrast Stretching.
+  # Contrast Stretching technique.
 
   def ContrastStretching(self):
 
@@ -633,7 +643,7 @@ class ImageProcessing:
 
       # Remove images of the folder chosen
 
-      Removeallfiles(self.newfolder)
+      remove_all_files(self.newfolder)
       
       # General lists
 
@@ -655,7 +665,7 @@ class ImageProcessing:
 
       os.chdir(self.folder)
 
-      sorted_files, images = SortImages(self.folder)
+      sorted_files, images = sort_images(self.folder)
       Count = 1
 
       # For each file sorted.

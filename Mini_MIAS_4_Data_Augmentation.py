@@ -5,9 +5,7 @@ import albumentations as A
 
 from skimage import io
 
-# Data Augmentation
-
-#self, PathFolder, NewPathFolder, Severity, Sampling, Label
+# Data Augmentation function
 
 class dataAugmentation:
   

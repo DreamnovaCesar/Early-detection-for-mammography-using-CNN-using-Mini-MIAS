@@ -6,9 +6,11 @@ import pandas as pd
 from sklearn.preprocessing import LabelEncoder
 
 from Mini_MIAS_2_General_Functions import SortImages
+from Mini_MIAS_2_General_Functions import MeanImages
+from Mini_MIAS_2_General_Functions import Removeallfiles
 from Mini_MIAS_2_General_Functions import Removeallfiles
 
-def MeanImages(df_M, column):
+def extract_mean_from_images(df_M, column):
 
     """
 	  Obtaining the mean value of the mammograms
@@ -34,7 +36,7 @@ def MeanImages(df_M, column):
 
     return Mean
 
-def MIASCSV(CSV_Path):
+def mias_csv(CSV_Path):
 
     col_list = ["REFNUM", "BG", "CLASS", "SEVERITY", "X", "Y", "RADIUS"]
     df = pd.read_csv(CSV_Path, usecols = col_list)
@@ -42,14 +44,14 @@ def MIASCSV(CSV_Path):
     pd.set_option('display.max_rows', df.shape[0] + 1)
     print(df)
 
-    df_T = CleaningMIASCSV(df)
+    df_T = mias_csv_clean(df)
 
     pd.set_option('display.max_rows', df_T.shape[0] + 1)
     print(df_T)
 
     return df_T
 
-def CleaningMIASCSV(df_M):
+def mias_csv_clean(df_M):
 
     df_M.iloc[:, 3].values
     LE = LabelEncoder()

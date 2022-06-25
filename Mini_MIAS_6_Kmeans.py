@@ -8,7 +8,8 @@ from glrlm import GLRLM
 from skimage.feature import graycomatrix, graycoprops
 from sklearn.cluster import KMeans
 
-from Mini_MIAS_2_General_Functions import SortImages
+from Mini_MIAS_2_General_Functions import sort_images
+from Mini_MIAS_2_General_Functions import remove_all_files
 
 # First Order features from https://github.com/giakou4/pyfeats/blob/main/pyfeats/textural/fos.py
 
@@ -94,7 +95,7 @@ class featureExtraction():
 
   # FOF features folder
 
-  def TexturesFeatureFirstOrder(self):
+  def textures_Feature_first_order_from_folder(self):
 
     Fof = 'First Order Features'
 
@@ -170,7 +171,7 @@ class featureExtraction():
 
   # GLRLM features folder
 
-  def TexturesFeatureGLRLM(self):
+  def textures_Feature_GLRLM_from_folder(self):
 
     Glrlm = 'Gray-Level Run Length Matrix'
 
@@ -226,7 +227,7 @@ class featureExtraction():
 
   # GLCM features folder
 
-  def TexturesFeatureGLCM(self):
+  def textures_Feature_GLCM_from_folder(self):
     
     Glcm = 'Gray-Level Co-Occurance Matrix'
 
@@ -281,7 +282,7 @@ class featureExtraction():
 
   # FOF features images
 
-  def TexturesFeatureFirstOrderImage(Images, Label):
+  def textures_Feature_first_order_from_images(Images, Label):
 
     Fof = 'First Order Features'
 
@@ -326,7 +327,7 @@ class featureExtraction():
 
   # GLRLM features images
 
-  def TexturesFeatureGLRLMImage(Images, Label):
+  def textures_Feature_GLRLM_from_images(Images, Label):
 
     Glrlm = 'Gray-Level Run Length Matrix'
 
@@ -367,7 +368,7 @@ class featureExtraction():
 
   # GLCM features images
 
-  def TexturesFeatureGLCMImage(Images, Label):
+  def textures_Feature_GLCM_from_images(Images, Label):
 
     Glcm = 'Gray-Level Co-Occurance Matrix'
 
@@ -400,9 +401,9 @@ class featureExtraction():
     #Entropy = []
     #ASM = []
     Labels = []
-    Labels2 = []
-    Labels3 = []
-    Labels4 = []
+    #Labels2 = []
+    #Labels3 = []
+    #Labels4 = []
 
     count = 1
 
@@ -485,7 +486,7 @@ class Kmeans:
     self.df = kwargs.get('df', None)
     self.removecluster = kwargs.get('CR', None)
 
-  def KmeansFunction(self):
+  def Kmeans_function(self):
 
     """
 	  Using the elbow method and get k-means clusters.
@@ -552,7 +553,7 @@ class Kmeans:
 
   # Remove Data from K-means function
 
-  def RemoveDataKmeans(self):
+  def Kmeans_remove_data(self):
 
     """
 	  Remove the cluster chosen from dataframe
