@@ -1,71 +1,39 @@
 
-########## ########## ########## ########## ########## ########## ########## ########## ########## ##########
-
-from Mini_MIAS_1_Folders import NTCropped_Images_Normal
-from Mini_MIAS_1_Folders import NTCropped_Images_Tumor
-from Mini_MIAS_1_Folders import NTCropped_Images_Benign
-from Mini_MIAS_1_Folders import NTCropped_Images_Malignant
-
-from Mini_MIAS_1_Folders import NOCropped_Images_Normal
-from Mini_MIAS_1_Folders import NOCropped_Images_Tumor
-from Mini_MIAS_1_Folders import NOCropped_Images_Benign
-from Mini_MIAS_1_Folders import NOCropped_Images_Malignant
-
-########## ########## ########## ########## ########## ########## ########## ########## ########## ##########
-
 from Mini_MIAS_4_Data_Augmentation import dataAugmentation
 
-########## ########## ########## ########## ########## ########## ########## ########## ########## ##########
-
-def preprocessing_DataAugmentation_Multiclass():
+def preprocessing_DataAugmentation_Multiclass(Folder_normal, Folder_benign, Folder_malignant):
 
     # Parameters
 
     Images = []
     Labels = []
 
-    NNormal = 14 # The number of normal images
-    NBenign = 55 # The number of benign images
-    NMalignant = 70  # The number of malignant images
+    NNormal = 2 # The number of normal images
+    NBenign = 70 # The number of benign images
+    NMalignant = 90  # The number of malignant images
 
     Normal = 'Normal'  # Normal label
     Benign = 'Benign'  # Benign label
     Malignant = 'Malignant'    # Malignant label
 
-    IN = 0  # Normal class
-    IB = 1  # Normal class
-    IT = 2  # Normal class
+    Normal_images_label = 0 # Normal class
+    Benign_images_label = 1 # Tumor class
+    Malignant_images_label = 2 # Tumor class
 
-    DataAug_0 = dataAugmentation(folder = NTCropped_Images_Normal, severity = Normal, sampling = NNormal, label = IN, nfsave = False)
-    DataAug_1 = dataAugmentation(folder = NTCropped_Images_Benign, severity = Benign, sampling = NBenign, label = IT, nfsave = False)
-    DataAug_2 = dataAugmentation(folder = NTCropped_Images_Malignant, severity = Malignant, sampling = NMalignant, label = IT, nfsave = False)
+    Data_augmentation_normal = dataAugmentation(folder = Folder_normal, severity = Normal, sampling = NNormal, label = Normal_images_label, nfsave = False)
+    Data_augmentation_benign = dataAugmentation(folder = Folder_benign, severity = Benign, sampling = NBenign, label = Benign_images_label, nfsave = False)
+    Data_augmentation_malignant = dataAugmentation(folder = Folder_malignant, severity = Malignant, sampling = NMalignant, label = Malignant_images_label, nfsave = False)
 
-    DataAug_3 = dataAugmentation(folder = NOCropped_Images_Normal, severity = Normal, sampling = NNormal, label = IN, nfsave = False)
-    DataAug_4 = dataAugmentation(folder = NOCropped_Images_Benign, severity = Benign, sampling = NBenign, label = IT, nfsave = False)
-    DataAug_5 = dataAugmentation(folder = NOCropped_Images_Malignant, severity = Malignant, sampling = NMalignant, label = IT, nfsave = False)
-
-    Images_Normal, Labels_Normal = DataAug_0.DataAugmentation()
-    Images_Benign, Labels_Benign = DataAug_1.DataAugmentation()
-    Images_Malignant, Labels_Malignant = DataAug_2.DataAugmentation()
-
-    NOImages_Normal, NOLabels_Normal = DataAug_3.DataAugmentation()
-    NOImages_Benign, NOLabels_Benign = DataAug_4.DataAugmentation()
-    NOImages_Malignant, NOLabels_Malignant = DataAug_5.DataAugmentation()
+    Images_Normal, Labels_Normal = Data_augmentation_normal.DataAugmentation()
+    Images_Benign, Labels_Benign = Data_augmentation_benign.DataAugmentation()
+    Images_Malignant, Labels_Malignant = Data_augmentation_malignant.DataAugmentation()
 
     Images.append(Images_Normal)
     Images.append(Images_Benign)
     Images.append(Images_Malignant)
 
-    Images.append(NOImages_Normal)
-    Images.append(NOImages_Benign)
-    Images.append(NOImages_Malignant)
-
     Labels.append(Labels_Normal)
     Labels.append(Labels_Benign)
     Labels.append(Labels_Malignant)
-
-    Labels.append(NOLabels_Normal)
-    Labels.append(NOLabels_Benign)
-    Labels.append(NOLabels_Malignant)
 
     return Images, Labels

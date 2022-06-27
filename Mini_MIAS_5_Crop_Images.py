@@ -2,15 +2,9 @@ import os
 import cv2
 import numpy as np
 import pandas as pd
-
 from sklearn.preprocessing import LabelEncoder
 
-from Mini_MIAS_2_General_Functions import SortImages
-from Mini_MIAS_2_General_Functions import MeanImages
-from Mini_MIAS_2_General_Functions import Removeallfiles
-from Mini_MIAS_2_General_Functions import Removeallfiles
-
-def extract_mean_from_images(df_M, column):
+def extract_mean_from_images(Dataframe, Column):
 
     """
 	  Obtaining the mean value of the mammograms
@@ -25,53 +19,52 @@ def extract_mean_from_images(df_M, column):
 
     Data = []
 
-    for i in range(df_M.shape[0]):
-        if df_M.iloc[i - 1, column] > 0:
-            Data.append(df_M.iloc[i - 1, column])
+    for i in range(Dataframe.shape[0]):
+        if Dataframe.iloc[i - 1, Column] > 0:
+            Data.append(Dataframe.iloc[i - 1, Column])
 
     Mean = int(np.mean(Data))
 
-    print(Data)
+    #print(Data)
     print(Mean)
 
     return Mean
 
 def mias_csv(CSV_Path):
 
-    col_list = ["REFNUM", "BG", "CLASS", "SEVERITY", "X", "Y", "RADIUS"]
-    df = pd.read_csv(CSV_Path, usecols = col_list)
+    Col_list = ["REFNUM", "BG", "CLASS", "SEVERITY", "X", "Y", "RADIUS"]
+    Dataframe = pd.read_csv(CSV_Path, usecols = Col_list)
 
-    pd.set_option('display.max_rows', df.shape[0] + 1)
-    print(df)
+    #pd.set_option('display.max_rows', Dataframe.shape[0] + 1)
+    #print(Dataframe)
 
-    df_T = mias_csv_clean(df)
+    New_dataframe = mias_csv_clean(Dataframe)
 
-    pd.set_option('display.max_rows', df_T.shape[0] + 1)
-    print(df_T)
+    #pd.set_option('display.max_rows', New_dataframe.shape[0] + 1)
+    #print(New_dataframe)
 
-    return df_T
+    return New_dataframe
 
-def mias_csv_clean(df_M):
+def mias_csv_clean(Dataframe):
 
-    df_M.iloc[:, 3].values
+    Dataframe.iloc[:, 3].values
     LE = LabelEncoder()
-    df_M.iloc[:, 3] = LE.fit_transform(df_M.iloc[:, 3])
+    Dataframe.iloc[:, 3] = LE.fit_transform(Dataframe.iloc[:, 3])
 
-    df_M['X'] = df_M['X'].fillna(0)
-    df_M['Y'] = df_M['Y'].fillna(0)
-    df_M['RADIUS'] = df_M['RADIUS'].fillna(0)
-
+    Dataframe['X'] = Dataframe['X'].fillna(0)
+    Dataframe['Y'] = Dataframe['Y'].fillna(0)
+    Dataframe['RADIUS'] = Dataframe['RADIUS'].fillna(0)
 
     #df_M["X"].replace({"*NOTE": 0}, inplace = True)
     #df_M["Y"].replace({"3*": 0}, inplace = True)
 
-    df_M['X'] = df_M['X'].astype(int)
-    df_M['Y'] = df_M['Y'].astype(int)
+    Dataframe['X'] = Dataframe['X'].astype(int)
+    Dataframe['Y'] = Dataframe['Y'].astype(int)
 
-    df_M['SEVERITY'] = df_M['SEVERITY'].astype(int)
-    df_M['RADIUS'] = df_M['RADIUS'].astype(int)
+    Dataframe['SEVERITY'] = Dataframe['SEVERITY'].astype(int)
+    Dataframe['RADIUS'] = Dataframe['RADIUS'].astype(int)
 
-    return df_M
+    return Dataframe
 
 # class for images cropping.
 
@@ -92,38 +85,7 @@ class cropImages():
     self.Ymean = kwargs.get('Ymean', None)
 
   def CropMIAS(self):
-
-    """
-
-    Newfolder = r'\NT_Cropped_Images_'
-
-    NormalFolder = self.newfolder + Newfolder + 'Normal'
-    TumorFolder = self.newfolder + Newfolder + 'Tumor'
-    BenignFolder = self.newfolder + Newfolder + 'Benign'
-    MalignantFolder = self.newfolder + Newfolder + 'Malignant'
-
-    ExistdirN = os.path.isdir(NormalFolder) 
-    ExistdirT = os.path.isdir(TumorFolder)
-    ExistdirB = os.path.isdir(BenignFolder) 
-    ExistdirM = os.path.isdir(MalignantFolder) 
-
-    if ExistdirN == False:
-        Folder_Normal = os.path.join(self.newfolder, Newfolder + 'Normal')
-        os.mkdir(Folder_Normal)
-
-    if ExistdirT == False:
-        Folder_Tumor = os.path.join(self.newfolder, Newfolder + 'Tumor')
-        os.mkdir(Folder_Tumor)
-
-    if ExistdirB == False:
-        Folder_Benign = os.path.join(self.newfolder, Newfolder + 'Benign')
-        os.mkdir(Folder_Benign)
-
-    if ExistdirM == False:
-        Folder_Malignant = os.path.join(self.newfolder, Newfolder + 'Malignant')
-        os.mkdir(Folder_Malignant)
-    """
-
+    
     #Images = []
 
     os.chdir(self.folder)
@@ -140,9 +102,9 @@ class cropImages():
 
     Index = 1
 
-    png = ".png"    # png.
+    PNG = ".png"    # png.
 
-    sorted_files, images = SortImages(self.folder)
+    sorted_files, images = sorted_files(self.folder)
     count = 1
     k = 0
 
@@ -191,7 +153,7 @@ class cropImages():
                     # Display cropped image
                     # cv2_imshow(cropped_image)
 
-                    dst_name = filename + '_Benign_cropped' + png
+                    dst_name = filename + '_Benign_cropped' + PNG
 
                     dstPath_name = os.path.join(self.benignfolder, dst_name)
                     cv2.imwrite(dstPath_name, Cropped_Image_Benig)
@@ -240,7 +202,7 @@ class cropImages():
                   # Display cropped image
                   # cv2_imshow(cropped_image)
               
-                  dst_name = filename + '_Malignant_cropped' + png
+                  dst_name = filename + '_Malignant_cropped' + PNG
 
                   dstPath_name = os.path.join(self.malignantfolder, dst_name)
                   cv2.imwrite(dstPath_name, Cropped_Image_Malig)
@@ -289,7 +251,7 @@ class cropImages():
                   # Display cropped image
                   # cv2_imshow(cropped_image)
               
-                  dst_name = filename + '_Normal_cropped' + png
+                  dst_name = filename + '_Normal_cropped' + PNG
 
                   dstPath_name = os.path.join(self.normalfolder, dst_name)
                   cv2.imwrite(dstPath_name, Cropped_Image_Normal)

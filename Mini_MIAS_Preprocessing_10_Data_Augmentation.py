@@ -1,58 +1,32 @@
 
-########## ########## ########## ########## ########## ########## ########## ########## ########## ##########
-
-from Mini_MIAS_1_Folders import NTCropped_Images_Normal
-from Mini_MIAS_1_Folders import NTCropped_Images_Tumor
-
-from Mini_MIAS_1_Folders import NOCropped_Images_Normal
-from Mini_MIAS_1_Folders import NOCropped_Images_Tumor
-
-########## ########## ########## ########## ########## ########## ########## ########## ########## ##########
-
 from Mini_MIAS_4_Data_Augmentation import dataAugmentation
 
-########## ########## ########## ########## ########## ########## ########## ########## ########## ##########
-
-def preprocessing_DataAugmentation_Biclass():
+def preprocessing_DataAugmentation_Biclass(Folder_normal, Folder_tumor):
 
     # Parameters
 
     Images = []
     Labels = []
 
-    NNormal = 20 # The number of normal images
-    NTumor = 40  # The number of tumor images
+    Iter_normal = 20 # The number of normal images
+    Iter_tumor = 40  # The number of tumor images
 
-    Normal = 'Normal'  # Normal label
-    Tumor = 'Tumor'    # Tumor label
+    Label_normal = 'Normal'  # Normal label
+    Label_tumor = 'Tumor'    # Tumor label
 
-    IN = 0 # Normal class
-    IT = 1 # Tumor class
+    Normal_images_label = 0 # Normal class
+    Tumor_images_label = 1 # Tumor class
 
-    DataAug_0 = dataAugmentation(folder = NTCropped_Images_Normal, severity = Normal, sampling = NNormal, label = IN, nfsave = False)
-    DataAug_1 = dataAugmentation(folder = NTCropped_Images_Tumor, severity = Tumor, sampling = NTumor, label = IT, nfsave = False)
+    Data_augmentation_normal = dataAugmentation(folder = Folder_normal, severity = Label_normal, sampling = Iter_normal, label = Normal_images_label, nfsave = False)
+    Data_augmentation_tumor = dataAugmentation(folder = Folder_tumor, severity = Label_tumor, sampling = Iter_tumor, label = Tumor_images_label, nfsave = False)
 
-    DataAug_2 = dataAugmentation(folder = NOCropped_Images_Normal, severity = Normal, sampling = NNormal, label = IN, nfsave = False)
-    DataAug_3 = dataAugmentation(folder = NOCropped_Images_Tumor, severity = Tumor, sampling = NTumor, label = IT, nfsave = False)
-
-    Images_Normal, Labels_Normal = DataAug_0.DataAugmentation()
-    Images_Tumor, Labels_Tumor = DataAug_1.DataAugmentation()
-
-    NOImages_Normal, NOLabels_Normal = DataAug_2.DataAugmentation()
-    NOImages_Tumor, NOLabels_Tumor = DataAug_3.DataAugmentation()
+    Images_Normal, Labels_Normal = Data_augmentation_normal.DataAugmentation()
+    Images_Tumor, Labels_Tumor = Data_augmentation_tumor.DataAugmentation()
 
     Images.append(Images_Normal)
     Images.append(Images_Tumor)
 
-    Images.append(NOImages_Normal)
-    Images.append(NOImages_Tumor)
-
     Labels.append(Labels_Normal)
     Labels.append(Labels_Tumor)
 
-    Labels.append(NOLabels_Normal)
-    Labels.append(NOLabels_Tumor)
-
     return Images, Labels
-
-preprocessing_DataAugmentation_Biclass()

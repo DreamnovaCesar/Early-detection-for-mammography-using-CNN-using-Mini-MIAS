@@ -116,7 +116,7 @@ def PreTrainedModels(ModelPreTrained, Technique, labels, Xsize, Ysize, num_class
     
    	"""
 
-    # Parameters for plotting
+    # Parameters
 
     Height = 12
     Width = 12

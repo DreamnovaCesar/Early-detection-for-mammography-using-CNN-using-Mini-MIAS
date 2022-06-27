@@ -17,6 +17,18 @@ class dataAugmentation:
     self.label = kwargs.get('label')
     self.nfsave = kwargs.get('nfsave', False)
 
+    if self.folder == None:
+      raise ValueError("Folder does not exist")
+
+    elif self.severity == None:
+      raise ValueError("Destination Folder does not exist")
+
+    elif self.sampling == None:
+      raise ValueError("Extension does not exist")
+
+    elif self.label == None:
+      raise ValueError("New extension does not exist")
+
   def ShiftRotation(self, Image_Cropped):
 
     """
@@ -175,7 +187,7 @@ class dataAugmentation:
 
         # 1.a) Rotation
 
-        for i in range(Sampling):
+        for i in range(self.sampling):
 
           Imagen_transformed = self.Rotation(Rotation_initial_value, Resize_Imagen)
 

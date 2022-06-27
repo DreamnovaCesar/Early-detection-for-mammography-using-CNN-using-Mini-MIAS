@@ -145,7 +145,7 @@ def mias_csv_clean(Dataframe):
 
 # Concat multiple dataframes
 
-def dataframe_csv(*dfs, **kwargs):
+def concat_dataframe(*dfs, **kwargs):
 
     folder = kwargs.get('folder', None)
     Class = kwargs.get('Class', None)

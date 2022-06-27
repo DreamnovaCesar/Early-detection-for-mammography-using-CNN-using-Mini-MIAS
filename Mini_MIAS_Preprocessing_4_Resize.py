@@ -1,5 +1,4 @@
 import cv2
-
 from Mini_MIAS_1_Folders import Mini_MIAS_NT_Cropped_Images_Normal
 from Mini_MIAS_1_Folders import Mini_MIAS_NT_Cropped_Images_Tumor
 from Mini_MIAS_1_Folders import Mini_MIAS_NT_Cropped_Images_Benign
@@ -11,20 +10,20 @@ def preprocessing_Resize():
 
     # Parameters for resize
 
-    x_new_size = 224
-    YsizeResized = 224
-    interpolation = cv2.INTER_CUBIC
+    X_new_size = 224
+    Y_new_size = 224
+    Interpolation = cv2.INTER_CUBIC
 
     # Image processing class
 
-    MIASResize_N = ImageProcessing(folder = Mini_MIAS_NT_Cropped_Images_Normal, Xresize = XsizeResized, Yresize = YsizeResized, interpolation = interpolation)
-    MIASResize_T = ImageProcessing(folder = Mini_MIAS_NT_Cropped_Images_Tumor, Xresize = XsizeResized, Yresize = YsizeResized, interpolation = interpolation)
-    MIASResize_B = ImageProcessing(folder = Mini_MIAS_NT_Cropped_Images_Benign, Xresize = XsizeResized, Yresize = YsizeResized, interpolation = interpolation)
-    MIASResize_M = ImageProcessing(folder = Mini_MIAS_NT_Cropped_Images_Malignant, Xresize = XsizeResized, Yresize = YsizeResized, interpolation = interpolation)
+    Resize_normal_images = ImageProcessing(folder = Mini_MIAS_NT_Cropped_Images_Normal, Xresize = X_new_size, Yresize = Y_new_size, interpolation = Interpolation)
+    Resize_tumor_images = ImageProcessing(folder = Mini_MIAS_NT_Cropped_Images_Tumor, Xresize = X_new_size, Yresize = Y_new_size, interpolation = Interpolation)
+    Resize_benign_images = ImageProcessing(folder = Mini_MIAS_NT_Cropped_Images_Benign, Xresize = X_new_size, Yresize = Y_new_size, interpolation = Interpolation)
+    Resize_malignant_images = ImageProcessing(folder = Mini_MIAS_NT_Cropped_Images_Malignant, Xresize = X_new_size, Yresize = Y_new_size, interpolation = Interpolation)
 
     # Image processing resize
 
-    MIASResize_N.Resize() # Resize normal images
-    MIASResize_T.Resize() # Resize tumor images
-    MIASResize_B.Resize() # Resize benign images
-    MIASResize_M.Resize() # Resize malignant images
+    Resize_normal_images.resize_technique() # Resize normal images
+    Resize_tumor_images.resize_technique() # Resize tumor images
+    Resize_benign_images.resize_technique() # Resize benign images
+    Resize_malignant_images.resize_technique() # Resize malignant images

@@ -471,22 +471,7 @@ class featureExtraction():
 
 # class about Kmeans algorithm
 
-class Kmeans:
-
-  def __init__(self, **kwargs):
-
-    self.folder = kwargs.get('folder', None)
-    self.folderpic = kwargs.get('folderpic', None)
-    self.folderCSV = kwargs.get('folderCSV', None)
-    self.severity = kwargs.get('severity', None)
-    self.name = kwargs.get('name', None)
-    self.X = kwargs.get('X', None)
-    self.clusters = kwargs.get('clusters', None)
-    self.filename = kwargs.get('filename', None)
-    self.df = kwargs.get('df', None)
-    self.removecluster = kwargs.get('CR', None)
-
-  def Kmeans_function(self):
+def kmeans_function(CSV_folder, GRAPH_folder, Technique_name, X_data, Clusters, Filename, Severity):
 
     """
 	  Using the elbow method and get k-means clusters.
@@ -505,7 +490,7 @@ class Kmeans:
     wcss = []
     for i in range(1, 10):
       kmeans = KMeans(n_clusters = i, init = 'k-means++', random_state = 42)
-      kmeans.fit(self.X)
+      kmeans.fit(X_data)
       wcss.append(kmeans.inertia_)
     plt.plot(range(1, 10), wcss)
     plt.title('The Elbow Method')
@@ -513,14 +498,14 @@ class Kmeans:
     plt.ylabel('WCSS')
     #plt.show()
 
-    kmeans = KMeans(n_clusters = self.clusters, init = 'k-means++', random_state = 42)
-    y_kmeans = kmeans.fit_predict(self.X)
+    kmeans = KMeans(n_clusters = Clusters, init = 'k-means++', random_state = 42)
+    y_kmeans = kmeans.fit_predict(X_data)
 
-    for i in range(self.clusters):
+    for i in range(Clusters):
 
-      if  self.clusters <= 10:
+      if  Clusters <= 10:
 
-          plt.scatter(self.X[y_kmeans == i, 0], self.X[y_kmeans == i, 1], s = 100, c = Colors[i], label = 'Cluster ' + str(i))
+          plt.scatter(X_data[y_kmeans == i, 0], X_data[y_kmeans == i, 1], s = 100, c = Colors[i], label = 'Cluster ' + str(i))
 
 
     plt.scatter(kmeans.cluster_centers_[:, 0], kmeans.cluster_centers_[:, 1], s = 200, c = 'yellow', label = 'Centroids')
@@ -530,22 +515,22 @@ class Kmeans:
     plt.ylabel('')
     plt.legend()
 
-    dst = 'Kmeans_Graph_' + str(self.name) + '_' + str(self.severity) + '.png'
-    dstPath = os.path.join(self.folderpic, dst)
+    GRAPH_name = 'Kmeans_Graph_' + str(Technique_name) + '_' + str(Severity) + '.png'
+    GRAPH_folder = os.path.join(GRAPH_folder, GRAPH_name)
 
-    plt.savefig(dstPath)
+    plt.savefig(GRAPH_folder)
 
     #plt.show()
 
-    DataFrame = pd.DataFrame({'y_kmeans':y_kmeans, 'REFNUM':self.filename})
-    pd.set_option('display.max_rows', DataFrame.shape[0] + 1)
+    DataFrame = pd.DataFrame({'y_kmeans' : y_kmeans, 'REFNUM' : Filename})
+    #pd.set_option('display.max_rows', DataFrame.shape[0] + 1)
     #print(DataFrame)
 
-    pd.set_option('display.max_rows', DataFrame.shape[0] + 1)
-    dst = str(self.name) + '_Dataframe_' + str(self.severity) + '.csv'
-    dstPath = os.path.join(self.folderCSV, dst)
+    #pd.set_option('display.max_rows', DataFrame.shape[0] + 1)
+    Dataframe_name = str(Technique_name) + '_Dataframe_' + str(Severity) + '.csv'
+    Dataframe_folder = os.path.join(CSV_folder, Dataframe_name)
 
-    DataFrame.to_csv(dstPath)
+    DataFrame.to_csv(Dataframe_folder)
 
     #print(DataFrame['y_kmeans'].value_counts())
 
@@ -553,7 +538,7 @@ class Kmeans:
 
   # Remove Data from K-means function
 
-  def Kmeans_remove_data(self):
+def kmeans_remove_data(Folder, CSV_folder, Technique_name, Dataframe, Cluster_to_remove, Severity):
 
     """
 	  Remove the cluster chosen from dataframe
@@ -575,9 +560,9 @@ class Kmeans:
     KmeansValue = 0
     Refnum = 1
 
-    os.chdir(self.folder)
+    os.chdir(Folder)
 
-    sorted_files, images = SortImages(self.folder)
+    sorted_files, images = sort_images(Folder)
     count = 1
     Index = 1
 
@@ -585,21 +570,21 @@ class Kmeans:
 
       filename, extension  = os.path.splitext(File)
 
-      if self.df.iloc[Index - 1, Refnum] == filename: # Read png files
+      if Dataframe.iloc[Index - 1, Refnum] == filename: # Read png files
 
         print(filename)
-        print(self.df.iloc[Index - 1, Refnum])
+        print(Dataframe.iloc[Index - 1, Refnum])
 
-        if self.df.iloc[Index - 1, KmeansValue] == self.removecluster:
+        if Dataframe.iloc[Index - 1, KmeansValue] == Cluster_to_remove:
 
           try:
             print(f"Working with {count} of {images} {extension} images, {filename} ------- {extension} ✅")
             count += 1
 
-            Path_File = os.path.join(self.folder, File)
+            Path_File = os.path.join(Folder, File)
             #print(Path_File)
             os.remove(Path_File)
-            print(self.df.iloc[Index - 1, Refnum], ' removed ❌')
+            print(Dataframe.iloc[Index - 1, Refnum], ' removed ❌')
             DataRemove.append(count)
             Data += 0
             #df = df.drop(df.index[count])
@@ -607,16 +592,16 @@ class Kmeans:
           except OSError:
             print('Cannot convert %s ❌' % File)
 
-        elif self.df.iloc[Index - 1, KmeansValue] != self.removecluster:
+        elif Dataframe.iloc[Index - 1, KmeansValue] != Cluster_to_remove:
         
           Filename.append(filename)
 
         Index += 1
 
-      elif self.df.iloc[Index - 1, Refnum] != filename:
+      elif Dataframe.iloc[Index - 1, Refnum] != filename:
       
         print(filename)
-        print(self.df.iloc[Index - 1, Refnum])
+        print(Dataframe.iloc[Index - 1, Refnum])
         print('Files are not equal')
         break
 
@@ -626,18 +611,17 @@ class Kmeans:
 
       for i in range(Data):
 
-        self.df = self.df.drop(self.df.index[DataRemove[i]])
+        Dataframe = Dataframe.drop(Dataframe.index[DataRemove[i]])
 
   #Dataset = pd.DataFrame({'y_kmeans':df_u.iloc[Index - 1, REFNUM], 'REFNUM':df_u.iloc[Index - 1, KmeansValue]})
   #X = Dataset.iloc[:, [0, 1, 2, 3, 4]].values
 
     #print(df)
+    #pd.set_option('display.max_rows', df.shape[0] + 1)
 
-    pd.set_option('display.max_rows', self.df.shape[0] + 1)
+    Dataframe_name = str(Technique_name) + '_Data_Removed_' + str(Severity) + '.csv'
+    Dataframe_folder = os.path.join(CSV_folder, Dataframe_name)
 
-    dst = str(self.name) + '_Data_Removed_' + str(self.severity) + '.csv'
-    dstPath = os.path.join(self.folderCSV, dst)
+    Dataframe.to_csv(Dataframe_folder)
 
-    self.df.to_csv(dstPath)
-
-    return self.df
+    return Dataframe
