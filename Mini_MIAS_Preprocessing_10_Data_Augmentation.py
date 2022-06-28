@@ -3,26 +3,28 @@ from Mini_MIAS_4_Data_Augmentation import dataAugmentation
 
 def preprocessing_DataAugmentation_Biclass(Folder_normal, Folder_tumor):
 
-    # Parameters
-
+    # * List to add images and labels.
     Images = []
     Labels = []
 
-    Iter_normal = 20 # The number of normal images
-    Iter_tumor = 40  # The number of tumor images
+    # * General parameters
+    Iter_normal = 20 
+    Iter_tumor = 40 
 
-    Label_normal = 'Normal'  # Normal label
-    Label_tumor = 'Tumor'    # Tumor label
+    Label_normal = 'Normal' 
+    Label_tumor = 'Tumor'  
 
-    Normal_images_label = 0 # Normal class
-    Tumor_images_label = 1 # Tumor class
+    Normal_images_class = 0 
+    Tumor_images_class = 1 
 
-    Data_augmentation_normal = dataAugmentation(folder = Folder_normal, severity = Label_normal, sampling = Iter_normal, label = Normal_images_label, nfsave = False)
-    Data_augmentation_tumor = dataAugmentation(folder = Folder_tumor, severity = Label_tumor, sampling = Iter_tumor, label = Tumor_images_label, nfsave = False)
+    # * With this class we use the technique called data augmentation to create new images with their transformations
+    Data_augmentation_normal = dataAugmentation(Folder = Folder_normal, Severity = Label_normal, Sampling = Iter_normal, Label = Normal_images_class, Saveimages = False)
+    Data_augmentation_tumor = dataAugmentation(Folder = Folder_tumor, Severity = Label_tumor, Sampling = Iter_tumor, Label = Tumor_images_class, Saveimages = False)
 
-    Images_Normal, Labels_Normal = Data_augmentation_normal.DataAugmentation()
-    Images_Tumor, Labels_Tumor = Data_augmentation_tumor.DataAugmentation()
+    Images_Normal, Labels_Normal = Data_augmentation_normal.data_augmentation()
+    Images_Tumor, Labels_Tumor = Data_augmentation_tumor.data_augmentation()
 
+    # * Add the value in the lists already created
     Images.append(Images_Normal)
     Images.append(Images_Tumor)
 

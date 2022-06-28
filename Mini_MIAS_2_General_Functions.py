@@ -157,17 +157,17 @@ def concat_dataframe(*dfs, **kwargs):
 
     # * General parameters
 
-    folder = kwargs.get('folder', None)
-    label = kwargs.get('label', None)
-    technique = kwargs.get('technique', None)
+    Folder = kwargs.get('Folder', None)
+    Class_problem = kwargs.get('Class', None)
+    Technique = kwargs.get('Technique', None)
 
-    if folder == None:
+    if Folder == None:
       raise ValueError("Folder does not exist") #! Alert
 
-    elif label == None:
+    elif Class_problem == None:
       raise ValueError("Class does not exist")  #! Alert
 
-    elif technique == None:
+    elif Technique == None:
       raise ValueError("Technique does not exist")  #! Alert
 
     # * Concatenate each dataframe
@@ -179,8 +179,8 @@ def concat_dataframe(*dfs, **kwargs):
     #print(DataFrame)
 
     # * Name the final dataframe and save it into the given path
-    Name_dataframe =  str(label) + '_Dataframe_' + str(technique) + '.csv'
-    Folder_dataframe_to_save = os.path.join(folder, Name_dataframe)
+    Name_dataframe =  str(Class_problem) + '_Dataframe_' + str(Technique) + '.csv'
+    Folder_dataframe_to_save = os.path.join(Folder, Name_dataframe)
 
     Final_dataframe.to_csv(Folder_dataframe_to_save)
 

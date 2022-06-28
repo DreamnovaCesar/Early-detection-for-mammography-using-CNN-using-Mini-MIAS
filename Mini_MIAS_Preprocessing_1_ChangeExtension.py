@@ -6,12 +6,15 @@ from Mini_MIAS_2_General_Functions import changeFormat
 
 def preprocessing_ChangeFormat():
 
+    # * General parameters
+
     pgm = '.pgm'
     png = '.png'
     tiff = '.tiff'
 
-    PGMtoPNG = changeFormat(folder = Mini_MIAS_PGM_MOD, newfolder = Mini_MIAS_PNG, extension = pgm, newextension = png)
-    PGMtoTIFF = changeFormat(folder = Mini_MIAS_PGM_MOD, newfolder = Mini_MIAS_TIFF, extension = pgm, newextension = tiff)
+    # * With this class we change the format of each image for a new one
+    PGMtoPNG = changeFormat(Folder = Mini_MIAS_PGM_MOD, Newfolder = Mini_MIAS_PNG, Format = pgm, Newformat = png)
+    PGMtoTIFF = changeFormat(Folder = Mini_MIAS_PGM_MOD, Newfolder = Mini_MIAS_TIFF, Format = pgm, Newformat = tiff)
 
     PGMtoPNG.ChangeExtension()
     PGMtoTIFF.ChangeExtension()
