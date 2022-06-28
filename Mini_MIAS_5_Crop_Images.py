@@ -1,214 +1,211 @@
+
 import os
 import cv2
 import numpy as np
 import pandas as pd
-from sklearn.preprocessing import LabelEncoder
 
-def extract_mean_from_images(Dataframe, Column):
+from Mini_MIAS_2_General_Functions import sort_images
+from Mini_MIAS_2_General_Functions import remove_all_files
 
-    """
-	  Obtaining the mean value of the mammograms
-
-    Parameters:
-    argument1 (dataframe): dataframe that will be use to acquire the values
-    argument2 (int): the column number to get the mean value
-
-    Returns:
-	  float:Returning the mean value
-    """
-
-    Data = []
-
-    for i in range(Dataframe.shape[0]):
-        if Dataframe.iloc[i - 1, Column] > 0:
-            Data.append(Dataframe.iloc[i - 1, Column])
-
-    Mean = int(np.mean(Data))
-
-    #print(Data)
-    print(Mean)
-
-    return Mean
-
-def mias_csv(CSV_Path):
-
-    Col_list = ["REFNUM", "BG", "CLASS", "SEVERITY", "X", "Y", "RADIUS"]
-    Dataframe = pd.read_csv(CSV_Path, usecols = Col_list)
-
-    #pd.set_option('display.max_rows', Dataframe.shape[0] + 1)
-    #print(Dataframe)
-
-    New_dataframe = mias_csv_clean(Dataframe)
-
-    #pd.set_option('display.max_rows', New_dataframe.shape[0] + 1)
-    #print(New_dataframe)
-
-    return New_dataframe
-
-def mias_csv_clean(Dataframe):
-
-    Dataframe.iloc[:, 3].values
-    LE = LabelEncoder()
-    Dataframe.iloc[:, 3] = LE.fit_transform(Dataframe.iloc[:, 3])
-
-    Dataframe['X'] = Dataframe['X'].fillna(0)
-    Dataframe['Y'] = Dataframe['Y'].fillna(0)
-    Dataframe['RADIUS'] = Dataframe['RADIUS'].fillna(0)
-
-    #df_M["X"].replace({"*NOTE": 0}, inplace = True)
-    #df_M["Y"].replace({"3*": 0}, inplace = True)
-
-    Dataframe['X'] = Dataframe['X'].astype(int)
-    Dataframe['Y'] = Dataframe['Y'].astype(int)
-
-    Dataframe['SEVERITY'] = Dataframe['SEVERITY'].astype(int)
-    Dataframe['RADIUS'] = Dataframe['RADIUS'].astype(int)
-
-    return Dataframe
-
-# class for images cropping.
+# ? class for images cropping.
 
 class cropImages():
 
   def __init__(self, **kwargs):
     
-    self.folder = kwargs.get('folder', None)
-    #self.newfolder = kwargs.get('foldersave', None)
-    self.normalfolder = kwargs.get('normalfolder', None)
-    self.tumorfolder = kwargs.get('tumorfolder', None)
-    self.benignfolder = kwargs.get('benignfolder', None)
-    self.malignantfolder = kwargs.get('malignantfolder', None)
-    self.df = kwargs.get('df', None)
-    self.shape = kwargs.get('shape', None)
+    # * This algorithm outputs crop values for images based on the coordinates of the CSV file.
+    # * General parameters
+    self.Folder = kwargs.get('Folder', None)
+    self.Normalfolder = kwargs.get('Normalfolder', None)
+    self.Tumorfolder = kwargs.get('Tumorfolder', None)
+    self.Benignfolder = kwargs.get('Benignfolder', None)
+    self.Malignantfolder = kwargs.get('Malignantfolder', None)
 
+    # * CSV to extract data
+    self.Dataframe = kwargs.get('Dataframe', None)
+    self.Shapes = kwargs.get('Shapes', None)
+    
+    # * X and Y mean to extract normal cropped images
     self.Xmean = kwargs.get('Xmean', None)
     self.Ymean = kwargs.get('Ymean', None)
+
+    if self.Folder == None:
+      raise ValueError("Folder does not exist") #! Alert
+
+    elif self.Normalfolder == None:
+      raise ValueError("Folder for normal images does not exist") #! Alert
+
+    elif self.Tumorfolder == None:
+      raise ValueError("Folder for tumor images does not exist") #! Alert
+
+    elif self.Benignfolder == None:
+      raise ValueError("Folder for benign images does not exist") #! Alert
+
+    elif self.Malignantfolder == None:
+      raise ValueError("Folder for malignant images does not exist") #! Alert
+
+    #elif self.Dataframe == None:
+      #raise ValueError("The dataframe is required") #! Alert
+
+    elif self.Shapes == None:
+      raise ValueError("The shape is required") #! Alert
+
+    elif self.Xmean == None:
+      raise ValueError("Xmean is required") #! Alert
+
+    elif self.Ymean == None:
+      raise ValueError("Ymean is required") #! Alert
 
   def CropMIAS(self):
     
     #Images = []
 
-    os.chdir(self.folder)
+    os.chdir(self.Folder)
 
-    Refnum = 0
+    # * Columns
+    Name_column = 0
     Severity = 3
-    Xcolumn = 4
-    Ycolumn = 5
+    X_column = 4
+    Y_column = 5
     Radius = 6
 
+    # * Labels
     Benign = 0
     Malignant = 1
     Normal = 2
 
+    # * Initial index
     Index = 1
+    
+    # * Using sort function
+    Sorted_files, Total_images = sort_images(self.Folder)
+    Count = 1
 
-    PNG = ".png"    # png.
-
-    sorted_files, images = sorted_files(self.folder)
-    count = 1
-    k = 0
-
-    for File in sorted_files:
+    # * Reading the files
+    for File in Sorted_files:
       
-        filename, extension  = os.path.splitext(File)
+        Filename, Format = os.path.splitext(File)
 
         print("******************************************")
-        print(self.df.iloc[Index - 1, 0])
-        print(filename)
+        print(self.Dataframe.iloc[Index - 1, Name_column])
+        print(Filename)
         print("******************************************")
 
-        if self.df.iloc[Index - 1, Severity] == Benign:
-            if self.df.iloc[Index - 1, Xcolumn] > 0  or self.df.iloc[Index - 1, Ycolumn] > 0:
+        if self.Dataframe.iloc[Index - 1, Severity] == Benign:
+            if self.Dataframe.iloc[Index - 1, X_column] > 0  or self.Dataframe.iloc[Index - 1, Y_column] > 0:
               
                 try:
                 
-                    print(f"Working with {count} of {images} {extension} Benign images, {filename} X {self.df.iloc[Index - 1, Xcolumn]} Y {self.df.iloc[Index - 1, Ycolumn]}")
-                    print(self.df.iloc[Index - 1, Refnum], " ------ ", filename, " ✅")
-                    count += 1
+                  print(f"Working with {Count} of {Total_images} {Format} Benign images, {Filename} X: {self.Dataframe.iloc[Index - 1, X_column]} Y: {self.Dataframe.iloc[Index - 1, Y_column]}")
+                  print(self.Dataframe.iloc[Index - 1, Name_column], " ------ ", Filename, " ✅")
+                  Count += 1
 
-                    Path_File = os.path.join(self.folder, File)
-                    Imagen = cv2.imread(Path_File)
+                  # * Reading the image
+                  Path_file = os.path.join(self.Folder, File)
+                  Image = cv2.imread(Path_file)
                 
-                    Distance = self.shape # X and Y.
-
-                    #CD = Distance / 2 
-                    CD = self.df.iloc[Index - 1, Radius] / 2 # Center
-                    YA = Imagen.shape[0] # YAltura.
-
-                    Xsize = self.df.iloc[Index - 1, Xcolumn]
-                    Ysize = self.df.iloc[Index - 1, Ycolumn]
+                  #Distance = self.Shape # X and Y.
+                  #Distance = self.Shape # Perimetro de X y Y de la imagen.
+                  #Image_center = Distance / 2 
                     
-                    XDL = Xsize - CD
-                    XDM = Xsize + CD
+                  # * Obtaining the center using the radius
+                  Image_center = self.Dataframe.iloc[Index - 1, Radius] / 2 
+                  # * Obtaining dimension
+                  Height_Y = Image.shape[0] 
+                  print(Image.shape[0])
+                  print(self.Dataframe.iloc[Index - 1, Radius])
 
-                    YDL = YA - Ysize - CD
-                    YDM = YA - Ysize + CD
+                  # * Extract the value of X and Y of each image
+                  X_size = self.Dataframe.iloc[Index - 1, X_column]
+                  print(X_size)
+                  Y_size = self.Dataframe.iloc[Index - 1, Y_column]
+                  print(Y_size)
+                    
+                  # * Extract the value of X and Y of each image
+                  XDL = X_size - Image_center
+                  print(XDL)
+                  XDM = X_size + Image_center
+                  print(XDM)
+                    
+                  # * Extract the value of X and Y of each image
+                  YDL = Height_Y - Y_size - Image_center
+                  print(YDL)
+                  YDM = Height_Y - Y_size + Image_center
+                  print(YDM)
 
-                    # Cropped image
-                    Cropped_Image_Benig = Imagen[int(YDL):int(YDM), int(XDL):int(XDM)]
+                  # * Cropped image
+                  Cropped_Image_Benig = Image[int(YDL):int(YDM), int(XDL):int(XDM)]
 
-                    print(Imagen.shape, " ----------> ", Cropped_Image_Benig.shape)
+                  print(Image.shape, " ----------> ", Cropped_Image_Benig.shape)
 
-                    # print(Cropped_Image_Benig.shape)
-                    # Display cropped image
-                    # cv2_imshow(cropped_image)
+                  # print(Cropped_Image_Benig.shape)
+                  # Display cropped image
+                  # cv2_imshow(cropped_image)
 
-                    dst_name = filename + '_Benign_cropped' + PNG
+                  New_name_filename = Filename + '_Benign_cropped' + Format
 
-                    dstPath_name = os.path.join(self.benignfolder, dst_name)
-                    cv2.imwrite(dstPath_name, Cropped_Image_Benig)
+                  New_folder = os.path.join(self.Benignfolder, New_name_filename)
+                  cv2.imwrite(New_folder, Cropped_Image_Benig)
 
-                    dstPath_name = os.path.join(self.tumorfolder, dst_name)
-                    cv2.imwrite(dstPath_name, Cropped_Image_Benig)
+                  New_folder = os.path.join(self.Tumorfolder, New_name_filename)
+                  cv2.imwrite(New_folder, Cropped_Image_Benig)
 
-                    #Images.append(Cropped_Image_Benig)
+                  #Images.append(Cropped_Image_Benig)
 
                 except OSError:
                         print('Cannot convert %s' % File)
 
-        elif self.df.iloc[Index - 1, Severity] == Malignant:
-            if self.df.iloc[Index - 1, Xcolumn] > 0  or self.df.iloc[Index - 1, Ycolumn] > 0:
+        elif self.Dataframe.iloc[Index - 1, Severity] == Malignant:
+            if self.Dataframe.iloc[Index - 1, X_column] > 0  or self.Dataframe.iloc[Index - 1, Y_column] > 0:
 
                 try:
 
-                  print(f"Working with {count} of {images} {extension} Malignant images, {filename} X {self.df.iloc[Index - 1, Xcolumn]} Y {self.df.iloc[Index - 1, Ycolumn]}")
-                  print(self.df.iloc[Index - 1, Refnum], " ------ ", filename, " ✅")
-                  count += 1
+                  print(f"Working with {Count} of {Total_images} {Format} Malignant images, {Filename} X {self.Dataframe.iloc[Index - 1, X_column]} Y {self.Dataframe.iloc[Index - 1, Y_column]}")
+                  print(self.Dataframe.iloc[Index - 1, Name_column], " ------ ", Filename, " ✅")
+                  Count += 1
 
-                  Path_File = os.path.join(self.folder, File)
-                  Imagen = cv2.imread(Path_File)
+                  # * Reading the image
+                  Path_file = os.path.join(self.Folder, File)
+                  Image = cv2.imread(Path_file)
+                
+                  #Distance = self.Shape # X and Y.
+                  #Distance = self.Shape # Perimetro de X y Y de la imagen.
+                  #Image_center = Distance / 2 
+                    
+                  # * Obtaining the center using the radius
+                  Image_center = self.Dataframe.iloc[Index - 1, Radius] / 2 # Center
+                  # * Obtaining dimension
+                  Height_Y = Image.shape[0] 
+                  print(Image.shape[0])
 
-                  Distance = self.shape # Perimetro de X y Y de la imagen.
+                  # * Extract the value of X and Y of each image
+                  X_size = self.Dataframe.iloc[Index - 1, X_column]
+                  Y_size = self.Dataframe.iloc[Index - 1, Y_column]
+                    
+                  # * Extract the value of X and Y of each image
+                  XDL = X_size - Image_center
+                  XDM = X_size + Image_center
+                    
+                  # * Extract the value of X and Y of each image
+                  YDL = Height_Y - Y_size - Image_center
+                  YDM = Height_Y - Y_size + Image_center
 
-                  #CD = Distance / 2 
-                  CD = self.df.iloc[Index - 1, Radius] / 2
-                  YA = Imagen.shape[0] # YAltura.
+                  # * Cropped image
+                  Cropped_Image_Malig = Image[int(YDL):int(YDM), int(XDL):int(XDM)]
 
-                  Xsize = self.df.iloc[Index - 1, Xcolumn]
-                  Ysize = self.df.iloc[Index - 1, Ycolumn]
-
-                  XDL = Xsize - CD
-                  XDM = Xsize + CD
-
-                  YDL = YA - Ysize - CD
-                  YDM = YA - Ysize + CD
-
-                  # Cropping an image
-                  Cropped_Image_Malig = Imagen[int(YDL):int(YDM), int(XDL):int(XDM)]
-
-                  print(Imagen.shape, " ----------> ", Cropped_Image_Malig.shape)
-
+                  print(Image.shape, " ----------> ", Cropped_Image_Malig.shape)
+        
                   # print(Cropped_Image_Malig.shape)
                   # Display cropped image
                   # cv2_imshow(cropped_image)
-              
-                  dst_name = filename + '_Malignant_cropped' + PNG
 
-                  dstPath_name = os.path.join(self.malignantfolder, dst_name)
-                  cv2.imwrite(dstPath_name, Cropped_Image_Malig)
+                  New_name_filename = Filename + '_Malignant_cropped' + Format
 
-                  dstPath_name = os.path.join(self.tumorfolder, dst_name)
-                  cv2.imwrite(dstPath_name, Cropped_Image_Malig)
+                  New_folder = os.path.join(self.Malignantfolder, New_name_filename)
+                  cv2.imwrite(New_folder, Cropped_Image_Malig)
+
+                  New_folder = os.path.join(self.Tumorfolder, New_name_filename)
+                  cv2.imwrite(New_folder, Cropped_Image_Malig)
 
                   #Images.append(Cropped_Image_Malig)
 
@@ -216,52 +213,57 @@ class cropImages():
                 except OSError:
                     print('Cannot convert %s' % File)
         
-        elif self.df.iloc[Index - 1, Severity] == Normal:
-          if self.df.iloc[Index - 1, Xcolumn] == 0  or self.df.iloc[Index - 1, Ycolumn] == 0:
+        elif self.Dataframe.iloc[Index - 1, Severity] == Normal:
+          if self.Dataframe.iloc[Index - 1, X_column] == 0  or self.Dataframe.iloc[Index - 1, Y_column] == 0:
 
                 try:
 
-                  print(f"Working with {count} of {images} {extension} Normal images, {filename}")
-                  print(self.df.iloc[Index - 1, Refnum], " ------ ", filename, " ✅")
-                  count += 1
+                  print(f"Working with {Count} of {Total_images} {Format} Normal images, {Filename}")
+                  print(self.Dataframe.iloc[Index - 1, Name_column], " ------ ", Filename, " ✅")
+                  Count += 1
 
-                  Path_File = os.path.join(self.folder, File)
-                  Imagen = cv2.imread(Path_File)
+                  Path_file = os.path.join(self.Folder, File)
+                  Image = cv2.imread(Path_file)
 
-                  Distance = self.shape # Perimetro de X y Y de la imagen.
-                  CD = Distance / 2 # Centro de la imagen.
+                  Distance = self.Shapes # Perimetro de X y Y de la imagen.
+                  Image_center = Distance / 2 # Centro de la imagen.
                   #CD = self.df.iloc[Index - 1, Radius] / 2
-                  YA = Imagen.shape[0] # YAltura.
+                  # * Obtaining dimension
+                  Height_Y = Image.shape[0] 
+                  print(Image.shape[0])
 
-                  Xsize = self.Xmean
-                  Ysize = self.Ymean
+                  # * Extract the value of X and Y of each image
+                  X_size = self.Xmean
+                  Y_size = self.Ymean
+                    
+                  # * Extract the value of X and Y of each image
+                  XDL = X_size - Image_center
+                  XDM = X_size + Image_center
+                    
+                  # * Extract the value of X and Y of each image
+                  YDL = Height_Y - Y_size - Image_center
+                  YDM = Height_Y - Y_size + Image_center
 
-                  XDL = Xsize - CD
-                  XDM = Xsize + CD
+                  # * Cropped image
+                  Cropped_Image_Normal = Image[int(YDL):int(YDM), int(XDL):int(XDM)]
 
-                  YDL = YA - Ysize - CD
-                  YDM = YA - Ysize + CD
+                  # * Comparison two images
+                  print(Image.shape, " ----------> ", Cropped_Image_Normal.shape)
 
-                  # Cropping an image
-                  Cropped_Image_Normal = Imagen[int(YDL):int(YDM), int(XDL):int(XDM)]
-
-                  print(Imagen.shape, " ----------> ", Cropped_Image_Normal.shape)
-
-                  # print(Cropped_Image_Malig.shape)
+                  # print(Cropped_Image_Normal.shape)
                   # Display cropped image
                   # cv2_imshow(cropped_image)
               
-                  dst_name = filename + '_Normal_cropped' + PNG
+                  New_name_filename = Filename + '_Normal_cropped' + Format
 
-                  dstPath_name = os.path.join(self.normalfolder, dst_name)
-                  cv2.imwrite(dstPath_name, Cropped_Image_Normal)
+                  New_folder = os.path.join(self.Normalfolder, New_name_filename)
+                  cv2.imwrite(New_folder, Cropped_Image_Normal)
 
                   #Images.append(Cropped_Image_Normal)
 
                 except OSError:
                     print('Cannot convert %s' % File)
 
-        Index += 1
-        k += 1    
+        Index += 1   
 
  

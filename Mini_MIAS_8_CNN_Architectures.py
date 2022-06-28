@@ -54,6 +54,8 @@ from tensorflow.keras.layers import MaxPooling2D
 from tensorflow.keras.layers import AveragePooling2D
 from tensorflow.keras.layers import BatchNormalization
 
+from sklearn.model_selection import train_test_split
+
 # function fine-tuning MLP
 
 def MLPClassificadorTL(x, units, activation):
@@ -87,6 +89,89 @@ class pretrainedModels:
     self.newfolder = kwargs.get('newfolder', None)
     self.extension = kwargs.get('extension', None)
     self.newextension = kwargs.get('newextension', None)
+
+# Configuration of each DCNN model
+
+def configuration_models(MainKeys, Arguments, Folder_Save, Folder_Save_Esp):
+
+    TotalImage = []
+    TotalLabel = []
+
+    ClassSize = (len(Arguments[2]))
+    Images = 7
+    Labels = 8
+
+    if len(Arguments) == len(MainKeys):
+        
+        DicAruments = dict(zip(MainKeys, Arguments))
+
+        for i in range(ClassSize):
+
+            for element in list(DicAruments.values())[Images]:
+                TotalImage.append(element)
+            
+            #print('Total:', len(TotalImage))
+        
+            for element in list(DicAruments.values())[Labels]:
+                TotalLabel.append(element)
+
+            #print('Total:', len(TotalLabel))
+
+            Images += 2
+            Labels += 2
+
+        #TotalImage = [*list(DicAruments.values())[Images], *list(DicAruments.values())[Images + 2]]
+        
+    elif len(Arguments) > len(MainKeys):
+
+        TotalArguments = len(Arguments) - len(MainKeys)
+
+        for i in range(TotalArguments // 2):
+
+            MainKeys.append('Images ' + str(i + 3))
+            MainKeys.append('Labels ' + str(i + 3))
+
+        DicAruments = dict(zip(MainKeys, Arguments))
+
+        for i in range(ClassSize):
+
+            for element in list(DicAruments.values())[Images]:
+                TotalImage.append(element)
+            
+            for element in list(DicAruments.values())[Labels]:
+                TotalLabel.append(element)
+
+            Images += 2
+            Labels += 2
+
+    elif len(Arguments) < len(MainKeys):
+
+        raise ValueError('its impossible')
+
+    #print(DicAruments)
+
+    def printDict(DicAruments):
+
+        for i in range(7):
+            print(list(DicAruments.items())[i])
+
+    printDict(DicAruments)
+
+    print(len(TotalImage))
+    print(len(TotalLabel))
+
+    X_train, X_test, y_train, y_test = train_test_split(np.array(TotalImage), np.array(TotalLabel), test_size = 0.20, random_state = 42)
+
+    # convert from integers to floats
+    #X_train = X_train.astype('float32')
+    #X_test = X_test.astype('float32')
+    # normalize to range 0-1
+    #X_train = X_train / 255.0
+    #X_test = X_test / 255.0
+
+    Score = PreTrainedModels(Arguments[0], Arguments[1], Arguments[2], Arguments[3], Arguments[4], ClassSize, Arguments[5], Arguments[6], X_train, y_train, X_test, y_test, Folder_Save, Folder_Save_Esp)
+    #Score = PreTrainedModels(ModelPreTrained, technique, labels, Xsize, Ysize, num_classes, vali_split, epochs, X_train, y_train, X_test, y_test)
+    return Score
 
 # Pretrained model configurations
 
@@ -487,6 +572,29 @@ def PreTrainedModels(ModelPreTrained, Technique, labels, Xsize, Ysize, num_class
   
     return Score
 
+# Update CSV changing value
+
+def update_csv_row(Score, df, column_names, path, row):
+
+    """
+	  Printing amount of images with data augmentation 
+
+    Parameters:
+    argument1 (list): The number of Normal images.
+    argument2 (list): The number of Tumor images.
+    argument3 (str): Technique used
+
+    Returns:
+	  void
+   	"""
+     
+    for i in range(len(Score)):
+        df.loc[row, column_names[i]] = Score[i]
+  
+    df.to_csv(path, index = False)
+  
+    print(df)
+    
 # Fine-Tuning MLP
 
 def MLPClassificadorTL(x, units, activation):

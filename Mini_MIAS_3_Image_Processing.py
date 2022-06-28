@@ -30,79 +30,92 @@ class ImageProcessing:
 
   def __init__(self, **kwargs):
 
-    self.folder = kwargs.get('folder', None)
-    self.newfolder = kwargs.get('newfolder', None)
-    self.severity = kwargs.get('severity', None)
-    self.label = kwargs.get('label', None)
+    # * General parameters
+    self.Folder = kwargs.get('folder', None)
+    self.Newfolder = kwargs.get('newfolder', None)
+    self.Severity = kwargs.get('severity', None)
+    self.Label = kwargs.get('label', None)
 
-    self.interpolation = kwargs.get('interpolation', None)
-    self.Xresize = kwargs.get('Xresize', None)
-    self.Yresize = kwargs.get('Yresize', None)
+    # * Parameters for resizing
+    self.Interpolation = kwargs.get('interpolation', cv2.INTER_CUBIC)
+    self.Xresize = kwargs.get('Xresize', 224)
+    self.Yresize = kwargs.get('Yresize', 224)
 
-    self.division = kwargs.get('division', 3)
+    # * Parameters for median filter
+    self.Division = kwargs.get('division', 3)
 
-    self.cliplimit = kwargs.get('cliplimit', 0.01)
+    # * Parameters for CLAHE
+    self.Cliplimit = kwargs.get('cliplimit', 0.01)
 
-    self.radius = kwargs.get('radius', 1)
-    self.amount = kwargs.get('amount', 1)
+    # * Parameters for unsharp masking
+    self.Radius = kwargs.get('radius', 1)
+    self.Amount = kwargs.get('amount', 1)
 
-    if self.folder == None:
-      raise ValueError("Folder does not exist")
+    if self.Folder == None:
+      raise ValueError("Folder does not exist") #! Alert
 
-    if self.folder == None:
-      raise ValueError("New folder destination does not exist")
+    if self.ewfolder == None:
+      raise ValueError("Folder destination does not exist") #! Alert
 
-    if self.folder == None:
-      raise ValueError("Assign the severity")
+    if self.Severity == None:
+      raise ValueError("Assign the severity") #! Alert
 
-    if self.folder == None:
-      raise ValueError("Assign the interpolation that will be used")
+    if self.Label == None:
+      raise ValueError("Assign the interpolation that will be used") #! Alert
 
-  # Resize technique.
+  # ? Resize technique method
 
   def resize_technique(self):
 
-    Images = [] 
+    # * Save the new images in a list
+    #New_images = [] 
 
-    os.chdir(self.folder)
-
+    os.chdir(self.Folder)
     print(os.getcwd())
     print("\n")
 
-    sorted_files, images = sort_images(self.folder)
+    # * Using sort function
+    Sorted_files, Total_images = sort_images(self.Folder)
     count = 1
 
-    for File in sorted_files:
-
-      filename, extension  = os.path.splitext(File)
-
-      if File.endswith(extension): # Read extension files
+    # * Reading the files
+    for File in Sorted_files:
+      
+      # * Extract the file name and format
+      Filename, Format  = os.path.splitext(File)
+      
+      if File.endswith(Format):
 
         try:
-          print(f"Working with {count} of {images} normal images")
+          print(f"Working with {count} of {Total_images} normal images")
           count += 1
+          
+          # * Resize with the given values 
+          Path_file = os.path.join(self.Folder, File)
+          Imagen = cv2.imread(Path_file)
 
-          Path_File = os.path.join(self.folder, File)
-          Imagen = cv2.imread(Path_File)
+          # * Resize with the given values 
+          Shape = (self.Xresize, self.Yresize)
+          Resized_Imagen = cv2.resize(Imagen, Shape, interpolation = self.Interpolation)
 
-          dsize = (self.Xresize, self.Yresize)
-          Resized_Imagen = cv2.resize(Imagen, dsize, interpolation = self.interpolation)
-
+          # * Show old image and new image
           print(Imagen.shape, ' -------- ', Resized_Imagen.shape)
 
-          dst = filename + extension
-          dstPath_N = os.path.join(self.folder, dst)
+          # * Name the new file
+          New_name_filename = Filename + Format
+          New_folder = os.path.join(self.Folder, New_name_filename)
 
-          cv2.imwrite(dstPath_N, Resized_Imagen)
-          Images.append(Resized_Imagen)
+          # * Save the image in a new folder
+          cv2.imwrite(New_folder, Resized_Imagen)
+          #New_images.append(Resized_Imagen)
           
         except OSError:
-          print('Cannot convert %s ❌' % File)
+          print('Cannot convert %s ❌' % File) #! Alert
 
     print("\n")
-    print(f"COMPLETE {count} of {images} RESIZED ✅")
+    print(f"COMPLETE {count} of {Total_images} RESIZED ✅")
 
-  # Normalization technique.
+  # ? Normalization technique method
 
   def normalize_technique(self):
 
@@ -121,54 +134,63 @@ class ImageProcessing:
 	  int:Returning dataframe with all data.
     
     """
-    remove_all_files(self.newfolder)
+    # * Remove all the files in the new folder using this function
+    remove_all_files(self.Newfolder)
 
+    # * Lists to save the values of the labels and the filename and later use them for a dataframe
     #Images = [] 
     Labels = []
-    Filename_ALL = []
+    All_filenames = []
+    
+    # * Lists to save the values of each statistic
+    Mae_ALL = [] # ? Mean Absolute Error.
+    Mse_ALL = [] # ? Mean Squared Error.
+    Ssim_ALL = [] # ? Structural similarity.
+    Psnr_ALL = [] # ? Peak Signal-to-Noise Ratio.
+    Nrmse_ALL = [] # ? Normalized Root-Mean-Square Error.
+    Nmi_ALL = [] # ? Normalized Mutual Information.
+    R2s_ALL = [] # ? Coefficient of determination.
 
-    Mae_ALL = [] # MSE normal.
-    Mse_ALL = [] # PSNR normal.
-    Ssim_ALL = [] # MSE normal.
-    Psnr_ALL = [] # PSNR normal.
-    Nrmse_ALL = [] # MSE normal.
-    Nmi_ALL = [] # PSNR normal.
-    R2s_ALL = [] # PSNR normal.
+    os.chdir(self.Folder)
 
-    # Normals Images.
-
-    os.chdir(self.folder)
-
-    sorted_files, images = sort_images(self.folder)
+    # * Using sort function
+    Sorted_files, Total_images = sort_images(self.Folder)
     Count = 1
 
-    for File in sorted_files:
+    # * Reading the files
+    for File in Sorted_files:
 
-      filename, extension  = os.path.splitext(File)
+      # * Extract the file name and format
+      Filename, Format  = os.path.splitext(File)
 
-      if File.endswith(extension): # Read extension files
+      # * Read extension files
+      if File.endswith(Format): 
         
-        print(f"Working with {Count} of {images} {self.severity} images ✅")
-        print(f"Working with {filename} ✅")
+        print(f"Working with {Count} of {Total_images} {self.Severity} images ✅")
+        print(f"Working with {Filename} ✅")
 
-        Path_File = os.path.join(self.folder, File)
-        Imagen = cv2.imread(Path_File)
+        # * Resize with the given values
+        Path_file = os.path.join(self.Folder, File)
+        Image = cv2.imread(Path_file)
 
-        Imagen = cv2.cvtColor(Imagen, cv2.COLOR_BGR2GRAY)
+        Image = cv2.cvtColor(Image, cv2.COLOR_BGR2GRAY)
 
         #print("%s has %d and %d" % (File, Imagen.shape[0], Imagen.shape[1]))
 
-        Norm_img = np.zeros((Imagen.shape[0], Imagen.shape[1]))
-        Normalization_Imagen = cv2.normalize(Imagen, Norm_img, 0, 255, cv2.NORM_MINMAX)
+        # * Add a black image for normalization
+        Norm_img = np.zeros((Image.shape[0], Image.shape[1]))
+        Normalization_Imagen = cv2.normalize(Image, Norm_img, 0, 255, cv2.NORM_MINMAX)
 
-        Mae = mae(Imagen, Normalization_Imagen)
-        Mse = mse(Imagen, Normalization_Imagen)
-        Ssim = ssim(Imagen, Normalization_Imagen)
-        Psnr = psnr(Imagen, Normalization_Imagen)
-        Nrmse = nrmse(Imagen, Normalization_Imagen)
-        Nmi = nmi(Imagen, Normalization_Imagen)
-        R2s = r2s(Imagen, Normalization_Imagen)
+        # * Save each statistic in a variable
+        Mae = mae(Image, Normalization_Imagen)
+        Mse = mse(Image, Normalization_Imagen)
+        Ssim = ssim(Image, Normalization_Imagen)
+        Psnr = psnr(Image, Normalization_Imagen)
+        Nrmse = nrmse(Image, Normalization_Imagen)
+        Nmi = nmi(Image, Normalization_Imagen)
+        R2s = r2s(Image, Normalization_Imagen)
 
+        # * Add the value in the lists already created
         Mae_ALL.append(Mae)
         Mse_ALL.append(Mse)
         Ssim_ALL.append(Ssim)
@@ -177,29 +199,31 @@ class ImageProcessing:
         Nmi_ALL.append(Nmi)
         R2s_ALL.append(R2s)
 
-        FilenamesREFNUM = filename + '_Normalization'
-        dst = FilenamesREFNUM + extension
-        dstPath = os.path.join(self.newfolder, dst)
+        # * Name the new file
+        Filename_and_technique = Filename + '_Normalization'
+        New_name_filename = Filename_and_technique + format
+        New_folder = os.path.join(self.Newfolder, New_name_filename)
         
         #Normalization_Imagen = Normalization_Imagen.astype('float32')
         #Normalization_Imagen = Normalization_Imagen / 255.0
         #print(Normalization_Imagen)
 
-        cv2.imwrite(dstPath, Normalization_Imagen)
-
-        REFNUM = FilenamesREFNUM
-
+        # * Save the image in a new folder
+        cv2.imwrite(New_folder, Normalization_Imagen)
+        
+        # * Save the values of labels and each filenames
         #Images.append(Normalization_Imagen)
-        Labels.append(self.label)
-        Filename_ALL.append(REFNUM)
+        Labels.append(self.Label)
+        All_filenames.append(Filename_and_technique)
 
         Count += 1
-
-    Dataframe = pd.DataFrame({'REFNUMMF_ALL':Filename_ALL, 'MAE':Mae_ALL, 'MSE':Mse_ALL, 'SSIM':Ssim_ALL, 'PSNR':Psnr_ALL, 'NRMSE':Nrmse_ALL, 'NMI':Nmi_ALL, 'R2s':R2s_ALL, 'Labels':Labels})
+    
+    # * Return the new dataframe with the new data
+    Dataframe = pd.DataFrame({'REFNUMMF_ALL':All_filenames, 'MAE':Mae_ALL, 'MSE':Mse_ALL, 'SSIM':Ssim_ALL, 'PSNR':Psnr_ALL, 'NRMSE':Nrmse_ALL, 'NMI':Nmi_ALL, 'R2s':R2s_ALL, 'Labels':Labels})
 
     return Dataframe
 
-  # Median filter technique.
+  # ? Median filter technique method
 
   def median_filter_technique(self):
 
@@ -218,60 +242,58 @@ class ImageProcessing:
       int:Returning dataframe with all data.
       
       """
-      # Remove images of the folder chosen
-
-      remove_all_files(self.newfolder)
+      # * Remove all the files in the new folder using this function
+      remove_all_files(self.Newfolder)
       
-      # General lists
-
+      # * Lists to save the values of the labels and the filename and later use them for a dataframe
       #Images = [] 
       Labels = []
-      Filename_ALL = []
+      All_filenames = []
 
-      # Metric lists
+      # * Lists to save the values of each statistic
+      Mae_ALL = [] # ? Mean Absolute Error.
+      Mse_ALL = [] # ? Mean Squared Error.
+      Ssim_ALL = [] # ? Structural similarity.
+      Psnr_ALL = [] # ? Peak Signal-to-Noise Ratio.
+      Nrmse_ALL = [] # ? Normalized Root-Mean-Square Error.
+      Nmi_ALL = [] # ? Normalized Mutual Information.
+      R2s_ALL = [] # ? Coefficient of determination.
 
-      Mae_ALL = [] 
-      Mse_ALL = [] 
-      Ssim_ALL = [] 
-      Psnr_ALL = [] 
-      Nrmse_ALL = [] 
-      Nmi_ALL = [] 
-      R2s_ALL = [] 
+      os.chdir(self.Folder)
 
-      # Extension used 
-
-      os.chdir(self.folder)
-
-      sorted_files, images = sort_images(self.folder)
+      # * Using sort function
+      Sorted_files, Total_images = sort_images(self.Folder)
       Count = 1
 
-      # For each file sorted.
+      # * Reading the files
+      for File in Sorted_files:
+        
+        # * Extract the file name and format
+        Filename, Format  = os.path.splitext(File)
 
-      for File in sorted_files:
-
-        filename, extension  = os.path.splitext(File)
-
-        if File.endswith(extension): # Read extension files
+        # * Read extension files
+        if File.endswith(Format):
           
-          # Using median filter function
+          print(f"Working with {Count} of {Total_images} {self.Severity} images ✅")
+          print(f"Working with {Filename} ✅")
 
-          print(f"Working with {Count} of {images} {self.severity} images ✅")
-          print(f"Working with {filename} ✅")
+          # * Resize with the given values
+          Path_file = os.path.join(self.Folder, File)
+          Image = io.imread(Path_file, as_gray = True)
 
-          Path_File = os.path.join(self.folder, File)
-          Imagen = io.imread(Path_File, as_gray = True)
+          #Image_median_filter = cv2.medianBlur(Imagen, Division)
+          Median_filter_image = filters.median(Image, np.ones((self.Division, self.Division)))
 
-          #Image_Median_Filter = cv2.medianBlur(Imagen, Division)
-          MedianFilter_Image = filters.median(Imagen, np.ones((self.division, self.division)))
+          # * Save each statistic in a variable
+          Mae = mae(Image, Median_filter_image)
+          Mse = mse(Image, Median_filter_image)
+          Ssim = ssim(Image, Median_filter_image)
+          Psnr = psnr(Image, Median_filter_image)
+          Nrmse = nrmse(Image, Median_filter_image)
+          Nmi = nmi(Image, Median_filter_image)
+          R2s = r2s(Image, Median_filter_image)
 
-          Mae = mae(Imagen, MedianFilter_Image)
-          Mse = mse(Imagen, MedianFilter_Image)
-          Ssim = ssim(Imagen, MedianFilter_Image)
-          Psnr = psnr(Imagen, MedianFilter_Image)
-          Nrmse = nrmse(Imagen, MedianFilter_Image)
-          Nmi = nmi(Imagen, MedianFilter_Image)
-          R2s = r2s(Imagen, MedianFilter_Image)
-
+          # * Add the value in the lists already created
           Mae_ALL.append(Mae)
           Mse_ALL.append(Mse)
           Ssim_ALL.append(Ssim)
@@ -280,29 +302,27 @@ class ImageProcessing:
           Nmi_ALL.append(Nmi)
           R2s_ALL.append(R2s)
 
-          FilenamesREFNUM = filename + '_Median_Filter'
-          dst = FilenamesREFNUM + extension
-          dstPath = os.path.join(self.newfolder, dst)
+          # * Name the new file
+          Filename_and_technique = Filename + '_Median_Filter'
+          New_name_filename = Filename_and_technique + format
+          New_folder = os.path.join(self.Newfolder, New_name_filename)
 
-          io.imsave(dstPath, MedianFilter_Image)
+          # * Save the image in a new folder
+          io.imsave(New_folder, Median_filter_image)
 
-          REFNUM = FilenamesREFNUM
+          # * Save the values of labels and each filenames
+          #Images.append(Normalization_Imagen)
+          Labels.append(self.Label)
+          All_filenames.append(Filename_and_technique)
 
           Count += 1
 
-          # Saving values in the lists
-
-          #Images.append(MedianFilter_Image)
-          Labels.append(self.label)
-          Filename_ALL.append(REFNUM)
-
-      # Final dataframe
-
-      DataFrame = pd.DataFrame({'REFNUMMF_ALL':Filename_ALL, 'MAE':Mae_ALL, 'MSE':Mse_ALL, 'SSIM':Ssim_ALL, 'PSNR':Psnr_ALL, 'NRMSE':Nrmse_ALL, 'NMI':Nmi_ALL, 'R2s':R2s_ALL, 'Labels':Labels})
+      # * Return the new dataframe with the new data
+      DataFrame = pd.DataFrame({'REFNUMMF_ALL':All_filenames, 'MAE':Mae_ALL, 'MSE':Mse_ALL, 'SSIM':Ssim_ALL, 'PSNR':Psnr_ALL, 'NRMSE':Nrmse_ALL, 'NMI':Nmi_ALL, 'R2s':R2s_ALL, 'Labels':Labels})
 
       return DataFrame
 
-  # CLAHE technique.
+  # ? CLAHE technique method
 
   def CLAHE_technique(self):
 
@@ -320,67 +340,64 @@ class ImageProcessing:
       int:Returning dataframe with all data.
       
       """
-
-      # Remove images of the folder chosen
-
-      remove_all_files(self.newfolder)
+      # * Remove all the files in the new folder using this function
+      remove_all_files(self.Newfolder)
       
-      # General lists
-
+      # * Lists to save the values of the labels and the filename and later use them for a dataframe
       #Images = [] 
       Labels = []
-      Filename_ALL = []
+      All_filenames = []
 
-      # Metrics lists
+      # * Lists to save the values of each statistic
+      Mae_ALL = [] # ? Mean Absolute Error.
+      Mse_ALL = [] # ? Mean Squared Error.
+      Ssim_ALL = [] # ? Structural similarity.
+      Psnr_ALL = [] # ? Peak Signal-to-Noise Ratio.
+      Nrmse_ALL = [] # ? Normalized Root-Mean-Square Error.
+      Nmi_ALL = [] # ? Normalized Mutual Information.
+      R2s_ALL = [] # ? Coefficient of determination.
 
-      Mae_ALL = [] 
-      Mse_ALL = [] 
-      Ssim_ALL = [] 
-      Psnr_ALL = [] 
-      Nrmse_ALL = [] 
-      Nmi_ALL = [] 
-      R2s_ALL = [] 
+      os.chdir(self.Folder)
 
-      # Extension used
-
-      os.chdir(self.folder)
-
-      sorted_files, images = sort_images(self.folder)
+      # * Using sort function
+      Sorted_files, Total_images = sort_images(self.Folder)
       Count = 1
 
-      # For each file sorted.
+      # * Reading the files
+      for File in Sorted_files:
+        
+        # * Extract the file name and format
+        Filename, Format  = os.path.splitext(File)
 
-      for File in sorted_files:
-
-        filename, extension  = os.path.splitext(File)
-
-        if File.endswith(extension): # Read extension files
+        # * Read extension files
+        if File.endswith(Format):
           
-          # Using CLAHE function
+          print(f"Working with {Count} of {Total_images} {self.Severity} images ✅")
+          print(f"Working with {Filename} ✅")
 
-          print(f"Working with {Count} of {images} {self.severity} images ✅")
-          print(f"Working with {filename} ✅")
-
-          Path_File = os.path.join(self.folder, File)
-          Imagen = io.imread(Path_File, as_gray = True)
+          # * Resize with the given values
+          Path_file = os.path.join(self.Folder, File)
+          Image = io.imread(Path_file, as_gray = True)
 
           #Imagen = cv2.cvtColor(Imagen, cv2.COLOR_BGR2GRAY)
           #CLAHE = cv2.createCLAHE(clipLimit = 2.0, tileGridSize = (8, 8))
           #CLAHE_Imagen = CLAHE.apply(Imagen)
 
-          CLAHE_Imagen = equalize_adapthist(Imagen, clip_limit = self.cliplimit)
+          CLAHE_image = equalize_adapthist(Image, clip_limit = self.Cliplimit)
 
-          Imagen = img_as_ubyte(Imagen)
-          CLAHE_Imagen = img_as_ubyte(CLAHE_Imagen)
+          Image = img_as_ubyte(Image)
+          CLAHE_image = img_as_ubyte(CLAHE_image)
 
-          Mae = mae(Imagen, CLAHE_Imagen)
-          Mse = mse(Imagen, CLAHE_Imagen)
-          Ssim = ssim(Imagen, CLAHE_Imagen)
-          Psnr = psnr(Imagen, CLAHE_Imagen)
-          Nrmse = nrmse(Imagen, CLAHE_Imagen)
-          Nmi = nmi(Imagen, CLAHE_Imagen)
-          R2s = r2s(Imagen, CLAHE_Imagen)
+          # * Save each statistic in a variable
+          Mae = mae(Image, CLAHE_image)
+          Mse = mse(Image, CLAHE_image)
+          Ssim = ssim(Image, CLAHE_image)
+          Psnr = psnr(Image, CLAHE_image)
+          Nrmse = nrmse(Image, CLAHE_image)
+          Nmi = nmi(Image, CLAHE_image)
+          R2s = r2s(Image, CLAHE_image)
 
+          # * Add the value in the lists already created
           Mae_ALL.append(Mae)
           Mse_ALL.append(Mse)
           Ssim_ALL.append(Ssim)
@@ -389,33 +406,29 @@ class ImageProcessing:
           Nmi_ALL.append(Nmi)
           R2s_ALL.append(R2s)
 
-          FilenamesREFNUM = filename + '_CLAHE'
-          print(FilenamesREFNUM)
+          # * Name the new file
+          Filename_and_technique = Filename + '_CLAHE'
+          New_name_filename = Filename_and_technique + format
+          New_folder = os.path.join(self.Newfolder, New_name_filename)
 
-          dst = str(FilenamesREFNUM) + extension
-          dstPath = os.path.join(self.newfolder, dst)
+          # * Save the image in a new folder
+          io.imsave(New_folder, CLAHE_image)
 
-          io.imsave(dstPath, CLAHE_Imagen)
-
-          REFNUM = FilenamesREFNUM
+          # * Save the values of labels and each filenames
+          #Images.append(Normalization_Imagen)
+          Labels.append(self.Label)
+          All_filenames.append(Filename_and_technique)
 
           Count += 1
 
-          # Saving values in the lists
-
-          #Images.append(CLAHE_Imagen)
-          Labels.append(self.label)
-          Filename_ALL.append(REFNUM)
-
-      # Final dataframe
-
-      DataFrame = pd.DataFrame({'REFNUMMF_ALL':Filename_ALL, 'MAE':Mae_ALL, 'MSE':Mse_ALL, 'SSIM':Ssim_ALL, 'PSNR':Psnr_ALL, 'NRMSE':Nrmse_ALL, 'NMI':Nmi_ALL, 'R2s':R2s_ALL, 'Labels':Labels})
+      # * Return the new dataframe with the new data
+      DataFrame = pd.DataFrame({'REFNUMMF_ALL':All_filenames, 'MAE':Mae_ALL, 'MSE':Mse_ALL, 'SSIM':Ssim_ALL, 'PSNR':Psnr_ALL, 'NRMSE':Nrmse_ALL, 'NMI':Nmi_ALL, 'R2s':R2s_ALL, 'Labels':Labels})
 
       return DataFrame
 
-  # Histogram equalization technique.
+  # ? Histogram equalization technique method
 
-  def HistogramEqualization(self):
+  def histogram_equalization_technique(self):
 
       """
       Get the values from histogram equalization images and save them into a dataframe.
@@ -430,63 +443,60 @@ class ImageProcessing:
       int:Returning dataframe with all data.
       
       """
-
-      # Remove images of the folder chosen
-
-      remove_all_files(self.newfolder)
+      # * Remove all the files in the new folder using this function
+      remove_all_files(self.Newfolder)
       
-      # General lists
-
+      # * Lists to save the values of the labels and the filename and later use them for a dataframe
       #Images = [] 
       Labels = []
-      Filename_ALL = []
+      All_filenames = []
 
-      # Statistic lists
+      # * Lists to save the values of each statistic
+      Mae_ALL = [] # ? Mean Absolute Error.
+      Mse_ALL = [] # ? Mean Squared Error.
+      Ssim_ALL = [] # ? Structural similarity.
+      Psnr_ALL = [] # ? Peak Signal-to-Noise Ratio.
+      Nrmse_ALL = [] # ? Normalized Root-Mean-Square Error.
+      Nmi_ALL = [] # ? Normalized Mutual Information.
+      R2s_ALL = [] # ? Coefficient of determination.
 
-      Mae_ALL = [] 
-      Mse_ALL = [] 
-      Ssim_ALL = [] 
-      Psnr_ALL = [] 
-      Nrmse_ALL = [] 
-      Nmi_ALL = [] 
-      R2s_ALL = [] 
+      os.chdir(self.Folder)
 
-      # Extension used
-
-      os.chdir(self.folder)
-
-      sorted_files, images = sort_images(self.folder)
+      # * Using sort function
+      Sorted_files, Total_images = sort_images(self.Folder)
       Count = 1
 
-      # For each file sorted.
+      # * Reading the files
+      for File in Sorted_files:
+        
+        # * Extract the file name and format
+        Filename, Format  = os.path.splitext(File)
 
-      for File in sorted_files:
+        # * Read extension files
+        if File.endswith(Format):
+          
+          print(f"Working with {Count} of {Total_images} {self.Severity} images ✅")
+          print(f"Working with {Filename} ✅")
 
-        filename, extension  = os.path.splitext(File)
+          # * Resize with the given values
+          Path_file = os.path.join(self.Folder, File)
+          Image = io.imread(Path_file, as_gray = True)
 
-        if File.endswith(extension): # Read extension files
+          HE_image = equalize_hist(Image)
 
-          # Using CLAHE function
+          Image = img_as_ubyte(Image)
+          HE_image = img_as_ubyte(HE_image)
 
-          print(f"Working with {Count} of {images} {self.severity} images ✅")
-          print(f"Working with {filename} ✅")
+          # * Save each statistic in a variable
+          Mae = mae(Image, HE_image)
+          Mse = mse(Image, HE_image)
+          Ssim = ssim(Image, HE_image)
+          Psnr = psnr(Image, HE_image)
+          Nrmse = nrmse(Image, HE_image)
+          Nmi = nmi(Image, HE_image)
+          R2s = r2s(Image, HE_image)
 
-          Path_File = os.path.join(self.folder, File)
-          Imagen = io.imread(Path_File, as_gray = True)
-
-          HE_Imagen = equalize_hist(Imagen)
-
-          Imagen = img_as_ubyte(Imagen)
-          HE_Imagen = img_as_ubyte(HE_Imagen)
-
-          Mae = mae(Imagen, HE_Imagen)
-          Mse = mse(Imagen, HE_Imagen)
-          Ssim = ssim(Imagen, HE_Imagen)
-          Psnr = psnr(Imagen, HE_Imagen)
-          Nrmse = nrmse(Imagen, HE_Imagen)
-          Nmi = nmi(Imagen, HE_Imagen)
-          R2s = r2s(Imagen, HE_Imagen)
-
+          # * Add the value in the lists already created
           Mae_ALL.append(Mae)
           Mse_ALL.append(Mse)
           Ssim_ALL.append(Ssim)
@@ -495,31 +505,28 @@ class ImageProcessing:
           Nmi_ALL.append(Nmi)
           R2s_ALL.append(R2s)
 
-          FilenamesREFNUM = filename + '_HE'
-          dst = FilenamesREFNUM + extension
-          dstPath = os.path.join(self.newfolder, dst)
+          # * Name the new file
+          Filename_and_technique = Filename + '_HE'
+          New_name_filename = Filename_and_technique + format
+          New_folder = os.path.join(self.Newfolder, New_name_filename)
 
-          io.imsave(dstPath, img_as_ubyte(HE_Imagen))
+          # * Save the image in a new folder
+          io.imsave(New_folder, HE_image)
 
-          REFNUM = FilenamesREFNUM
-
+          # * Save the values of labels and each filenames
+          #Images.append(Normalization_Imagen)
+          Labels.append(self.Label)
+          All_filenames.append(Filename_and_technique)
           Count += 1
 
-          # Saving values in the lists
-
-          #Images.append(HE_Imagen)
-          Labels.append(self.label)
-          Filename_ALL.append(REFNUM)
-
-      # Final dataframe
-
-      DataFrame = pd.DataFrame({'REFNUMMF_ALL':Filename_ALL, 'MAE':Mae_ALL, 'MSE':Mse_ALL, 'SSIM':Ssim_ALL, 'PSNR':Psnr_ALL, 'NRMSE':Nrmse_ALL, 'NMI':Nmi_ALL, 'R2s':R2s_ALL, 'Labels':Labels})
+      # * Return the new dataframe with the new data
+      DataFrame = pd.DataFrame({'REFNUMMF_ALL':All_filenames, 'MAE':Mae_ALL, 'MSE':Mse_ALL, 'SSIM':Ssim_ALL, 'PSNR':Psnr_ALL, 'NRMSE':Nrmse_ALL, 'NMI':Nmi_ALL, 'R2s':R2s_ALL, 'Labels':Labels})
 
       return DataFrame
 
-  # Unsharp masking technique.
+  # ? Unsharp masking technique method
 
-  def UnsharpMasking(self):
+  def unsharp_masking_technique(self):
 
       """
       Get the values from unsharp masking images and save them into a dataframe.
@@ -536,63 +543,60 @@ class ImageProcessing:
       int:Returning dataframe with all data.
       
       """
-
-      # Remove images of the folder chosen
-
-      remove_all_files(self.newfolder)
+      # * Remove all the files in the new folder using this function
+      remove_all_files(self.Newfolder)
       
-      # General lists
-
+      # * Lists to save the values of the labels and the filename and later use them for a dataframe
       #Images = [] 
       Labels = []
-      Filename_ALL = []
+      All_filenames = []
 
-      # Metrics lists
+      # * Lists to save the values of each statistic
+      Mae_ALL = [] # ? Mean Absolute Error.
+      Mse_ALL = [] # ? Mean Squared Error.
+      Ssim_ALL = [] # ? Structural similarity.
+      Psnr_ALL = [] # ? Peak Signal-to-Noise Ratio.
+      Nrmse_ALL = [] # ? Normalized Root-Mean-Square Error.
+      Nmi_ALL = [] # ? Normalized Mutual Information.
+      R2s_ALL = [] # ? Coefficient of determination.
 
-      Mae_ALL = [] 
-      Mse_ALL = [] 
-      Ssim_ALL = [] 
-      Psnr_ALL = [] 
-      Nrmse_ALL = [] 
-      Nmi_ALL = [] 
-      R2s_ALL = [] 
+      os.chdir(self.Folder)
 
-      # Extension used  
-
-      os.chdir(self.folder)
-
-      sorted_files, images = sort_images(self.folder)
+      # * Using sort function
+      Sorted_files, Total_images = sort_images(self.Folder)
       Count = 1
 
-      # For each file sorted.
+      # * Reading the files
+      for File in Sorted_files:
+        
+        # * Extract the file name and format
+        Filename, Format  = os.path.splitext(File)
 
-      for File in sorted_files:
-
-        filename, extension = os.path.splitext(File)
-
-        if File.endswith(extension): # Read extension files
+        # * Read extension files
+        if File.endswith(Format):
           
-          # Using unsharp masking function
+          print(f"Working with {Count} of {Total_images} {self.Severity} images ✅")
+          print(f"Working with {Filename} ✅")
 
-          print(f"Working with {Count} of {images} {self.severity} images ✅")
-          print(f"Working with {filename} ✅")
+          # * Resize with the given values
+          Path_file = os.path.join(self.Folder, File)
+          Image = io.imread(Path_file, as_gray = True)
 
-          Path_File = os.path.join(self.folder, File)
-          Imagen = io.imread(Path_File, as_gray = True)
+          UM_image = unsharp_mask(Image, radius = self.Radius, amount = self.Amount)
 
-          UM_Imagen = unsharp_mask(Imagen, radius = self.radius, amount = self.amount)
+          Image = img_as_ubyte(Image)
+          UM_image = img_as_ubyte(UM_image)
 
-          Imagen = img_as_ubyte(Imagen)
-          UM_Imagen = img_as_ubyte(UM_Imagen)
+          # * Save each statistic in a variable
+          Mae = mae(Image, UM_image)
+          Mse = mse(Image, UM_image)
+          Ssim = ssim(Image, UM_image)
+          Psnr = psnr(Image, UM_image)
+          Nrmse = nrmse(Image, UM_image)
+          Nmi = nmi(Image, UM_image)
+          R2s = r2s(Image, UM_image)
 
-          Mae = mae(Imagen, UM_Imagen)
-          Mse = mse(Imagen, UM_Imagen)
-          Ssim = ssim(Imagen, UM_Imagen)
-          Psnr = psnr(Imagen, UM_Imagen)
-          Nrmse = nrmse(Imagen, UM_Imagen)
-          Nmi = nmi(Imagen, UM_Imagen)
-          R2s = r2s(Imagen, UM_Imagen)
-
+          # * Add the value in the lists already created
           Mae_ALL.append(Mae)
           Mse_ALL.append(Mse)
           Ssim_ALL.append(Ssim)
@@ -601,31 +605,28 @@ class ImageProcessing:
           Nmi_ALL.append(Nmi)
           R2s_ALL.append(R2s)
 
-          FilenamesREFNUM = filename + '_UM'
-          dst = FilenamesREFNUM + extension
-          dstPath = os.path.join(self.newfolder, dst)
+          # * Name the new file
+          Filename_and_technique = Filename + '_UM'
+          New_name_filename = Filename_and_technique + format
+          New_folder = os.path.join(self.Newfolder, New_name_filename)
 
-          io.imsave(dstPath, img_as_ubyte(UM_Imagen))
+          # * Save the image in a new folder
+          io.imsave(New_folder, UM_image)
 
-          REFNUM = FilenamesREFNUM
-
+          # * Save the values of labels and each filenames
+          #Images.append(Normalization_Imagen)
+          Labels.append(self.Label)
+          All_filenames.append(Filename_and_technique)
           Count += 1
 
-          # Saving values in the lists
-
-          #Images.append(UM_Imagen)
-          Labels.append(self.label)
-          Filename_ALL.append(REFNUM)
-
-      # Final dataframe
-
-      Dataframe = pd.DataFrame({'REFNUMMF_ALL':Filename_ALL, 'MAE':Mae_ALL, 'MSE':Mse_ALL, 'SSIM':Ssim_ALL, 'PSNR':Psnr_ALL, 'NRMSE':Nrmse_ALL, 'NMI':Nmi_ALL, 'R2s':R2s_ALL, 'Labels':Labels})
+      # * Return the new dataframe with the new data
+      Dataframe = pd.DataFrame({'REFNUMMF_ALL':All_filenames, 'MAE':Mae_ALL, 'MSE':Mse_ALL, 'SSIM':Ssim_ALL, 'PSNR':Psnr_ALL, 'NRMSE':Nrmse_ALL, 'NMI':Nmi_ALL, 'R2s':R2s_ALL, 'Labels':Labels})
 
       return Dataframe
 
-  # Contrast Stretching technique.
+  # ? Contrast Stretching technique method
 
-  def ContrastStretching(self):
+  def contrast_stretching_technique(self):
 
       """
       Get the values from constrast streching images and save them into a dataframe.
@@ -640,64 +641,61 @@ class ImageProcessing:
       int:Returning dataframe with all data.
       
       """
-
-      # Remove images of the folder chosen
-
-      remove_all_files(self.newfolder)
+      # * Remove all the files in the new folder using this function
+      remove_all_files(self.Newfolder)
       
-      # General lists
-
+      # * Lists to save the values of the labels and the filename and later use them for a dataframe
       #Images = [] 
       Labels = []
-      Filename_ALL = []
+      All_filenames = []
 
-      # Metrics lists
+      # * Lists to save the values of each statistic
+      Mae_ALL = [] # ? Mean Absolute Error.
+      Mse_ALL = [] # ? Mean Squared Error.
+      Ssim_ALL = [] # ? Structural similarity.
+      Psnr_ALL = [] # ? Peak Signal-to-Noise Ratio.
+      Nrmse_ALL = [] # ? Normalized Root-Mean-Square Error.
+      Nmi_ALL = [] # ? Normalized Mutual Information.
+      R2s_ALL = [] # ? Coefficient of determination.
 
-      Mae_ALL = [] 
-      Mse_ALL = [] 
-      Ssim_ALL = [] 
-      Psnr_ALL = [] 
-      Nrmse_ALL = [] 
-      Nmi_ALL = [] 
-      R2s_ALL = [] 
+      os.chdir(self.Folder)
 
-      # Extension used
-
-      os.chdir(self.folder)
-
-      sorted_files, images = sort_images(self.folder)
+      # * Using sort function
+      Sorted_files, Total_images = sort_images(self.Folder)
       Count = 1
 
-      # For each file sorted.
+      # * Reading the files
+      for File in Sorted_files:
+        
+        # * Extract the file name and format
+        Filename, Format  = os.path.splitext(File)
 
-      for File in sorted_files: # Read extension files
-
-        filename, extension  = os.path.splitext(File)
-
-        if File.endswith(extension): # Read png files
+        # * Read extension files
+        if File.endswith(Format):
           
-          # Using unsharp masking function
+          print(f"Working with {Count} of {Total_images} {self.Severity} images ✅")
+          print(f"Working with {Filename} ✅")
 
-          print(f"Working with {Count} of {images} {self.severity} images ✅")
-          print(f"Working with {filename} ✅")
+          # * Resize with the given values
+          Path_file = os.path.join(self.Folder, File)
+          Image = io.imread(Path_file, as_gray = True)
 
-          Path_File = os.path.join(self.folder, File)
-          Imagen = io.imread(Path_File, as_gray = True)
+          p2, p98 = np.percentile(Image, (2, 98))
+          CS_Image = rescale_intensity(Image, in_range = (p2, p98))
 
-          p2, p98 = np.percentile(Imagen, (2, 98))
-          CS_Imagen = rescale_intensity(Imagen, in_range = (p2, p98))
+          Image = img_as_ubyte(Image)
+          CS_image = img_as_ubyte(CS_image)
 
-          Imagen = img_as_ubyte(Imagen)
-          CS_Imagen = img_as_ubyte(CS_Imagen)
+          # * Save each statistic in a variable
+          Mae = mae(Image, CS_image)
+          Mse = mse(Image, CS_image)
+          Ssim = ssim(Image, CS_image)
+          Psnr = psnr(Image, CS_image)
+          Nrmse = nrmse(Image, CS_image)
+          Nmi = nmi(Image, CS_image)
+          R2s = r2s(Image, CS_image)
 
-          Mae = mae(Imagen, CS_Imagen)
-          Mse = mse(Imagen, CS_Imagen)
-          Ssim = ssim(Imagen, CS_Imagen)
-          Psnr = psnr(Imagen, CS_Imagen)
-          Nrmse = nrmse(Imagen, CS_Imagen)
-          Nmi = nmi(Imagen, CS_Imagen)
-          R2s = r2s(Imagen, CS_Imagen)
-
+          # * Add the value in the lists already created
           Mae_ALL.append(Mae)
           Mse_ALL.append(Mse)
           Ssim_ALL.append(Ssim)
@@ -706,24 +704,21 @@ class ImageProcessing:
           Nmi_ALL.append(Nmi)
           R2s_ALL.append(R2s)
 
-          FilenamesREFNUM = filename + '_CS'
-          dst = FilenamesREFNUM + extension
-          dstPath = os.path.join(self.newfolder, dst)
+          # * Name the new file
+          Filename_and_technique = Filename + '_CS'
+          New_name_filename = Filename_and_technique + format
+          New_folder = os.path.join(self.Newfolder, New_name_filename)
 
-          io.imsave(dstPath, img_as_ubyte(CS_Imagen))
+          # * Save the image in a new folder
+          io.imsave(New_folder, CS_Image)
 
-          REFNUM = FilenamesREFNUM
-
+          # * Save the values of labels and each filenames
+          #Images.append(Normalization_Imagen)
+          Labels.append(self.Label)
+          All_filenames.append(Filename_and_technique)
           Count += 1
 
-          # Saving values in the lists
+      # * Return the new dataframe with the new data
+      Dataframe = pd.DataFrame({'REFNUMMF_ALL':All_filenames, 'MAE':Mae_ALL, 'MSE':Mse_ALL, 'SSIM':Ssim_ALL, 'PSNR':Psnr_ALL, 'NRMSE':Nrmse_ALL, 'NMI':Nmi_ALL, 'R2s':R2s_ALL, 'Labels':Labels})
 
-          #Images.append(CS_Imagen)
-          Labels.append(self.label)
-          Filename_ALL.append(REFNUM)
-
-      # Final dataframe
-
-      DataFrame = pd.DataFrame({'REFNUMMF_ALL':Filename_ALL, 'MAE':Mae_ALL, 'MSE':Mse_ALL, 'SSIM':Ssim_ALL, 'PSNR':Psnr_ALL, 'NRMSE':Nrmse_ALL, 'NMI':Nmi_ALL, 'R2s':R2s_ALL, 'Labels':Labels})
-
-      return DataFrame
+      return Dataframe

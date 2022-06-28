@@ -1,4 +1,4 @@
-from Mini_MIAS_Preprocessing_1_ChangeExtension import preprocessing_ChangeExtension
+from Mini_MIAS_Preprocessing_1_ChangeExtension import preprocessing_ChangeFormat
 
 from Mini_MIAS_Preprocessing_2_Cropped_MIAS_Mammograms import preprocessing_Cropped_MIAS_Mammograms
 
@@ -17,7 +17,7 @@ from Mini_MIAS_Preprocessing_10_Multi_Data_Augmentation import preprocessing_Dat
 from Mini_MIAS_Preprocessing_11_CNN_Models import Testing_CNN_Models_Biclass
 from Mini_MIAS_Preprocessing_11_Multi_CNN_Models import Testing_CNN_Models_Multiclass
 
-from Mini_MIAS_7_CNN_Architectures import ResNet50_PreTrained
+from Mini_MIAS_8_CNN_Architectures import ResNet50_PreTrained
 
 from Mini_MIAS_1_Folders import Mini_MIAS_NT_Cropped_Images_Normal
 from Mini_MIAS_1_Folders import Mini_MIAS_NT_Cropped_Images_Tumor
@@ -33,8 +33,8 @@ def main():
 
     Model_Tested = ResNet50_PreTrained
 
-    #preprocessing_ChangeExtension()
-    #preprocessing_Cropped_MIAS_Mammograms()
+    #preprocessing_ChangeFormat()
+    preprocessing_Cropped_MIAS_Mammograms()
     #preprocessing_Kmeans_GLCM_Tumor()
     #preprocessing_Kmeans_GLCM_Benign()
     #preprocessing_Kmeans_GLCM_Malignant()
@@ -44,10 +44,10 @@ def main():
     #                                        Mini_MIAS_NO_Cropped_Images_Normal, Mini_MIAS_NO_Cropped_Images_Benign, Mini_MIAS_NO_Cropped_Images_Malignant)
 
     #preprocessing_DataAugmentation_Biclass()
-    Images, Labels = preprocessing_DataAugmentation_Multiclass(Mini_MIAS_NO_Cropped_Images_Normal, Mini_MIAS_NO_Cropped_Images_Benign, Mini_MIAS_NO_Cropped_Images_Malignant)
+    #Images, Labels = preprocessing_DataAugmentation_Multiclass(Mini_MIAS_NO_Cropped_Images_Normal, Mini_MIAS_NO_Cropped_Images_Benign, Mini_MIAS_NO_Cropped_Images_Malignant)
 
     #Testing_CNN_Models_Biclass()
-    Testing_CNN_Models_Multiclass(Model_Tested, Images, Labels)
+    #Testing_CNN_Models_Multiclass(Model_Tested, Images, Labels)
     
 if __name__ == "__main__":
     main()
