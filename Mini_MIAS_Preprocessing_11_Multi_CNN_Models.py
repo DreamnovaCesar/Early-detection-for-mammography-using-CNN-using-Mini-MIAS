@@ -6,8 +6,6 @@ os.add_dll_directory(r'C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v11.6\
 from Mini_MIAS_1_Folders import Multiclass_Data_Model
 from Mini_MIAS_1_Folders import Multiclass_Data_Model_Esp
 
-from Mini_MIAS_8_CNN_Architectures import PreTrainedModels
-
 from Mini_MIAS_8_CNN_Architectures import MobileNetV3Small_Pretrained
 from Mini_MIAS_8_CNN_Architectures import MobileNetV3Large_Pretrained
 from Mini_MIAS_8_CNN_Architectures import MobileNet_Pretrained
