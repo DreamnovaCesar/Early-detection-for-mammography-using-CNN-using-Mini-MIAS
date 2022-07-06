@@ -41,9 +41,7 @@ from sklearn.multiclass import OneVsRestClassifier
 
 from imblearn.over_sampling import SMOTE
 
-# ? 
-
-def MLConfigurationModels(Dataframe, ML_model, Enhancement_technique, Class_labels, Folder_models, Folder_data, Extract_feature_technique):
+def Machine_learning_config(Dataframe, Dataframe_save, Folder_path, Column_names, ML_model, Enhancement_technique, Class_labels, Folder_data, Folder_models, Extract_feature_technique):
 
     """
 	  Extract features from each image, it could be FOS, GLCM or GRLM.
@@ -61,80 +59,64 @@ def MLConfigurationModels(Dataframe, ML_model, Enhancement_technique, Class_labe
    	"""
     sm = SMOTE()
     sc = StandardScaler()
+    #ALL_ML_model = len(ML_model)
+
+    for Index, Model in enumerate(ML_model):
+
+        # * Class problem definition
+        Class_problem = len(Class_labels)
+
+        if Class_problem == 2:
+            Class_problem_prefix = 'Biclass_'
+        elif Class_problem >= 3:
+            Class_problem_prefix = 'Multiclass_'
+
+        # * Extract data and label
+        Dataframe_len_columns = len(Dataframe.columns)
+
+        X_total = Dataframe.iloc[:, 0:Dataframe_len_columns - 1].values
+        Y_total = Dataframe.iloc[:, -1].values
+
+        print(X_total)
+        print(Y_total)
+
+        pd.set_option('display.max_rows', Dataframe.shape[0] + 1)
+        print(Dataframe)
+
+        # * Split data for training and testing
+        X_train, X_test, y_train, y_test = train_test_split(X_total, Y_total, test_size = 0.2, random_state = 1)
+
+        # * Resample data for training
+        X_train, y_train = sm.fit_resample(X_train, y_train)
+
+        # * Scaling data for training
+        X_train = sc.fit_transform(X_train)
+        X_test = sc.transform(X_test)
+
+        print(y_train)
+        print(y_test)
+
+        # * Chose the machine learning.
+        Info_model = Machine_learning_models(Model, Enhancement_technique, Class_labels, X_train, y_train, X_test, y_test, Folder_models)
+
+        # * Save dataframe in the folder given
+        #Class_problem_dataframe = str(Class_problem_prefix) + 'Dataframe_' + str(Extract_feature_technique) + '_' + str(Enhancement_technique) + '.csv'
+        #Class_problem_folder = os.path.join(Folder_data, Class_problem_dataframe)
+
+        #Dataframe.to_csv(Class_problem_folder)
     
-    # * Class problem definition
-    Class_problem = (len(Class_labels))
-
-    if Class_problem == 2:
-        Class_problem_prefix = 'Biclass_'
-    elif Class_problem >= 3:
-        Class_problem_prefix = 'Multiclass_'
-
-    # * Extract data and label
-    Dataframe_len_columns = len(Dataframe.columns)
-
-    X_total = Dataframe.iloc[:, 0:Dataframe_len_columns - 1].values
-    Y_total = Dataframe.iloc[:, -1].values
-
-    print(X_total)
-    print(Y_total)
-
-    #pd.set_option('display.max_rows', Dataframe.shape[0] + 1)
-    #print(DataFrame)
-
-    # * Split data for training and testing
-    X_train, X_test, y_train, y_test = train_test_split(X_total, Y_total, test_size = 0.2, random_state = 1)
-
-    # * Resample data for training
-    X_train, y_train = sm.fit_resample(X_train, y_train)
-
-    # * Scaling data for training
-    X_train = sc.fit_transform(X_train)
-    X_test = sc.transform(X_test)
-
-    print(y_train)
-    print(y_test)
-
-    # * Chose the machine learning.
-    Info_model = ModelsML(ML_model, Enhancement_technique, Class_labels, X_train, y_train, X_test, y_test, Folder_models)
+        Overwrite_row_CSV(Dataframe_save, Folder_path, Info_model, Column_names, Index)
 
     # * Save dataframe in the folder given
-    Class_problem_dataframe = str(Class_problem_prefix) + 'Dataframe_' + str(Extract_feature_technique) + '_' + str(Enhancement_technique) + '_' + Score[0] + '.csv'
+    Class_problem_dataframe = str(Class_problem_prefix) + 'Dataframe_' + str(Extract_feature_technique) + '_' + str(Enhancement_technique) + '.csv'
     Class_problem_folder = os.path.join(Folder_data, Class_problem_dataframe)
-
     Dataframe.to_csv(Class_problem_folder)
 
     return Info_model
 
 # ?
 
-def updateCSV(Score, df, column_names, path, row):
-
-    """
-	  Updates final CSV dataframe to see all values
-
-    Parameters:
-    argument1 (list): All values.
-    argument2 (dataframe): dataframe that will be updated
-    argument3 (list): Names of each column
-    argument4 (folder): Folder path to save the dataframe
-    argument5 (int): The index.
-
-    Returns:
-	  void
-    
-   	"""
-
-    for i in range(len(Score)):
-        df.loc[row, column_names[i]] = Score[i]
-  
-    df.to_csv(path, index = False)
-  
-    print(df)
-
-# ?
-
-def ModelsML(ML_model, Enhancement_technique, Class_labels, X_train, y_train, X_test, y_test, Folder_models):
+def Machine_learning_models(ML_model, Enhancement_technique, Class_labels, X_train, y_train, X_test, y_test, Folder_models):
 
     """
 	  General configuration for each model, extracting features and printing theirs values (Machine Learning).
@@ -180,14 +162,14 @@ def ModelsML(ML_model, Enhancement_technique, Class_labels, X_train, y_train, X_
     # * Conditional if the class problem was biclass or multiclass
 
     if Class_problem == 2:
-        Class_problem_prefix = '_Biclass_'
+        Class_problem_prefix = 'Biclass_'
     elif Class_problem > 2:
-        Class_problem_prefix = '_Multiclass_'
+        Class_problem_prefix = 'Multiclass_'
 
     if len(Class_labels) == 2:
 
         # * Get the data from the model chosen
-        Y_pred, Total_time_training, Model_name, Classifier = ML_model(X_train, y_train, X_test)
+        Y_pred, Total_time_training, Model_name = ML_model(X_train, y_train, X_test)
 
         # * Confusion Matrix
         Confusion_matrix = confusion_matrix(y_test, Y_pred)
@@ -245,7 +227,7 @@ def ModelsML(ML_model, Enhancement_technique, Class_labels, X_train, y_train, X_
         plt.legend(loc = 'lower right')
 
         # * Save this figure in the folder given
-        Class_problem_name = Class_problem_prefix + str(Model_name) + str(Enhancement_technique) + '.png'
+        Class_problem_name = Class_problem_prefix + str(Model_name) + str(Enhancement_technique) + '_' + '.png'
         Class_problem_folder = os.path.join(Folder_models, Class_problem_name)
 
         plt.savefig(Class_problem_folder)
@@ -254,7 +236,7 @@ def ModelsML(ML_model, Enhancement_technique, Class_labels, X_train, y_train, X_
     elif len(Class_labels) >= 3:
 
         # * Get the data from the model chosen
-        Y_pred, Total_time_training, Model_name, classifier = ML_model(X_train, y_train, X_test)
+        Y_pred, Total_time_training, Model_name = ML_model(X_train, y_train, X_test)
 
         # * Binarize labels to get multiples ROC curves
         for i in range(len(Class_labels)):
@@ -337,6 +319,7 @@ def ModelsML(ML_model, Enhancement_technique, Class_labels, X_train, y_train, X_
         plt.savefig(Class_problem_folder)
         #plt.show()
     
+    Info.append(Model_name + '_' + Enhancement_technique)
     Info.append(Model_name)
     Info.append(Accuracy)
     Info.append(Precision)
@@ -360,7 +343,33 @@ def ModelsML(ML_model, Enhancement_technique, Class_labels, X_train, y_train, X_
     return Info
 
 # ?
+
+def Overwrite_row_CSV(Dataframe, Folder_path, Info_list, Column_names, Row):
+
+    """
+	  Updates final CSV dataframe to see all values
+
+    Parameters:
+    argument1 (list): All values.
+    argument2 (dataframe): dataframe that will be updated
+    argument3 (list): Names of each column
+    argument4 (folder): Folder path to save the dataframe
+    argument5 (int): The index.
+
+    Returns:
+	  void
+    
+   	"""
+
+    for i in range(len(Info_list)):
+        Dataframe.loc[Row, Column_names[i]] = Info_list[i]
   
+    Dataframe.to_csv(Folder_path, index = False)
+  
+    print(Dataframe)
+
+# ?
+
 def SVM(X_train, y_train, X_test):
 
     """
@@ -398,7 +407,7 @@ def SVM(X_train, y_train, X_test):
 
 # ?
 
-def MultiSVM(X_train, y_train, X_test):
+def Multi_SVM(X_train, y_train, X_test):
 
     """
 	  MultiSVM configuration.

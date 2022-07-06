@@ -28,15 +28,14 @@ Model_Tested = MobileNetV3Large_Pretrained
 
 def Testing_CNN_Models_Biclass(Model, technique, Images, Labels):
 
-    # Parameters
+    # * Parameters
+    Labels_biclass = ['Normal', 'Tumor']
 
     Images_Normal = Images[0]
     Images_Tumor = Images[1]
 
     Labels_Normal = Labels[0]
     Labels_Tumor = Labels[1]
-    
-    labels_Biclass = ['Normal', 'Tumor']
 
     X_size = 224
     Y_size = 224

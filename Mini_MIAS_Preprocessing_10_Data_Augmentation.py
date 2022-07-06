@@ -8,8 +8,11 @@ def preprocessing_DataAugmentation_Biclass(Folder_normal, Folder_tumor):
     Labels = []
 
     # * General parameters
-    Iter_normal = 20 
-    Iter_tumor = 40 
+    #Iter_normal = 20 
+    #Iter_tumor = 40 
+
+    Iter_normal = 3 
+    Iter_tumor = 9 
 
     Label_normal = 'Normal' 
     Label_tumor = 'Tumor'  

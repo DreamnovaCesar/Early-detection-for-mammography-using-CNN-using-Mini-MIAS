@@ -184,6 +184,8 @@ def concat_dataframe(*dfs, **kwargs):
 
     Final_dataframe.to_csv(Folder_dataframe_to_save)
 
+    return Final_dataframe
+
 # ? Transform initial format to another. (PGM to PNG) / (PGM to TIFF)
 
 class changeFormat:

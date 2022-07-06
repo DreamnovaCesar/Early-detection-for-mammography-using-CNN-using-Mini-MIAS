@@ -85,13 +85,16 @@ class featureExtraction():
     self.Folder = kwargs.get('Folder', None)
     #self.newfolder = kwargs.get('newfolder', None)
     self.Format = kwargs.get('Format', None)
-    self.Label = kwargs.get('Label', 0)
+    self.Images = kwargs.get('Images', None)
+    #self.Images_tumor = kwargs.get('Images_tumor', None)
+    self.Label = kwargs.get('Label', None)
+    #self.Label_tumor = kwargs.get('Label_tumor', None)
 
-    if self.Folder == None:
-      raise ValueError("Folder does not exist") #! Alert
+    #if self.Folder == None:
+      #raise ValueError("Folder does not exist") #! Alert
 
-    elif self.Format == None:
-      raise ValueError("Assign the format") #! Alert
+    #elif self.Format == None:
+      #raise ValueError("Assign the format") #! Alert
 
     #elif self.Label == None:
       #raise ValueError("Assign the label") #! Alert
@@ -324,7 +327,7 @@ class featureExtraction():
 
   # ? FOF features images
 
-  def textures_Feature_first_order_from_images(Images, Label):
+  def textures_Feature_first_order_from_images(self):
     
     # * General lists
     Labels = []
@@ -343,18 +346,18 @@ class featureExtraction():
     count = 1
 
     # * Reading the file
-    for File in range(len(Images)):
+    for File in range(len(self.Images)):
 
         try:
 
-            print(f"Working with {count} of {len(Images)} images ✅")
+            print(f"Working with {count} of {len(self.Images)} images ✅")
             count += 1
 
             # * Reading the image
-            Images[File] = cv2.cvtColor(Images[File], cv2.COLOR_BGR2GRAY)
+            self.Images[File] = cv2.cvtColor(self.Images[File], cv2.COLOR_BGR2GRAY)
 
             # * Extracting the first order features from the fos function
-            Features, Labels_ = fos(Images[File], None)
+            Features, Labels_ = fos(self.Images[File], None)
 
             # * Add the value in the lists already created
             Mean.append(Features[0])
@@ -363,7 +366,7 @@ class featureExtraction():
             Kurtosis.append(Features[5])
             Energy.append(Features[6])
             Entropy.append(Features[7])
-            Labels.append(Label)
+            Labels.append(self.Label[0])
 
         except OSError:
             print('Cannot convert %s ❌' % File)
@@ -382,7 +385,7 @@ class featureExtraction():
 
   # ? GLRLM features images
 
-  def textures_Feature_GLRLM_from_images(Images, Label):
+  def textures_Feature_GLRLM_from_images(self):
 
     # * General lists
     Labels = []
@@ -400,15 +403,15 @@ class featureExtraction():
     count = 1
 
     # * Reading the file
-    for File in range(len(Images)):
+    for File in range(len(self.Images)):
 
         try:
-            print(f"Working with {count} of {len(Images)} images ✅")
+            print(f"Working with {count} of {len(self.Images)} images ✅")
             count += 1
 
             # * Reading the image
             app = GLRLM()
-            glrlm = app.get_features(Images[File], 8)
+            glrlm = app.get_features(self.Images[File], 8)
 
             # * Add the value in the lists already created
             SRE.append(glrlm.Features[0])
@@ -416,7 +419,7 @@ class featureExtraction():
             GLU.append(glrlm.Features[2])
             RLU.append(glrlm.Features[3])
             RPC.append(glrlm.Features[4])
-            Labels.append(Label)
+            Labels.append(self.Label[0])
 
         except OSError:
             print('Cannot convert %s ❌' % File)
@@ -435,7 +438,7 @@ class featureExtraction():
 
   # ? GLCM features images
 
-  def textures_Feature_GLCM_from_images(Images, Label):
+  def textures_Feature_GLCM_from_images(self):
 
     # * General lists
     Labels = []
@@ -474,46 +477,46 @@ class featureExtraction():
     count = 1
 
     # * Reading the file
-    for File in range(len(Images)):
+    for File in range(len(self.Images)):
 
         try:
 
-            print(f"Working with {count} of {len(Images)} images ✅")
+            print(f"Working with {count} of {len(self.Images)} images ✅")
             count += 1
 
             # * Reading the image
-            Images[File] = cv2.cvtColor(Images[File], cv2.COLOR_BGR2GRAY)
+            self.Images[File] = cv2.cvtColor(self.Images[File], cv2.COLOR_BGR2GRAY)
 
             # * Add the value in the lists already created
-            GLCM_1_0 = graycomatrix(Images[File], [1], [0])
+            GLCM_1_0 = graycomatrix(self.Images[File], [1], [0])
             Energy_1_0.append(graycoprops(GLCM_1_0, 'energy')[0, 0])
             Correlation_1_0.append(graycoprops(GLCM_1_0, 'correlation')[0, 0])
             Homogeneity_1_0.append(graycoprops(GLCM_1_0, 'homogeneity')[0, 0])
             Dissimilarity_1_0.append(graycoprops(GLCM_1_0, 'dissimilarity')[0, 0])
             Contrast_1_0.append(graycoprops(GLCM_1_0, 'contrast')[0, 0])
           
-            GLCM_1_pi_4 = graycomatrix(Images[File], [1], [np.pi/4])
+            GLCM_1_pi_4 = graycomatrix(self.Images[File], [1], [np.pi/4])
             Energy_1_pi_4.append(graycoprops(GLCM_1_pi_4, 'energy')[0, 0])
             Correlation_1_pi_4.append(graycoprops(GLCM_1_pi_4, 'correlation')[0, 0])
             Homogeneity_1_pi_4.append(graycoprops(GLCM_1_pi_4, 'homogeneity')[0, 0])
             Dissimilarity_1_pi_4.append(graycoprops(GLCM_1_pi_4, 'dissimilarity')[0, 0])
             Contrast_1_pi_4.append(graycoprops(GLCM_1_pi_4, 'contrast')[0, 0])
 
-            GLCM_7_pi_2 = graycomatrix(Images[File], [7], [np.pi/2])
+            GLCM_7_pi_2 = graycomatrix(self.Images[File], [7], [np.pi/2])
             Energy_7_pi_2.append(graycoprops(GLCM_7_pi_2, 'energy')[0, 0])
             Correlation_7_pi_2.append(graycoprops(GLCM_7_pi_2, 'correlation')[0, 0])
             Homogeneity_7_pi_2.append(graycoprops(GLCM_7_pi_2, 'homogeneity')[0, 0])
             Dissimilarity_7_pi_2.append(graycoprops(GLCM_7_pi_2, 'dissimilarity')[0, 0])
             Contrast_7_pi_2.append(graycoprops(GLCM_7_pi_2, 'contrast')[0, 0])
 
-            GLCM_7_3_pi_4 = graycomatrix(Images[File], [7], [3 * np.pi/4])
+            GLCM_7_3_pi_4 = graycomatrix(self.Images[File], [7], [3 * np.pi/4])
             Energy_7_3_pi_4.append(graycoprops(GLCM_7_3_pi_4, 'energy')[0, 0])
             Correlation_7_3_pi_4.append(graycoprops(GLCM_7_3_pi_4, 'correlation')[0, 0])
             Homogeneity_7_3_pi_4.append(graycoprops(GLCM_7_3_pi_4, 'homogeneity')[0, 0])
             Dissimilarity_7_3_pi_4.append(graycoprops(GLCM_7_3_pi_4, 'dissimilarity')[0, 0])
             Contrast_7_3_pi_4.append(graycoprops(GLCM_7_3_pi_4, 'contrast')[0, 0])
           
-            Labels.append(Label)
+            Labels.append(self.Label[0])
             # np.pi/4
             # np.pi/2
             # 3*np.pi/4
