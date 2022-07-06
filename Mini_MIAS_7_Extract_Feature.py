@@ -85,7 +85,7 @@ class featureExtraction():
     self.Folder = kwargs.get('Folder', None)
     #self.newfolder = kwargs.get('newfolder', None)
     self.Format = kwargs.get('Format', None)
-    self.Label = kwargs.get('Label', None)
+    self.Label = kwargs.get('Label', 0)
 
     if self.Folder == None:
       raise ValueError("Folder does not exist") #! Alert
@@ -93,8 +93,8 @@ class featureExtraction():
     elif self.Format == None:
       raise ValueError("Assign the format") #! Alert
 
-    elif self.Label == None:
-      raise ValueError("Assign the label") #! Alert
+    #elif self.Label == None:
+      #raise ValueError("Assign the label") #! Alert
 
   # ? FOF features folder
 

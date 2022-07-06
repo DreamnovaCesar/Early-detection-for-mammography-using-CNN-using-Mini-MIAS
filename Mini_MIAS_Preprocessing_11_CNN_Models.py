@@ -19,12 +19,12 @@ from Mini_MIAS_8_CNN_Architectures import update_csv_row
 
 Model_Tested = MobileNetV3Large_Pretrained
 
-NT = 'NT'
-NO = 'NO'  
-CLAHE = 'CLAHE'
-HE = 'HE'
-UM = 'UM'
-CS = 'CS' 
+#NT = 'NT'
+#NO = 'NO'  
+#CLAHE = 'CLAHE'
+#HE = 'HE'
+#UM = 'UM'
+#CS = 'CS' 
 
 def Testing_CNN_Models_Biclass(Model, technique, Images, Labels):
 

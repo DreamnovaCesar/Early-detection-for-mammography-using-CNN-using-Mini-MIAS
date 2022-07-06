@@ -21,9 +21,9 @@ def preprocessing_DataAugmentation_Multiclass(Folder_normal, Folder_benign, Fold
     Malignant_images_class = 2 
 
     # * With this class we use the technique called data augmentation to create new images with their transformations
-    Data_augmentation_normal = dataAugmentation(Folder = Folder_normal, Severity = Label_bormal, Sampling = Iter_normal, Label = Normal_images_class, nfsave = False)
-    Data_augmentation_benign = dataAugmentation(Folder = Folder_benign, Severity = Label_benign, Sampling = Iter_benign, Label = Benign_images_class, nfsave = False)
-    Data_augmentation_malignant = dataAugmentation(Folder = Folder_malignant, Severity = Label_malignant, Sampling = Iter_malignant, Label = Malignant_images_class, nfsave = False)
+    Data_augmentation_normal = dataAugmentation(Folder = Folder_normal, Severity = Label_bormal, Sampling = Iter_normal, Label = Normal_images_class, Saveimages = False)
+    Data_augmentation_benign = dataAugmentation(Folder = Folder_benign, Severity = Label_benign, Sampling = Iter_benign, Label = Benign_images_class, Saveimages = False)
+    Data_augmentation_malignant = dataAugmentation(Folder = Folder_malignant, Severity = Label_malignant, Sampling = Iter_malignant, Label = Malignant_images_class, Saveimages = False)
 
     Images_Normal, Labels_Normal = Data_augmentation_normal.data_augmentation()
     Images_Benign, Labels_Benign = Data_augmentation_benign.data_augmentation()

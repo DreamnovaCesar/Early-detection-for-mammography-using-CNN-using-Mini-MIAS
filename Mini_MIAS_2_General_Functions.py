@@ -65,7 +65,7 @@ def sort_images(Folder_path):
 
 # ? Remove all files in folder
 
-def remove_all_files(Folder_Path):
+def remove_all_files(Folder_path):
 
 	"""
 	Remove all images inside the folder chosen
@@ -79,10 +79,10 @@ def remove_all_files(Folder_Path):
    	"""
   # * This function will remove all the files inside a folder
 
-	for File in os.listdir(Folder_Path):
+	for File in os.listdir(Folder_path):
 		filename, extension  = os.path.splitext(File)
 		print(f"Removing {filename} {extension}✅")
-		os.remove(os.path.join(Folder_Path, File))
+		os.remove(os.path.join(Folder_path, File))
 
 # ? Extract the mean of each column
 
