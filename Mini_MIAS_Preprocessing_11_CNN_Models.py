@@ -70,6 +70,4 @@ def Testing_CNN_Models_Biclass(Model, Technique, All_images, All_labels):
 
     #parameters_model = [Model, technique, Labels_biclass, X_size, Y_size, Valid_split, Epochs, Images_Normal, Labels_Normal, Images_Tumor, Labels_Tumor]
 
-    Score = configuration_models(dataframe_keys, parameters_model, Biclass_Data_Model, Biclass_Data_Model_Esp)
-
-    update_csv_row(Score, df, column_names, path, 0)
+    Info_model = configuration_models(dataframe_keys, parameters_model, Biclass_Data_Model, Biclass_Data_Model_Esp)

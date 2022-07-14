@@ -92,7 +92,7 @@ class pretrainedModels:
 
 # Configuration of each DCNN model
 
-def configuration_models(All_images, All_labels, Dataframe_save, Folder_path, Column_names, DL_model, Enhancement_technique, Extract_feature_technique, Class_labels, Folder_data, Folder_models):
+def configuration_models(All_images, All_labels, Dataframe_save, DL_model, Enhancement_technique, Extract_feature_technique, Class_labels, Column_names, Folder_path, Folder_models, Folder_models_esp):
 
     for Index, Model in enumerate(DL_model):
 
@@ -108,7 +108,7 @@ def configuration_models(All_images, All_labels, Dataframe_save, Folder_path, Co
       #X_train = X_train / 255.0
       #X_test = X_test / 255.0
 
-      Info_model = Deep_learning_models(Model, Enhancement_technique, Class_labels, Arguments[3], Arguments[4], ClassSize, Arguments[5], Arguments[6], X_train, y_train, X_test, y_test, Folder_models)
+      Info_model = Deep_learning_models(Model, Enhancement_technique, Class_labels, X_train, y_train, X_test, y_test, Folder_models, Folder_models_esp)
       
       Overwrite_row_CSV(Dataframe_save, Folder_path, Info_model, Column_names, Index)
 
