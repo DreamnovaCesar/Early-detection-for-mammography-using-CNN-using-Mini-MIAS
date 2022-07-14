@@ -27,7 +27,7 @@ from Mini_MIAS_ML_Functions import Machine_learning_config
 from Mini_MIAS_ML_Functions import Overwrite_row_CSV
 
 
-def Testing_ML_Models_Biclass_FOF(Model, Technique, All_images, ALL_labels):
+def Testing_ML_Models_Biclass_FOF(Model, Technique, All_images, All_labels):
 
     Column_names = ["Model name", "Model", "Accuracy", "Precision", "Recall", "F1 Score", "Training images", "Test images", "Time training", "Technique", "TN", "FP", "FN", "TP", "AUC"]
     Dataframe_save_mias = pd.DataFrame(columns = Column_names)
@@ -47,8 +47,8 @@ def Testing_ML_Models_Biclass_FOF(Model, Technique, All_images, ALL_labels):
     Images_Normal = All_images[0]
     Images_Tumor = All_images[1]
 
-    Labels_Normal = ALL_labels[0]
-    Labels_Tumor = ALL_labels[1]
+    Labels_Normal = All_labels[0]
+    Labels_Tumor = All_labels[1]
         
     ML_extraction_biclass_normal = featureExtraction(Images = Images_Normal, Label = Labels_Normal)
     ML_extraction_biclass_tumor = featureExtraction(Images = Images_Tumor, Label = Labels_Tumor)

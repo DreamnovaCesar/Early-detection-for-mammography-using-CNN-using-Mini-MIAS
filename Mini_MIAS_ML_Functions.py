@@ -1,5 +1,6 @@
 import os
 import time
+import numpy as np
 import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
@@ -41,7 +42,7 @@ from sklearn.multiclass import OneVsRestClassifier
 
 from imblearn.over_sampling import SMOTE
 
-def Machine_learning_config(Dataframe, Dataframe_save, Folder_path, Column_names, ML_model, Enhancement_technique, Class_labels, Folder_data, Folder_models, Extract_feature_technique):
+def Machine_learning_config(Dataframe, Dataframe_save, Folder_path, Column_names, ML_model, Enhancement_technique, Extract_feature_technique, Class_labels, Folder_data, Folder_models):
 
     """
 	  Extract features from each image, it could be FOS, GLCM or GRLM.
@@ -84,7 +85,7 @@ def Machine_learning_config(Dataframe, Dataframe_save, Folder_path, Column_names
         print(Dataframe)
 
         # * Split data for training and testing
-        X_train, X_test, y_train, y_test = train_test_split(X_total, Y_total, test_size = 0.2, random_state = 1)
+        X_train, X_test, y_train, y_test = train_test_split(np.array(X_total), np.array(Y_total), test_size = 0.2, random_state = 1)
 
         # * Resample data for training
         X_train, y_train = sm.fit_resample(X_train, y_train)
@@ -98,12 +99,6 @@ def Machine_learning_config(Dataframe, Dataframe_save, Folder_path, Column_names
 
         # * Chose the machine learning.
         Info_model = Machine_learning_models(Model, Enhancement_technique, Class_labels, X_train, y_train, X_test, y_test, Folder_models)
-
-        # * Save dataframe in the folder given
-        #Class_problem_dataframe = str(Class_problem_prefix) + 'Dataframe_' + str(Extract_feature_technique) + '_' + str(Enhancement_technique) + '.csv'
-        #Class_problem_folder = os.path.join(Folder_data, Class_problem_dataframe)
-
-        #Dataframe.to_csv(Class_problem_folder)
     
         Overwrite_row_CSV(Dataframe_save, Folder_path, Info_model, Column_names, Index)
 
@@ -154,7 +149,7 @@ def Machine_learning_models(ML_model, Enhancement_technique, Class_labels, X_tra
     # * Lists
 
     Info = []
-    Labels_triclass = []
+    Labels_multiclass = []
     
     # * Class problem definition
     Class_problem = len(Class_labels)
@@ -240,12 +235,12 @@ def Machine_learning_models(ML_model, Enhancement_technique, Class_labels, X_tra
 
         # * Binarize labels to get multiples ROC curves
         for i in range(len(Class_labels)):
-            Labels_triclass.append(i)
+            Labels_multiclass.append(i)
         
         print(Y_pred)
 
-        y_pred_roc = label_binarize(Y_pred, classes = Labels_triclass)
-        y_test_roc = label_binarize(y_test, classes = Labels_triclass)
+        y_pred_roc = label_binarize(Y_pred, classes = Labels_multiclass)
+        y_test_roc = label_binarize(y_test, classes = Labels_multiclass)
 
         # * Confusion Matrix
         Confusion_matrix = confusion_matrix(y_test, Y_pred)

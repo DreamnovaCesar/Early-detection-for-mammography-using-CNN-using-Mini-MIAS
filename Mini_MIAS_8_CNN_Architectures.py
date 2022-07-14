@@ -92,90 +92,31 @@ class pretrainedModels:
 
 # Configuration of each DCNN model
 
-def configuration_models(MainKeys, Arguments, Folder_Save, Folder_Save_Esp):
+def configuration_models(All_images, All_labels, Dataframe_save, Folder_path, Column_names, DL_model, Enhancement_technique, Extract_feature_technique, Class_labels, Folder_data, Folder_models):
 
-    TotalImage = []
-    TotalLabel = []
+    for Index, Model in enumerate(DL_model):
 
-    ClassSize = (len(Arguments[2]))
-    Images = 7
-    Labels = 8
+      print(len(All_images))
+      print(len(All_labels))
 
-    if len(Arguments) == len(MainKeys):
-        
-        DicAruments = dict(zip(MainKeys, Arguments))
+      X_train, X_test, y_train, y_test = train_test_split(np.array(All_images), np.array(All_labels), test_size = 0.20, random_state = 42)
 
-        for i in range(ClassSize):
+      # convert from integers to floats
+      #X_train = X_train.astype('float32')
+      #X_test = X_test.astype('float32')
+      # normalize to range 0-1
+      #X_train = X_train / 255.0
+      #X_test = X_test / 255.0
 
-            for element in list(DicAruments.values())[Images]:
-                TotalImage.append(element)
-            
-            #print('Total:', len(TotalImage))
-        
-            for element in list(DicAruments.values())[Labels]:
-                TotalLabel.append(element)
+      Info_model = Deep_learning_models(Model, Enhancement_technique, Class_labels, Arguments[3], Arguments[4], ClassSize, Arguments[5], Arguments[6], X_train, y_train, X_test, y_test, Folder_models)
+      
+      Overwrite_row_CSV(Dataframe_save, Folder_path, Info_model, Column_names, Index)
 
-            #print('Total:', len(TotalLabel))
-
-            Images += 2
-            Labels += 2
-
-        #TotalImage = [*list(DicAruments.values())[Images], *list(DicAruments.values())[Images + 2]]
-        
-    elif len(Arguments) > len(MainKeys):
-
-        TotalArguments = len(Arguments) - len(MainKeys)
-
-        for i in range(TotalArguments // 2):
-
-            MainKeys.append('Images ' + str(i + 3))
-            MainKeys.append('Labels ' + str(i + 3))
-
-        DicAruments = dict(zip(MainKeys, Arguments))
-
-        for i in range(ClassSize):
-
-            for element in list(DicAruments.values())[Images]:
-                TotalImage.append(element)
-            
-            for element in list(DicAruments.values())[Labels]:
-                TotalLabel.append(element)
-
-            Images += 2
-            Labels += 2
-
-    elif len(Arguments) < len(MainKeys):
-
-        raise ValueError('its impossible')
-
-    #print(DicAruments)
-
-    def printDict(DicAruments):
-
-        for i in range(7):
-            print(list(DicAruments.items())[i])
-
-    printDict(DicAruments)
-
-    print(len(TotalImage))
-    print(len(TotalLabel))
-
-    X_train, X_test, y_train, y_test = train_test_split(np.array(TotalImage), np.array(TotalLabel), test_size = 0.20, random_state = 42)
-
-    # convert from integers to floats
-    #X_train = X_train.astype('float32')
-    #X_test = X_test.astype('float32')
-    # normalize to range 0-1
-    #X_train = X_train / 255.0
-    #X_test = X_test / 255.0
-
-    Score = PreTrainedModels(Arguments[0], Arguments[1], Arguments[2], Arguments[3], Arguments[4], ClassSize, Arguments[5], Arguments[6], X_train, y_train, X_test, y_test, Folder_Save, Folder_Save_Esp)
-    #Score = PreTrainedModels(ModelPreTrained, technique, labels, Xsize, Ysize, num_classes, vali_split, epochs, X_train, y_train, X_test, y_test)
-    return Score
+    return Info_model
 
 # Pretrained model configurations
 
-def PreTrainedModels(ModelPreTrained, Technique, labels, Xsize, Ysize, num_classes, vali_split, epochs, X_train, y_train, X_test, y_test, Folder_Save, Folder_Save_Esp):
+def Deep_learning_models(Pretrained_model_function, Enhancement_technique, Class_labels, X_size, Y_size, Vali_split, Epochs, X_train, y_train, X_test, y_test, Folder_models, Folder_models_Esp):
 
     """
 	  General configuration for each model, extracting features and printing theirs values.
@@ -201,237 +142,211 @@ def PreTrainedModels(ModelPreTrained, Technique, labels, Xsize, Ysize, num_class
     
    	"""
 
-    # Parameters
+    # * Parameters plt
 
     Height = 12
     Width = 12
     Annot_kws = 12
     font = 0.7
 
-    # Score list
+    X_size_figure = 2
+    Y_size_figure = 2
 
-    Score = []
+    # * Metrics digits
 
-    if num_classes != len(labels):
-      print('The num of classes is not the same than the num of labels,', 'num_classes = ', num_classes, '-----', 'labels = ', len(labels))
-      sys.exit(0)
+    Digits = 4
 
-    if num_classes != len(labels):
-      print('The num of classes is the same,', 'num_classes = ', num_classes, '-----', 'labels = ', len(labels))
+    # * List
+    Info = []
 
-    if num_classes == 2:
-      LabelClassName = '_Biclass_'
-    elif num_classes > 2:
-      LabelClassName = '_Multiclass_'
+    # * Class problem definition
+    Class_problem = len(Class_labels)
 
-    Begin_train = time.time()
+    if Class_problem == 2:
+      Class_problem_prefix = '_Biclass_'
+    elif Class_problem > 2:
+      Class_problem_prefix = '_Multiclass_'
 
-    # Data pretrained model
+    # * Training fit
 
-    Pretrained_Model, ModelName, ModelNameLetters = ModelPreTrained(Xsize, Ysize, num_classes)
-    Pretrained_Model_History = Pretrained_Model.fit(X_train, y_train, batch_size = 64, validation_split = vali_split, epochs = epochs)
+    Start_training_time = time.time()
+
+    Pretrained_model, Pretrained_model_name, Pretrained_model_name_letters = Pretrained_model_function(X_size, Y_size, Class_problem)
+    Pretrained_Model_History = Pretrained_model.fit(X_train, y_train, batch_size = 32, validation_split = Vali_split, epochs = Epochs)
   
-    End_train = time.time()
+    End_training_time = time.time()
 
-    Begin_test = time.time()
+    # * Test evaluation
 
-    # Test evaluation
+    Start_testing_time = time.time()
 
-    Loss_Test, Accuracy_Test = Pretrained_Model.evaluate(X_test, y_test, verbose = 2)
+    Loss_Test, Accuracy_Test = Pretrained_model.evaluate(X_test, y_test, verbose = 2)
 
-    End_test = time.time()
+    End_testing_time = time.time()
 
-    Time_train = End_train - Begin_train 
-    Time_test = End_test - Begin_test
+    # * Total time of training and testing
 
-    ModelNameTechnique = str(ModelNameLetters) + '_' + str(Technique)
+    Total_training_time = End_training_time - Start_training_time 
+    Total_testing_time = End_testing_time - Start_testing_time
 
-    if num_classes == 2:
+    Pretrained_model_name_technique = str(Pretrained_model_name_letters) + '_' + str(Enhancement_technique)
 
-      labels_Biclass_Num = []
+    if Class_problem == 2:
 
-      for i in range(len(labels)):
-        labels_Biclass_Num.append(i)
+      Labels_biclass_number = []
 
-      y_pred = Pretrained_Model.predict(X_test)
-      y_pred = Pretrained_Model.predict(X_test).ravel()
+      for i in range(len(Class_labels)):
+        Labels_biclass_number.append(i)
+
+      # * Get the data from the model chosen
+      y_pred = Pretrained_model.predict(X_test)
+      y_pred = Pretrained_model.predict(X_test).ravel()
+
+      # * Biclass labeling
       y_pred_class = np.where(y_pred < 0.5, 0, 1)
-
-      cm = confusion_matrix(y_test, y_pred_class)
-
-      # Precision
-      Precision = precision_score(y_test, y_pred_class)
-      print(f"Precision: {round(Precision, 4)}")
-
-      print("\n")
-      # Recall
-      Recall = recall_score(y_test, y_pred_class)
-      print(f"Recall: {round(Recall, 4)}")
-
-      print("\n")
-      # F1-score
-      F1_Score = f1_score(y_test, y_pred_class)
-      print(f"F1: {round(F1_Score, 4)}")
-
-      print(y_pred_class)
-      print(y_test)
-
+      
+      # * Confusion Matrix
       print('Confusion Matrix')
-      ConfusionM_Multiclass = confusion_matrix(y_test, y_pred_class)
-      print(ConfusionM_Multiclass)
+      Confusion_matrix = confusion_matrix(y_test, y_pred_class)
 
-      print(classification_report(y_test, y_pred_class, target_names = labels))
+      print(Confusion_matrix)
+      print(classification_report(y_test, y_pred_class, target_names = Class_labels))
 
-      #labels = ['Benign_W_C', 'Malignant']
-      df_cm = pd.DataFrame(ConfusionM_Multiclass, range(len(ConfusionM_Multiclass)), range(len(ConfusionM_Multiclass[0])))
+      # * Precision
+      Precision = precision_score(y_test, y_pred_class)
+      print(f"Precision: {round(Precision, Digits)}")
+      print("\n")
 
+      # * Recall
+      Recall = recall_score(y_test, y_pred_class)
+      print(f"Recall: {round(Recall, Digits)}")
+      print("\n")
+
+      # * F1-score
+      F1_score = f1_score(y_test, y_pred_class)
+      print(f"F1: {round(F1_score, Digits)}")
+      print("\n")
+
+      #print(y_pred_class)
+      #print(y_test)
+
+      #print('Confusion Matrix')
+      #ConfusionM_Multiclass = confusion_matrix(y_test, y_pred_class)
+      #print(ConfusionM_Multiclass)
+
+      #Labels = ['Benign_W_C', 'Malignant']
+      Confusion_matrix_dataframe = pd.DataFrame(Confusion_matrix, range(len(Confusion_matrix)), range(len(Confusion_matrix[0])))
+
+      # * Figure's size
       plt.figure(figsize = (Width, Height))
-      #technique
-      plt.subplot(2, 2, 4)
-      sns.set(font_scale = font) # for label size
+      plt.subplot(X_size_figure, Y_size_figure, 4)
+      sns.set(font_scale = font)
 
-      ax = sns.heatmap(df_cm, annot = True, fmt = 'd') # font size
+      # * Confusion matrix heatmap
+      ax = sns.heatmap(Confusion_matrix_dataframe, annot = True, fmt = 'd')
       #ax.set_title('Seaborn Confusion Matrix with labels\n\n')
       ax.set_xlabel('\nPredicted Values')
       ax.set_ylabel('Actual Values')
-      ax.set_xticklabels(labels)
-      ax.set_yticklabels(labels)
+      ax.set_xticklabels(Class_labels)
+      ax.set_yticklabels(Class_labels)
 
       Accuracy = Pretrained_Model_History.history['accuracy']
-      Validation_Accuracy = Pretrained_Model_History.history['val_accuracy']
+      Validation_accuracy = Pretrained_Model_History.history['val_accuracy']
 
       Loss = Pretrained_Model_History.history['loss']
-      Validation_Loss = Pretrained_Model_History.history['val_loss']
+      Validation_loss = Pretrained_Model_History.history['val_loss']
 
-      fpr, tpr, thresholds = roc_curve(y_test, y_pred)
+      # * FPR and TPR values for the ROC curve
+      FPR, TPR, _ = roc_curve(y_test, y_pred)
+      Auc = auc(FPR, TPR)
 
-      Auc = auc(fpr, tpr)
-
-      plt.subplot(2, 2, 1)
+      # * Subplot Training accuracy
+      plt.subplot(X_size_figure, Y_size_figure, 1)
       plt.plot(Accuracy, label = 'Training Accuracy')
-      plt.plot(Validation_Accuracy, label = 'Validation Accuracy')
+      plt.plot(Validation_accuracy, label = 'Validation Accuracy')
       plt.ylim([0, 1])
       plt.legend(loc = 'lower right')
       plt.title('Training and Validation Accuracy')
       plt.xlabel('epoch')
 
-      plt.subplot(2, 2, 2)
+      # * Subplot Training loss
+      plt.subplot(X_size_figure, Y_size_figure, 2)
       plt.plot(Loss, label = 'Training Loss')
-      plt.plot(Validation_Loss, label = 'Validation Loss')
+      plt.plot(Validation_loss, label = 'Validation Loss')
       plt.ylim([0, 2.0])
       plt.legend(loc = 'upper right')
       plt.title('Training and Validation Loss')
       plt.xlabel('epoch')
 
-      plt.subplot(2, 2, 3)
+      # * Subplot ROC curve
+      plt.subplot(X_size_figure, Y_size_figure, 3)
       plt.plot([0, 1], [0, 1], 'k--')
-      plt.plot(fpr, tpr, label = ModelName + '(area = {:.4f})'.format(Auc))
+      plt.plot(FPR, TPR, label = Pretrained_model_name + '(area = {:.4f})'.format(Auc))
       plt.xlabel('False positive rate')
       plt.ylabel('True positive rate')
       plt.title('ROC curve')
       plt.legend(loc = 'lower right')
 
-      dst = ModelName + LabelClassName + Technique + '.png'
-      dstPath = os.path.join(Folder_Save, dst)
+      # * Save this figure in the folder given
+      Class_problem_name = str(Class_problem_prefix) + str(Pretrained_model_name) + str(Enhancement_technique) + '.png'
+      Class_problem_folder = os.path.join(Folder_models, Class_problem_name)
 
-      plt.savefig(dstPath)
-
-      ############## ############## ############## ############## ############## ############## ##############
-
-      plt.figure(figsize = (Width, Height))
-      #technique
-      plt.subplot(2, 2, 4)
-      sns.set(font_scale = font) # for label size
-
-      ax = sns.heatmap(df_cm, annot = True, fmt = 'd') # font size
-      #ax.set_title('Seaborn Confusion Matrix with labels\n\n')
-      ax.set_xlabel('\nValores de predicción')
-      ax.set_ylabel('Valores actuales')
-      ax.set_xticklabels(labels)
-      ax.set_yticklabels(labels)
-
-      plt.subplot(2, 2, 1)
-      plt.plot(Accuracy, label = 'Exactitud del entrenamiento')
-      plt.plot(Validation_Accuracy, label = 'Exactitud de la validación')
-      plt.ylim([0, 1])
-      plt.legend(loc = 'lower right')
-      plt.title('Exactitud del entrenamiento y validación Accuracy')
-      plt.xlabel('Epocas')
-
-      plt.subplot(2, 2, 2)
-      plt.plot(Loss, label = 'Perdida del entrenamiento')
-      plt.plot(Validation_Loss, label = 'Perdida de la validación')
-      plt.ylim([0, 2.0])
-      plt.legend(loc = 'upper right')
-      plt.title('Perdida del entrenamiento y validación Accuracy')
-      plt.xlabel('Epocas')
-
-      plt.subplot(2, 2, 3)
-      plt.plot([0, 1], [0, 1], 'k--')
-      plt.plot(fpr, tpr, label = ModelName + '(area = {:.4f})'.format(Auc))
-      plt.xlabel('Tasa de falsos positivos')
-      plt.ylabel('Tasa de verdaderos positivos')
-      plt.title('Curva ROC')
-      plt.legend(loc = 'lower right')
-
-      dst = ModelName + LabelClassName + Technique + '.png'
-      dstPath = os.path.join(Folder_Save_Esp, dst)
-
-      plt.savefig(dstPath)
-
+      plt.savefig(Class_problem_folder)
       #plt.show()
 
-    elif num_classes >= 3:
+    elif Class_problem >= 3:
     
-      labels_Triclass_Num = []
+      Labels_multiclass_number = []
 
-      for i in range(len(labels)):
-        labels_Triclass_Num.append(i)
+      for i in range(len(Class_labels)):
+        Labels_multiclass_number.append(i)
 
-      # Test y_pred
-      y_pred = Pretrained_Model.predict(X_test)
+      # * Get the data from the model chosen
+      y_pred = Pretrained_model.predict(X_test)
       y_pred = np.argmax(y_pred, axis = 1)
 
-      y_pred_roc = label_binarize(y_pred, classes = labels_Triclass_Num)
-      y_test_roc = label_binarize(y_test, classes = labels_Triclass_Num)
+      # * Multiclass labeling
+      y_pred_roc = label_binarize(y_pred, classes = Labels_multiclass_number)
+      y_test_roc = label_binarize(y_test, classes = Labels_multiclass_number)
 
       #print(y_pred)
       #print(y_test)
 
+      # * Confusion Matrix
       print('Confusion Matrix')
-      ConfusionM_Multiclass = confusion_matrix(y_test, y_pred)
-      cm = confusion_matrix(y_test, y_pred)
-      print(ConfusionM_Multiclass)
+      Confusion_matrix = confusion_matrix(y_test, y_pred_class)
 
-      # Precision
+      print(Confusion_matrix)
+      print(classification_report(y_test, y_pred_class, target_names = Class_labels))
+
+      # * Precision
       Precision = precision_score(y_test, y_pred, average = 'weighted')
-      print(f"Precision: {round(Precision, 4)}")
-
+      print(f"Precision: {round(Precision, Digits)}")
       print("\n")
-      # Recall
+
+      # * Recall
       Recall = recall_score(y_test, y_pred, average = 'weighted')
-      print(f"Recall: {round(Recall, 4)}")
-
+      print(f"Recall: {round(Recall, Digits)}")
       print("\n")
-      # F1-score
-      F1_Score = f1_score(y_test, y_pred, average = 'weighted')
-      print(f"F1: {round(F1_Score, 4)}")
 
-      print(classification_report(y_test, y_pred, target_names = labels))
+      # * F1-score
+      F1_score = f1_score(y_test, y_pred, average = 'weighted')
+      print(f"F1: {round(F1_score, Digits)}")
+      print("\n")
 
       #labels = ['Benign', 'Benign_W_C', 'Malignant']
-      df_cm = pd.DataFrame(ConfusionM_Multiclass, range(len(ConfusionM_Multiclass)), range(len(ConfusionM_Multiclass[0])))
+      df_cm = pd.DataFrame(Confusion_matrix, range(len(Confusion_matrix)), range(len(Confusion_matrix[0])))
 
       plt.figure(figsize = (Width, Height))
-      plt.subplot(2, 2, 4)
+      plt.subplot(X_size_figure, Y_size_figure, 4)
       sns.set(font_scale = font) # for label size
 
       ax = sns.heatmap(df_cm, annot = True, fmt = 'd', annot_kws = {"size": Annot_kws}) # font size
       #ax.set_title('Seaborn Confusion Matrix with labels\n\n')
       ax.set_xlabel('\nPredicted Values')
       ax.set_ylabel('Actual Values ')
-      ax.set_xticklabels(labels)
-      ax.set_yticklabels(labels)
+      ax.set_xticklabels(Class_labels)
+      ax.set_yticklabels(Class_labels)
 
       Accuracy = Pretrained_Model_History.history['accuracy']
       Validation_Accuracy = Pretrained_Model_History.history['val_accuracy']
@@ -439,17 +354,19 @@ def PreTrainedModels(ModelPreTrained, Technique, labels, Xsize, Ysize, num_class
       Loss = Pretrained_Model_History.history['loss']
       Validation_Loss = Pretrained_Model_History.history['val_loss']
 
-      fpr = dict()
-      tpr = dict()
-      roc_auc = dict()
+      FPR = dict()
+      TPR = dict()
+      Roc_auc = dict()
 
-      for i in range(num_classes):
-        fpr[i], tpr[i], _ = roc_curve(y_test_roc[:, i], y_pred_roc[:, i])
-        roc_auc[i] = auc(fpr[i], tpr[i])
+      for i in range(Class_problem):
+        FPR[i], TPR[i], _ = roc_curve(y_test_roc[:, i], y_pred_roc[:, i])
+        Roc_auc[i] = auc(FPR[i], TPR[i])
 
-      colors = cycle(['blue', 'red', 'green', 'brown', 'purple', 'pink', 'orange', 'black', 'yellow', 'cyan'])
-
-      plt.subplot(2, 2, 1)
+      # * Colors for ROC curves
+      Colors = cycle(['blue', 'red', 'green', 'brown', 'purple', 'pink', 'orange', 'black', 'yellow', 'cyan'])
+      
+      # * Subplot Training accuracy
+      plt.subplot(X_size_figure, Y_size_figure, 1)
       plt.plot(Accuracy, label = 'Training Accuracy')
       plt.plot(Validation_Accuracy, label = 'Validation Accuracy')
       plt.ylim([0, 1])
@@ -457,19 +374,21 @@ def PreTrainedModels(ModelPreTrained, Technique, labels, Xsize, Ysize, num_class
       plt.title('Training and Validation Accuracy')
       plt.xlabel('epoch')
 
-      plt.subplot(2, 2, 2)
+      # * Subplot Training loss
+      plt.subplot(X_size_figure, Y_size_figure, 2)
       plt.plot(Loss, label = 'Training Loss')
       plt.plot(Validation_Loss, label = 'Validation Loss')
       plt.ylim([0, 2.0])
       plt.legend(loc = 'upper right')
       plt.title('Training and Validation Loss')
       plt.xlabel('epoch')
-    
-      plt.subplot(2, 2, 3)
+
+      # * Subplot ROC curves
+      plt.subplot(X_size_figure, Y_size_figure, 3)
       plt.plot([0, 1], [0, 1], 'k--')
 
-      for i, color, lbl in zip(range(num_classes), colors, labels):
-        plt.plot(fpr[i], tpr[i], color = color, label = 'ROC Curve of class {0} (area = {1:0.4f})'.format(lbl, roc_auc[i]))
+      for i, color, lbl in zip(range(Class_problem), Colors, Class_labels):
+        plt.plot(FPR[i], TPR[i], color = color, label = 'ROC Curve of class {0} (area = {1:0.4f})'.format(lbl, Roc_auc[i]))
 
       plt.legend(loc = 'lower right')
       plt.xlim([0.0, 1.0])
@@ -478,122 +397,67 @@ def PreTrainedModels(ModelPreTrained, Technique, labels, Xsize, Ysize, num_class
       plt.ylabel('True positive rate')
       plt.title('ROC curve Multiclass')
 
-      dst = ModelName + LabelClassName + Technique + '.png'
-      dstPath = os.path.join(Folder_Save, dst)
+      # * Save this figure in the folder given
+      Class_problem_name = str(Class_problem_prefix) + str(Pretrained_model_name) + str(Enhancement_technique) + '.png'
+      Class_problem_folder = os.path.join(Folder_models, Class_problem_name)
 
-      plt.savefig(dstPath)
-
-      ############## ############## ############## ############## ############## ############## ##############
-
-      plt.figure(figsize = (Width, Height))
-      #technique
-      plt.subplot(2, 2, 4)
-      sns.set(font_scale = font) # for label size
-
-      ax = sns.heatmap(df_cm, annot = True, fmt = 'd') # font size
-      #ax.set_title('Seaborn Confusion Matrix with labels\n\n')
-      ax.set_xlabel('\nValores de predicción')
-      ax.set_ylabel('Valores actuales')
-      ax.set_xticklabels(labels)
-      ax.set_yticklabels(labels)
-
-      fpr = dict()
-      tpr = dict()
-      roc_auc = dict()
-
-      for i in range(num_classes):
-        fpr[i], tpr[i], _ = roc_curve(y_test_roc[:, i], y_pred_roc[:, i])
-        roc_auc[i] = auc(fpr[i], tpr[i])
-
-      colors = cycle(['blue', 'red', 'green', 'brown', 'purple', 'pink', 'orange', 'black', 'yellow', 'cyan'])
-
-      plt.subplot(2, 2, 1)
-      plt.plot(Accuracy, label = 'Exactitud del entrenamiento')
-      plt.plot(Validation_Accuracy, label = 'Exactitud de la validación')
-      plt.ylim([0, 1])
-      plt.legend(loc = 'lower right')
-      plt.title('Exactitud del entrenamiento y validación Accuracy')
-      plt.xlabel('Epocas')
-
-      plt.subplot(2, 2, 2)
-      plt.plot(Loss, label = 'Perdida del entrenamiento')
-      plt.plot(Validation_Loss, label = 'Perdida de la validación')
-      plt.ylim([0, 2.0])
-      plt.legend(loc = 'upper right')
-      plt.title('Perdida del entrenamiento y validación Accuracy')
-      plt.xlabel('Epocas')
-    
-      plt.subplot(2, 2, 3)
-      plt.plot([0, 1], [0, 1], 'k--')
-
-      for i, color, lbl in zip(range(num_classes), colors, labels):
-        plt.plot(fpr[i], tpr[i], color = color, label = 'ROC Curva de clase {0} (area = {1:0.4f})'.format(lbl, roc_auc[i]))
-
-      plt.legend(loc = 'lower right')
-      plt.xlim([0.0, 1.0])
-      plt.ylim([0.0, 1.05])
-      plt.xlabel('Tasa de falsos positivos')
-      plt.ylabel('Tasa de verdaderos positivos')
-      plt.title('ROC Multiclase')
-
-      dst = ModelName + LabelClassName + Technique + '.png'
-      dstPath = os.path.join(Folder_Save_Esp, dst)
-
-      plt.savefig(dstPath)
-
+      plt.savefig(Class_problem_folder)
       #plt.show()
 
-    Score.append(ModelNameTechnique)
-    Score.append(ModelName)
-    Score.append(Accuracy[epochs - 1])
-    Score.append(Accuracy[0])
-    Score.append(Accuracy_Test)
-    Score.append(Loss[epochs - 1])
-    Score.append(Loss_Test)
-    Score.append(len(y_train))
-    Score.append(len(y_test))
-    Score.append(Precision)
-    Score.append(Recall)
-    Score.append(F1_Score)
-    Score.append(Time_train)
-    Score.append(Time_test)
-    Score.append(Technique)
-    Score.append(cm[0][0])
-    Score.append(cm[0][1])
-    Score.append(cm[1][0])
-    Score.append(cm[1][1])
-    Score.append(epochs)
+    Info.append(Pretrained_model_name_technique)
+    Info.append(Pretrained_model_name)
+    Info.append(Accuracy[Epochs - 1])
+    Info.append(Accuracy[0])
+    Info.append(Accuracy_Test)
+    Info.append(Loss[Epochs - 1])
+    Info.append(Loss_Test)
+    Info.append(len(y_train))
+    Info.append(len(y_test))
+    Info.append(Precision)
+    Info.append(Recall)
+    Info.append(F1_score)
+    Info.append(Total_training_time)
+    Info.append(Total_testing_time)
+    Info.append(Enhancement_technique)
+    Info.append(Confusion_matrix[0][0])
+    Info.append(Confusion_matrix[0][1])
+    Info.append(Confusion_matrix[1][0])
+    Info.append(Confusion_matrix[1][1])
+    Info.append(Epochs)
   
-    if num_classes == 2:
-      Score.append(Auc)
-    elif num_classes > 2:
-      for i in range(num_classes):
-        Score.append(roc_auc[i])
+    if Class_problem == 2:
+      Info.append(Auc)
+    elif Class_problem > 2:
+      for i in range(Class_problem):
+        Info.append(Roc_auc[i])
   
-    return Score
+    return Info
 
 # Update CSV changing value
 
-def update_csv_row(Score, df, column_names, path, row):
+def Overwrite_row_CSV(Dataframe, Folder_path, Info_list, Column_names, Row):
 
     """
-	  Printing amount of images with data augmentation 
+	  Updates final CSV dataframe to see all values
 
     Parameters:
-    argument1 (list): The number of Normal images.
-    argument2 (list): The number of Tumor images.
-    argument3 (str): Technique used
+    argument1 (list): All values.
+    argument2 (dataframe): dataframe that will be updated
+    argument3 (list): Names of each column
+    argument4 (folder): Folder path to save the dataframe
+    argument5 (int): The index.
 
     Returns:
 	  void
+    
    	"""
-     
-    for i in range(len(Score)):
-        df.loc[row, column_names[i]] = Score[i]
+
+    for i in range(len(Info_list)):
+        Dataframe.loc[Row, Column_names[i]] = Info_list[i]
   
-    df.to_csv(path, index = False)
+    Dataframe.to_csv(Folder_path, index = False)
   
-    print(df)
+    print(Dataframe)
     
 # Fine-Tuning MLP
 
