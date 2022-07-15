@@ -92,14 +92,35 @@ class pretrainedModels:
 
 # Configuration of each DCNN model
 
-def configuration_models(All_images, All_labels, Dataframe_save, DL_model, Enhancement_technique, Extract_feature_technique, Class_labels, Column_names, Folder_path, Folder_models, Folder_models_esp):
+def configuration_models(All_images, All_labels, Dataframe_save, Folder_path, DL_model, Enhancement_technique, Class_labels, Column_names, X_size, Y_size, Vali_split, Epochs, Folder_data, Folder_models, Folder_models_esp):
 
     for Index, Model in enumerate(DL_model):
 
-      print(len(All_images))
-      print(len(All_labels))
+      #print(All_images)
+      #print(All_labels)
 
-      X_train, X_test, y_train, y_test = train_test_split(np.array(All_images), np.array(All_labels), test_size = 0.20, random_state = 42)
+      #All_images[0] = np.array(All_images[0])
+      #All_images[1] = np.array(All_images[1])
+
+      All_labels[0] = np.array(All_labels[0])
+      All_labels[1] = np.array(All_labels[1])
+
+      print(len(All_images[0]))
+      print(len(All_images[1]))
+
+      print(len(All_labels[0]))
+      print(len(All_labels[1]))
+
+      All_images_CNN = All_images[0] + All_images[1]
+      All_labels_CNN = np.concatenate((All_labels[0], All_labels[1]), axis = None)
+
+      print(len(All_images_CNN))
+      print(len(All_labels_CNN))
+
+      X_train, X_test, y_train, y_test = train_test_split(np.array(All_images_CNN), np.array(All_labels_CNN), test_size = 0.20, random_state = 42)
+
+      print(y_train)
+      print(y_test)
 
       # convert from integers to floats
       #X_train = X_train.astype('float32')
@@ -108,15 +129,15 @@ def configuration_models(All_images, All_labels, Dataframe_save, DL_model, Enhan
       #X_train = X_train / 255.0
       #X_test = X_test / 255.0
 
-      Info_model = Deep_learning_models(Model, Enhancement_technique, Class_labels, X_train, y_train, X_test, y_test, Folder_models, Folder_models_esp)
+      Info_model = deep_learning_models(Model, Enhancement_technique, Class_labels, X_size, Y_size, Vali_split, Epochs, X_train, y_train, X_test, y_test, Folder_models, Folder_models_esp)
       
-      Overwrite_row_CSV(Dataframe_save, Folder_path, Info_model, Column_names, Index)
+      overwrite_row_CSV(Dataframe_save, Folder_path, Info_model, Column_names, Index)
 
     return Info_model
 
 # Pretrained model configurations
 
-def Deep_learning_models(Pretrained_model_function, Enhancement_technique, Class_labels, X_size, Y_size, Vali_split, Epochs, X_train, y_train, X_test, y_test, Folder_models, Folder_models_Esp):
+def deep_learning_models(Pretrained_model_function, Enhancement_technique, Class_labels, X_size, Y_size, Vali_split, Epochs, X_train, y_train, X_test, y_test, Folder_models, Folder_models_Esp):
 
     """
 	  General configuration for each model, extracting features and printing theirs values.
@@ -435,7 +456,7 @@ def Deep_learning_models(Pretrained_model_function, Enhancement_technique, Class
 
 # Update CSV changing value
 
-def Overwrite_row_CSV(Dataframe, Folder_path, Info_list, Column_names, Row):
+def overwrite_row_CSV(Dataframe, Folder_path, Info_list, Column_names, Row):
 
     """
 	  Updates final CSV dataframe to see all values
@@ -502,8 +523,8 @@ def ResNet50_PreTrained(Xsize, Ysize, num_classes):
     
    	"""
 
-    ModelName = 'ResNet50_Model'
-    ModelNameLetters = 'RN50'
+    Model_name = 'ResNet50_Model'
+    Model_name_letters = 'RN50'
 
     ResNet50_Model = ResNet50(input_shape = (Xsize, Ysize, 3), 
                               include_top = False, 
@@ -523,15 +544,15 @@ def ResNet50_PreTrained(Xsize, Ysize, num_classes):
 
     x = MLPClassificadorTL(ResNet50_Model.output, units, activation)
 
-    ResNet50Model = Model(ResNet50_Model.input, x)
+    ResNet50_model = Model(ResNet50_Model.input, x)
 
-    ResNet50Model.compile(
+    ResNet50_model.compile(
         optimizer = tf.keras.optimizers.Adam(learning_rate = 0.0001),
         loss = loss,
         metrics = ['accuracy']
     )
 
-    return ResNet50Model, ModelName, ModelNameLetters
+    return ResNet50_model, Model_name, Model_name_letters
 
 def ResNet50V2_PreTrained(Xsize, Ysize, num_classes):
 

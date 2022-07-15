@@ -13,6 +13,7 @@ class dataAugmentation:
     
     # * General parameters
     self.Folder = kwargs.get('Folder')
+    self.Folder_dest = kwargs.get('NewFolder')
     self.Severity = kwargs.get('Severity')
     self.Sampling = kwargs.get('Sampling')
     self.Label = kwargs.get('Label')
@@ -141,14 +142,23 @@ class dataAugmentation:
     
    	"""
     # * Create a folder with each image and its transformations.
-    Exist_dir = os.path.isdir(self.Folder + 'DA') 
+
+    Name_dir = os.path.dirname(self.Folder)
+    Name_base = os.path.basename(self.Folder)
+
+    Name_dir_dest = os.path.dirname(self.Folder_dest)
+    Name_base_dest = os.path.basename(self.Folder_dest)
+
+    print(self.Folder_dest + Name_base + '_DA')
+
+    Exist_dir = os.path.isdir(self.Folder_dest + '/' + Name_base + '_DA') 
 
     if self.Saveimages == True:
       if Exist_dir == False:
-        self.newfolder = self.Folder + 'DA'
+        self.newfolder = self.Folder_dest + '/' + Name_base + '_DA'
         os.mkdir(self.newfolder)
       else:
-        self.newfolder = self.Folder + 'DA'
+        self.newfolder = self.Folder +  '/' + Name_base + '_DA'
 
     # * Lists to save the images and their respective labels
     Images = [] 

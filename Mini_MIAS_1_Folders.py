@@ -30,6 +30,7 @@ Mini_MIAS_TIFF = r'D:\Mini-MIAS\Mini-MIAS Final\Mini_MIAS_TIFF'
 
 # * Mini-MIAS images without pre-processing
 
+Mini_MIAS_NT_Cropped_Images_Biclass = r"D:\Mini-MIAS\Mini-MIAS Final\Mini_MIAS_NT_Cropped_Images_Biclass"
 Mini_MIAS_NT_Cropped_Images_Tumor = r"D:\Mini-MIAS\Mini-MIAS Final\Mini_MIAS_NT_Cropped_Images_Tumor"
 Mini_MIAS_NT_Cropped_Images_Benign = r"D:\Mini-MIAS\Mini-MIAS Final\Mini_MIAS_NT_Cropped_Images_Benign"
 Mini_MIAS_NT_Cropped_Images_Malignant = r"D:\Mini-MIAS\Mini-MIAS Final\Mini_MIAS_NT_Cropped_Images_Malignant"
@@ -37,6 +38,7 @@ Mini_MIAS_NT_Cropped_Images_Normal = r"D:\Mini-MIAS\Mini-MIAS Final\Mini_MIAS_NT
 
 # * Mini-MIAS images with normalization
 
+Mini_MIAS_NO_Cropped_Images_Biclass = r"D:\Mini-MIAS\Mini-MIAS Final\Mini_MIAS_NO_Cropped_Images_Biclass"
 Mini_MIAS_NO_Cropped_Images_Tumor = r"D:\Mini-MIAS\Mini-MIAS Final\Mini_MIAS_NO_Cropped_Images_Tumor"
 Mini_MIAS_NO_Cropped_Images_Benign = r"D:\Mini-MIAS\Mini-MIAS Final\Mini_MIAS_NO_Cropped_Images_Benign"
 Mini_MIAS_NO_Cropped_Images_Malignant = r"D:\Mini-MIAS\Mini-MIAS Final\Mini_MIAS_NO_Cropped_Images_Malignant"
@@ -44,30 +46,30 @@ Mini_MIAS_NO_Cropped_Images_Normal = r"D:\Mini-MIAS\Mini-MIAS Final\Mini_MIAS_NO
 
 # * Mini-MIAS images with CLAHE (Contrast Limited Adaptive Histogram Equalization)
 
-Mini_MIAS_CLAHE_Cropped_Images_Tumor = r"D:\Mini-MIAS\Mini-MIAS Final\Mini_MIAS_CLAHE__Cropped_Images_Tumor"
-Mini_MIAS_CLAHE_Cropped_Images_Benign = r"D:\Mini-MIAS\Mini-MIAS Final\Mini_MIAS_CLAHE__Cropped_Images_Benign"
-Mini_MIAS_CLAHE_Cropped_Images_Malignant = r"D:\Mini-MIAS\Mini-MIAS Final\Mini_MIAS_CLAHE__Cropped_Images_Malignant"
-Mini_MIAS_CLAHE_Cropped_Images_Normal = r"D:\Mini-MIAS\Mini-MIAS Final\Mini_MIAS_CLAHE__Cropped_Images_Normal"
+Mini_MIAS_CLAHE_Cropped_Images_Tumor = r"D:\Mini-MIAS\Mini-MIAS Final\Mini_MIAS_CLAHE_Cropped_Images_Tumor"
+Mini_MIAS_CLAHE_Cropped_Images_Benign = r"D:\Mini-MIAS\Mini-MIAS Final\Mini_MIAS_CLAHE_Cropped_Images_Benign"
+Mini_MIAS_CLAHE_Cropped_Images_Malignant = r"D:\Mini-MIAS\Mini-MIAS Final\Mini_MIAS_CLAHE_Cropped_Images_Malignant"
+Mini_MIAS_CLAHE_Cropped_Images_Normal = r"D:\Mini-MIAS\Mini-MIAS Final\Mini_MIAS_CLAHE_Cropped_Images_Normal"
 
 # * Mini-MIAS images with histogram equalization
 
-Mini_MIAS_HE_Cropped_Images_Tumor = r"D:\Mini-MIAS\Mini-MIAS Final\Mini_MIAS_HE__Cropped_Images_Tumor"
-Mini_MIAS_HE_Cropped_Images_Benign = r"D:\Mini-MIAS\Mini-MIAS Final\Mini_MIAS_HE__Cropped_Images_Benign"
-Mini_MIAS_HE_Cropped_Images_Malignant = r"D:\Mini-MIAS\Mini-MIAS Final\Mini_MIAS_HE__Cropped_Images_Malignant"
-Mini_MIAS_HE_Cropped_Images_Normal = r"D:\Mini-MIAS\Mini-MIAS Final\Mini_MIAS_HE__Cropped_Images_Normal"
+Mini_MIAS_HE_Cropped_Images_Tumor = r"D:\Mini-MIAS\Mini-MIAS Final\Mini_MIAS_HE_Cropped_Images_Tumor"
+Mini_MIAS_HE_Cropped_Images_Benign = r"D:\Mini-MIAS\Mini-MIAS Final\Mini_MIAS_HE_Cropped_Images_Benign"
+Mini_MIAS_HE_Cropped_Images_Malignant = r"D:\Mini-MIAS\Mini-MIAS Final\Mini_MIAS_HE_Cropped_Images_Malignant"
+Mini_MIAS_HE_Cropped_Images_Normal = r"D:\Mini-MIAS\Mini-MIAS Final\Mini_MIAS_HE_Cropped_Images_Normal"
 
 # * Mini-MIAS images with unsharp masking
 
-Mini_MIAS_UM_Cropped_Images_Tumor = r"D:\Mini-MIAS\Mini-MIAS Final\Mini_MIAS_UM__Cropped_Images_Tumor"
-Mini_MIAS_UM_Cropped_Images_Benign = r"D:\Mini-MIAS\Mini-MIAS Final\Mini_MIAS_UM__Cropped_Images_Benign"
-Mini_MIAS_UM_Cropped_Images_Malignant = r"D:\Mini-MIAS\Mini-MIAS Final\Mini_MIAS_UM__Cropped_Images_Malignant"
-Mini_MIAS_UM_Cropped_Images_Normal = r"D:\Mini-MIAS\Mini-MIAS Final\Mini_MIAS_UM__Cropped_Images_Normal"
+Mini_MIAS_UM_Cropped_Images_Tumor = r"D:\Mini-MIAS\Mini-MIAS Final\Mini_MIAS_UM_Cropped_Images_Tumor"
+Mini_MIAS_UM_Cropped_Images_Benign = r"D:\Mini-MIAS\Mini-MIAS Final\Mini_MIAS_UM_Cropped_Images_Benign"
+Mini_MIAS_UM_Cropped_Images_Malignant = r"D:\Mini-MIAS\Mini-MIAS Final\Mini_MIAS_UM_Cropped_Images_Malignant"
+Mini_MIAS_UM_Cropped_Images_Normal = r"D:\Mini-MIAS\Mini-MIAS Final\Mini_MIAS_UM_Cropped_Images_Normal"
 
 # * Mini-MIAS images with contrast stretching
 
-Mini_MIAS_CS_Cropped_Images_Tumor = r"D:\Mini-MIAS\Mini-MIAS Final\Mini_MIAS_CS__Cropped_Images_Tumor"
-Mini_MIAS_CS_Cropped_Images_Benign = r"D:\Mini-MIAS\Mini-MIAS Final\Mini_MIAS_CS__Cropped_Images_Benign"
-Mini_MIAS_CS_Cropped_Images_Malignant = r"D:\Mini-MIAS\Mini-MIAS Final\Mini_MIAS_CS__Cropped_Images_Malignant"
-Mini_MIAS_CS_Cropped_Images_Normal = r"D:\Mini-MIAS\Mini-MIAS Final\Mini_MIAS_CS__Cropped_Images_Normal"
+Mini_MIAS_CS_Cropped_Images_Tumor = r"D:\Mini-MIAS\Mini-MIAS Final\Mini_MIAS_CS_Cropped_Images_Tumor"
+Mini_MIAS_CS_Cropped_Images_Benign = r"D:\Mini-MIAS\Mini-MIAS Final\Mini_MIAS_CS_Cropped_Images_Benign"
+Mini_MIAS_CS_Cropped_Images_Malignant = r"D:\Mini-MIAS\Mini-MIAS Final\Mini_MIAS_CS_Cropped_Images_Malignant"
+Mini_MIAS_CS_Cropped_Images_Normal = r"D:\Mini-MIAS\Mini-MIAS Final\Mini_MIAS_CS_Cropped_Images_Normal"
 
 ########## ########## ########## ########## ########## ########## ########## ########## ########## ##########

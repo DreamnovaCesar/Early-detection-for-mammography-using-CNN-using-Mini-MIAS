@@ -15,7 +15,6 @@ from Mini_MIAS_8_CNN_Architectures import ResNet50V2_PreTrained
 from Mini_MIAS_8_CNN_Architectures import ResNet152V2
 
 from Mini_MIAS_8_CNN_Architectures import configuration_models
-from Mini_MIAS_8_CNN_Architectures import update_csv_row
 
 Model_Tested = ResNet50_PreTrained
 

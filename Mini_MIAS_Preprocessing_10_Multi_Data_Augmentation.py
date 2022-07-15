@@ -12,9 +12,13 @@ def preprocessing_DataAugmentation_Multiclass(Folder_normal, Folder_benign, Fold
     #Iter_benign = 70
     #Iter_malignant = 90 
 
-    Iter_normal = 3
-    Iter_benign = 18
-    Iter_malignant = 23 
+    #Iter_normal = 3
+    #Iter_benign = 18
+    #Iter_malignant = 23 
+
+    Iter_normal = 2
+    Iter_benign = 8
+    Iter_malignant = 10 
 
     Label_bormal = 'Normal'
     Label_benign = 'Benign'
