@@ -1,3 +1,4 @@
+"""
 import os
 import splitfolders
 
@@ -20,3 +21,4 @@ def split_folders_train_test_val(Folder):
         print ('--------------------------------')
 
 split_folders_train_test_val(Mini_MIAS_NT_Cropped_Images_Biclass)
+"""

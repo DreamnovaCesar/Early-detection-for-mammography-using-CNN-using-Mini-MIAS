@@ -1,6 +1,7 @@
 import os
 import cv2
 import numpy as np
+import splitfolders
 import pandas as pd
 import tensorflow as tf
 
@@ -185,6 +186,23 @@ def concat_dataframe(*dfs, **kwargs):
     Final_dataframe.to_csv(Folder_dataframe_to_save)
 
     return Final_dataframe
+
+# ? Split folders into train/test/validation
+
+def split_folders_train_test_val(Folder):
+
+    #Name_dir = os.path.dirname(Folder)
+    #Name_base = os.path.basename(Folder)
+
+    Name_base_mod = Folder + '_Split'
+
+    splitfolders.ratio(Folder, output = Name_base_mod, seed = 1337, ratio = (0.8, 0.1, 0.1)) 
+
+    for (root, dirs, files) in os.walk(Name_base_mod, topdown = True):
+        print (root)
+        print (dirs)
+        #print (files)
+        print ('--------------------------------')
 
 # ? Transform initial format to another. (PGM to PNG) / (PGM to TIFF)
 

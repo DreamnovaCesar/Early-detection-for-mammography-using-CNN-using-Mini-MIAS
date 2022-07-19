@@ -1,5 +1,6 @@
 import numpy as np
 
+from Mini_MIAS_2_General_Functions import split_folders_train_test_val
 from Mini_MIAS_Preprocessing_1_ChangeExtension import preprocessing_ChangeFormat
 
 from Mini_MIAS_Preprocessing_2_Cropped_MIAS_Mammograms import preprocessing_Cropped_MIAS_Mammograms
@@ -61,6 +62,7 @@ def main():
     #                                        Mini_MIAS_NO_Cropped_Images_Normal, Mini_MIAS_NO_Cropped_Images_Benign, Mini_MIAS_NO_Cropped_Images_Malignant)
 
     Images, Labels = preprocessing_DataAugmentation_Biclass(Mini_MIAS_NT_Cropped_Images_Normal, Mini_MIAS_NT_Cropped_Images_Tumor, Mini_MIAS_NT_Cropped_Images_Biclass)
+    split_folders_train_test_val(Mini_MIAS_NT_Cropped_Images_Biclass)
     #Images, Labels = preprocessing_DataAugmentation_Biclass(Mini_MIAS_NO_Cropped_Images_Normal, Mini_MIAS_NO_Cropped_Images_Tumor, Mini_MIAS_NO_Cropped_Images_Biclass)
 
     #Testing_ML_Models_Biclass_FOF(Models, 'NO', Images, Labels)

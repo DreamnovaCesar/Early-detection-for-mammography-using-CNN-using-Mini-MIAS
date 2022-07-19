@@ -1,33 +1,5 @@
-import os
-from pyexpat import model
-import sys
-import time
-import numpy as np
-import pandas as pd
-import seaborn as sns
+
 import tensorflow as tf
-import matplotlib.pyplot as plt
-
-from itertools import cycle
-
-from sklearn.metrics import classification_report
-from sklearn.metrics import confusion_matrix
-from sklearn.metrics import roc_curve
-from sklearn.metrics import roc_auc_score
-from sklearn.metrics import auc
-
-from sklearn.metrics import precision_score
-from sklearn.metrics import recall_score
-from sklearn.metrics import f1_score
-
-from sklearn.datasets import make_classification
-from sklearn.preprocessing import label_binarize
-from sklearn.preprocessing import OneHotEncoder
-
-from tensorflow.keras import Input
-from tensorflow.keras import datasets
-from tensorflow.keras import layers
-from tensorflow.keras import models
 
 from tensorflow.keras.applications import ResNet50
 from tensorflow.keras.applications import ResNet50V2
@@ -54,8 +26,6 @@ from tensorflow.keras.layers import Conv2D
 from tensorflow.keras.layers import MaxPooling2D
 from tensorflow.keras.layers import AveragePooling2D
 from tensorflow.keras.layers import BatchNormalization
-
-from sklearn.model_selection import train_test_split
 
 from keras.models import Sequential
 from keras.layers import Conv2D, MaxPooling2D, Dense, Flatten, Dropout
@@ -113,7 +83,7 @@ def prepare_model1():
 
 def prepare_model():
     conv_base = ResNet50(weights='imagenet', include_top = False, input_shape=(224, 224, 3))
-    model = models.Sequential()
+    model = Sequential()
     model.add(conv_base)
 
     model.add(Flatten())
@@ -199,7 +169,7 @@ model.fit_generator(  train_generator,
             validation_data = train_generator,
             steps_per_epoch = train_generator.n//train_generator.batch_size,
             validation_steps = valid_generator.n//valid_generator.batch_size,
-            epochs=8)
+            epochs = 8)
 
 score = model.evaluate(valid_generator)
 print('Test loss:', score[0])
