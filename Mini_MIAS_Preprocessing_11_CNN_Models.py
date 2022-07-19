@@ -7,32 +7,7 @@ from Mini_MIAS_1_Folders import Biclass_Data_CSV
 from Mini_MIAS_1_Folders import Biclass_Data_Model
 from Mini_MIAS_1_Folders import Biclass_Data_Model_Esp
 
-from Mini_MIAS_1_Folders import Multiclass_Data_CSV
-from Mini_MIAS_1_Folders import Multiclass_Data_Model
-from Mini_MIAS_1_Folders import Multiclass_Data_Model_Esp
-
-from Mini_MIAS_1_Folders import Mini_MIAS_NT_Cropped_Images_Normal
-from Mini_MIAS_1_Folders import Mini_MIAS_NT_Cropped_Images_Tumor
-
-from Mini_MIAS_8_CNN_Architectures import MobileNetV3Small_Pretrained
-from Mini_MIAS_8_CNN_Architectures import MobileNetV3Large_Pretrained
-from Mini_MIAS_8_CNN_Architectures import MobileNet_Pretrained
-
-from Mini_MIAS_8_CNN_Architectures import ResNet50_PreTrained
-from Mini_MIAS_8_CNN_Architectures import ResNet50V2_PreTrained
-from Mini_MIAS_8_CNN_Architectures import ResNet152V2
-
 from Mini_MIAS_8_CNN_Architectures import configuration_models
-from Mini_MIAS_8_CNN_Architectures import overwrite_row_CSV
-
-Model_Tested = MobileNetV3Large_Pretrained
-
-#NT = 'NT'
-#NO = 'NO'  
-#CLAHE = 'CLAHE'
-#HE = 'HE'
-#UM = 'UM'
-#CS = 'CS' 
 
 def Testing_CNN_Models_Biclass(Model, Technique, All_images, All_labels):
 

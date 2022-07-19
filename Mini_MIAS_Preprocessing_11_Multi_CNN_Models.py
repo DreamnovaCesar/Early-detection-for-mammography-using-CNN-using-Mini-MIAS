@@ -3,27 +3,11 @@ import pandas as pd
 
 os.add_dll_directory(r'C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v11.6\bin')
 
+from Mini_MIAS_1_Folders import Multiclass_Data_CSV
 from Mini_MIAS_1_Folders import Multiclass_Data_Model
 from Mini_MIAS_1_Folders import Multiclass_Data_Model_Esp
 
-from Mini_MIAS_8_CNN_Architectures import MobileNetV3Small_Pretrained
-from Mini_MIAS_8_CNN_Architectures import MobileNetV3Large_Pretrained
-from Mini_MIAS_8_CNN_Architectures import MobileNet_Pretrained
-
-from Mini_MIAS_8_CNN_Architectures import ResNet50_PreTrained
-from Mini_MIAS_8_CNN_Architectures import ResNet50V2_PreTrained
-from Mini_MIAS_8_CNN_Architectures import ResNet152V2
-
 from Mini_MIAS_8_CNN_Architectures import configuration_models
-
-Model_Tested = ResNet50_PreTrained
-
-NT = 'NT'
-NO = 'NO'  
-CLAHE = 'CLAHE'
-HE = 'HE'
-UM = 'UM'
-CS = 'CS' 
 
 def Testing_CNN_Models_Multiclass(Model, Images, Labels):
 

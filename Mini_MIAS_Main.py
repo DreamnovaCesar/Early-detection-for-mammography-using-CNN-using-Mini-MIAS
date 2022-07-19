@@ -51,7 +51,8 @@ def main():
 
     Model_CNN = (MobileNet_Pretrained, MobileNetV3Small_Pretrained, MobileNetV3Large_Pretrained)
     #Model_ML = [Multi_SVM, MLP, KNN, RF, DT, GBC]
-    #preprocessing_ChangeFormat()
+    #preprocessing_ChangeFormat(pgm, png)
+    #preprocessing_ChangeFormat(pgm, tiff)
     #preprocessing_Cropped_MIAS_Mammograms()
     #preprocessing_Kmeans_GLCM_Tumor()
     #preprocessing_Kmeans_GLCM_Benign()
