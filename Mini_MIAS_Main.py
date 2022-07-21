@@ -101,6 +101,8 @@ def main():
     Model_CNN = (MobileNet_Pretrained, MobileNetV3Small_Pretrained, MobileNetV3Large_Pretrained)
     Model_CNN_R = (ResNet50_PreTrained, ResNet152_PreTrained)
     Model_ML = (Multi_SVM, MLP, KNN, RF, DT, GBC)
+    
+    Model_CNN_test = (MobileNet_pretrained_folder, ResNet50_pretrained_folder)
 
     #preprocessing_ChangeFormat(PGM, PNG)
     #preprocessing_ChangeFormat(PGM, TIFF)
@@ -191,7 +193,7 @@ def main():
     #Split_Folders_Each_Technique()
 
     #training_testing_validation_from_directory(Mini_MIAS_NO_Cropped_Images_Biclass + '_Split')
-    training_testing_validation_from_directory(Mini_MIAS_NO_Cropped_Images_Multiclass + '_Split', MobileNet_pretrained_folder)
+    training_testing_validation_from_directory(Model_CNN_test, Mini_MIAS_NO_Cropped_Images_Multiclass + '_Split', 'NO')
 
 if __name__ == "__main__":
     main()
