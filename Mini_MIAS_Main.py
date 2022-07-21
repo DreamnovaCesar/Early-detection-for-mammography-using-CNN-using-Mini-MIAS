@@ -33,6 +33,9 @@ from Mini_MIAS_8_CNN_Architectures import ResNet50_PreTrained
 from Mini_MIAS_8_CNN_Architectures import ResNet152_PreTrained
 from Mini_MIAS_8_CNN_Architectures import ResNet152V2_PreTrained
 
+from Mini_MIAS_8_CNN_Architectures import ResNet50_pretrained_folder
+from Mini_MIAS_8_CNN_Architectures import MobileNet_pretrained_folder
+
 from Mini_MIAS_ML_FeaturesExtraction import Testing_ML_Models_Biclass_FOF
 from Mini_MIAS_ML_FeaturesExtraction import Testing_ML_Models_Multiclass_FOF
 
@@ -188,7 +191,7 @@ def main():
     #Split_Folders_Each_Technique()
 
     #training_testing_validation_from_directory(Mini_MIAS_NO_Cropped_Images_Biclass + '_Split')
-    training_testing_validation_from_directory(Mini_MIAS_NO_Cropped_Images_Multiclass + '_Split')
+    training_testing_validation_from_directory(Mini_MIAS_NO_Cropped_Images_Multiclass + '_Split', MobileNet_pretrained_folder)
 
 if __name__ == "__main__":
     main()

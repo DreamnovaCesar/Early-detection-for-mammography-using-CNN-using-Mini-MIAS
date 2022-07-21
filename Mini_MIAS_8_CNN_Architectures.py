@@ -56,7 +56,7 @@ from tensorflow.keras.layers import BatchNormalization
 
 from sklearn.model_selection import train_test_split
 
-# function fine-tuning MLP
+# ? function fine-tuning MLP
 
 def MLPClassificadorTL(x, units, activation):
 
@@ -90,7 +90,7 @@ class pretrainedModels:
     self.extension = kwargs.get('extension', None)
     self.newextension = kwargs.get('newextension', None)
 
-# Configuration of each DCNN model
+# ? Configuration of each DCNN model
 
 def configuration_models(All_images, All_labels, Dataframe_save, Folder_path, DL_model, Enhancement_technique, Class_labels, Column_names, X_size, Y_size, Vali_split, Epochs, Folder_data, Folder_models, Folder_models_esp):
 
@@ -127,7 +127,8 @@ def configuration_models(All_images, All_labels, Dataframe_save, Folder_path, DL
       Info_dataframe = overwrite_row_CSV(Dataframe_save, Folder_path, Info_model, Column_names, Index)
 
     return Info_dataframe
-# Pretrained model configurations
+
+# ? Pretrained model configurations
 
 def deep_learning_models(Pretrained_model_function, Enhancement_technique, Class_labels, X_size, Y_size, Vali_split, Epochs, X_train, y_train, X_test, y_test, Folder_models, Folder_models_Esp):
 
@@ -448,7 +449,7 @@ def deep_learning_models(Pretrained_model_function, Enhancement_technique, Class
     
     return Info
 
-# Update CSV changing value
+# ? Update CSV changing value
 
 def overwrite_row_CSV(Dataframe, Folder_path, Info_list, Column_names, Row):
 
@@ -476,7 +477,7 @@ def overwrite_row_CSV(Dataframe, Folder_path, Info_list, Column_names, Row):
 
     return Dataframe
     
-# Fine-Tuning MLP
+# ? Fine-Tuning MLP
 
 def MLPClassificadorTL(x, units, activation):
 
@@ -501,7 +502,7 @@ def MLPClassificadorTL(x, units, activation):
 
     return x
   
-# ResNet50
+# ? ResNet50
 
 def ResNet50_PreTrained(Xsize, Ysize, num_classes):
   
@@ -694,7 +695,22 @@ def ResNet152V2_PreTrained(Xsize, Ysize, num_classes):
 
     return ResNet152V2Model, ModelName, ModelNameLetters
 
-# MobileNet
+# ? ResNet50 folder
+
+def ResNet50_pretrained_folder():
+    conv_base = ResNet50(weights = 'imagenet', include_top = False, input_shape = (224, 224, 3))
+    model = Sequential()
+    model.add(conv_base)
+
+    model.add(Flatten())
+    model.add(Dense(128, activation = 'relu'))
+    model.add(Dense(3, activation = 'softmax'))
+
+    conv_base.trainable = False
+    model.compile(loss = "categorical_crossentropy", optimizer = "adam", metrics = ['accuracy'])
+    return model
+
+# ? MobileNet
 
 def MobileNet_Pretrained(Xsize, Ysize, num_classes):
   
@@ -839,6 +855,34 @@ def MobileNetV3Large_Pretrained(Xsize, Ysize, num_classes):
     )
 
     return MobileNetV3LargeModel, ModelName, ModelNameLetters
+
+# ? MobileNet folder
+
+def MobileNet_pretrained_folder():
+    conv_base = MobileNet(weights = 'imagenet', include_top = False, input_shape = (224, 224, 3))
+    model = Sequential()
+    model.add(conv_base)
+
+    model.add(Flatten())
+    model.add(Dense(128, activation = 'relu'))
+    model.add(Dense(3, activation = 'softmax'))
+
+    conv_base.trainable = False
+    model.compile(loss = "categorical_crossentropy", optimizer = "adam", metrics = ['accuracy'])
+    return model
+
+def MobileNetV3Small_pretrained_folder():
+    conv_base = MobileNetV3Small(weights = 'imagenet', include_top = False, input_shape = (224, 224, 3))
+    model = Sequential()
+    model.add(conv_base)
+
+    model.add(Flatten())
+    model.add(Dense(128, activation = 'relu'))
+    model.add(Dense(3, activation = 'softmax'))
+
+    conv_base.trainable = False
+    model.compile(loss = "categorical_crossentropy", optimizer = "adam", metrics = ['accuracy'])
+    return model
 
 # Xception
 

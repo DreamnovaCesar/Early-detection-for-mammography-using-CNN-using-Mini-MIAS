@@ -31,7 +31,38 @@ from keras.models import Sequential
 from keras.layers import Conv2D, MaxPooling2D, Dense, Flatten, Dropout
 from keras.preprocessing.image import ImageDataGenerator
 
-def training_testing_validation_from_directory(Folder):
+def prepare_model1():
+    model = Sequential()
+    model.add(Conv2D(32, kernel_size = (3, 3), activation = 'relu', input_shape = (224, 224, 3)))
+    model.add(AveragePooling2D(pool_size = (2, 2)))
+    model.add(BatchNormalization())
+    model.add(Conv2D(32, kernel_size = (3, 3), activation = 'relu'))
+    model.add(AveragePooling2D(pool_size = (2, 2)))
+    model.add(BatchNormalization())
+    model.add(Conv2D(32, kernel_size = (3, 3), activation = 'relu'))
+    model.add(AveragePooling2D(pool_size = (2, 2)))
+    model.add(BatchNormalization())
+    model.add(Flatten())
+    model.add(Dense(32, activation = 'relu'))
+    model.add(Dense(3, activation = 'softmax'))
+    model.compile(loss = "categorical_crossentropy", optimizer = "adam", metrics = ['accuracy'])
+    return model
+
+
+def prepare_model():
+    conv_base = ResNet50(weights = 'imagenet', include_top = False, input_shape = (224, 224, 3))
+    model = Sequential()
+    model.add(conv_base)
+
+    model.add(Flatten())
+    model.add(Dense(128, activation = 'relu'))
+    model.add(Dense(3, activation = 'softmax'))
+
+    conv_base.trainable = False
+    model.compile(loss = "categorical_crossentropy", optimizer = "adam", metrics = ['accuracy'])
+    return model
+
+def training_testing_validation_from_directory(Folder, Model):
 
     #Name_dir = os.path.dirname(Folder)
     #Name_base = os.path.basename(Folder)
@@ -81,38 +112,7 @@ def training_testing_validation_from_directory(Folder):
         seed = 42
     )
 
-    def prepare_model1():
-        model = Sequential()
-        model.add(Conv2D(32, kernel_size = (3, 3), activation = 'relu', input_shape = (224, 224, 3)))
-        model.add(AveragePooling2D(pool_size = (2, 2)))
-        model.add(BatchNormalization())
-        model.add(Conv2D(32, kernel_size = (3, 3), activation = 'relu'))
-        model.add(AveragePooling2D(pool_size = (2, 2)))
-        model.add(BatchNormalization())
-        model.add(Conv2D(32, kernel_size = (3, 3), activation = 'relu'))
-        model.add(AveragePooling2D(pool_size = (2, 2)))
-        model.add(BatchNormalization())
-        model.add(Flatten())
-        model.add(Dense(32, activation = 'relu'))
-        model.add(Dense(3, activation = 'softmax'))
-        model.compile(loss = "categorical_crossentropy", optimizer = "adam", metrics = ['accuracy'])
-        return model
-
-
-    def prepare_model():
-        conv_base = ResNet50(weights = 'imagenet', include_top = False, input_shape = (224, 224, 3))
-        model = Sequential()
-        model.add(conv_base)
-
-        model.add(Flatten())
-        model.add(Dense(128, activation = 'relu'))
-        model.add(Dense(3, activation = 'softmax'))
-
-        conv_base.trainable = False
-        model.compile(loss = "categorical_crossentropy", optimizer = "adam", metrics = ['accuracy'])
-        return model
-
-    model = prepare_model1()
+    model = Model()
     model.fit(  train_generator,
                 validation_data = train_generator,
                 steps_per_epoch = train_generator.n//train_generator.batch_size,
