@@ -22,8 +22,8 @@ def preprocessing_Kmeans_GLCM_Benign():
     Cluster_to_remove = 1
 
     # * With this class we extract the features using GLCM
-    Feature_extraction = featureExtraction(folder = Mini_MIAS_NT_Cropped_Images_Benign, label = Benign_images_label, extension = PNG_format)
-    Benign_dataframe_GLCM, Benign_X_GLCM, All_filenames = Feature_extraction.textures_Feature_GLCM_from_images()
+    Feature_extraction = featureExtraction(Folder = Mini_MIAS_NT_Cropped_Images_Benign, Label = Benign_images_label, Format = PNG_format)
+    Benign_dataframe_GLCM, Benign_X_GLCM, All_filenames = Feature_extraction.textures_Feature_GLCM_from_folder()
 
     #pd.set_option('display.max_rows', benign_dataframe_GLCM.shape[0] + 1)
     Benign_dataframe_name = str(Features_extraction_technique) + '_Features_' + str(Benign_images_string) + '.csv'
@@ -47,8 +47,8 @@ def preprocessing_Kmeans_GLCM_Malignant():
     Cluster_to_remove = 1
 
     # * With this class we extract the features using GLCM
-    Feature_extraction = featureExtraction(folder = Mini_MIAS_NT_Cropped_Images_Malignant, label = Malignant_images_label, extension = PNG_format)
-    Malignant_dataframe_GLCM, Malignantn_X_GLCM, All_filenames = Feature_extraction.textures_Feature_GLCM_from_images()
+    Feature_extraction = featureExtraction(Folder = Mini_MIAS_NT_Cropped_Images_Malignant, Label = Malignant_images_label, Format = PNG_format)
+    Malignant_dataframe_GLCM, Malignantn_X_GLCM, All_filenames = Feature_extraction.textures_Feature_GLCM_from_folder()
 
     #pd.set_option('display.max_rows', Data.shape[0] + 1)
     Malignant_dataframe_name = str(Features_extraction_technique) + '_Features_' + str(Malignant_images_string) + '.csv'
@@ -57,7 +57,7 @@ def preprocessing_Kmeans_GLCM_Malignant():
 
     # * We remove the cluster chosen, and a new dataframe is created
     Kmeans_dataframe = kmeans_function(General_Data_CSV, General_Data_Model, Features_extraction_technique, Malignantn_X_GLCM, Clusters_kmeans, All_filenames, Malignant_images_string)
-    Kmeans_dataframe_removed_data = kmeans_remove_data(Mini_MIAS_NT_Cropped_Images_Malignant, General_Data_CSV, Malignant_dataframe_GLCM, Kmeans_dataframe, Cluster_to_remove, Malignant_images_string)
+    Kmeans_dataframe_removed_data = kmeans_remove_data(Mini_MIAS_NT_Cropped_Images_Malignant, General_Data_CSV, Features_extraction_technique, Kmeans_dataframe, Cluster_to_remove, Malignant_images_string)
 
 
 

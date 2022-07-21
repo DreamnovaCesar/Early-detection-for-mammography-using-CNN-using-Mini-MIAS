@@ -36,6 +36,8 @@ def Testing_CNN_Models_Multiclass(Model, Technique, All_images, All_labels):
     Dataframe_save_mias.to_csv(Dataframe_save_mias_folder)
     Dataframe_save_mias = pd.read_csv(Dataframe_save_mias_folder)
 
-    print(Dataframe_save_mias_folder)
+    #print(Dataframe_save_mias_folder)
 
-    Info_model = configuration_models(All_images, All_labels, Dataframe_save_mias, Dataframe_save_mias_folder, Model, Technique, Labels_triclass, Column_names, X_size, Y_size, Valid_split, Epochs, Multiclass_Data_CSV, Multiclass_Data_Model, Multiclass_Data_Model_Esp)
+    Info_dataframe = configuration_models(All_images, All_labels, Dataframe_save_mias, Dataframe_save_mias_folder, Model, Technique, Labels_triclass, Column_names, X_size, Y_size, Valid_split, Epochs, Multiclass_Data_CSV, Multiclass_Data_Model, Multiclass_Data_Model_Esp)
+
+    return Info_dataframe

@@ -143,7 +143,7 @@ def kmeans_remove_data(Folder, CSV_folder, Technique_name, Dataframe, Cluster_to
 
       elif Dataframe.iloc[Index - 1, Refnum] != Filename:
       
-        print(Filename)
+        print(Dataframe.iloc[Index - 1, Refnum]  + '----' + Filename)
         print(Dataframe.iloc[Index - 1, Refnum])
         raise ValueError("Files are not the same") #! Alert
 

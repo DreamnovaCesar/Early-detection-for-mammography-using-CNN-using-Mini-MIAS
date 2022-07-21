@@ -16,10 +16,10 @@ def preprocessing_Resize(Folder_normal, Folder_tumor, Folder_benign, Folder_mali
 
     # * Image processing class
 
-    Resize_normal_images = ImageProcessing(folder = Folder_normal, Xresize = X_new_size, Yresize = Y_new_size, interpolation = Interpolation)
-    Resize_tumor_images = ImageProcessing(folder = Folder_tumor, Xresize = X_new_size, Yresize = Y_new_size, interpolation = Interpolation)
-    Resize_benign_images = ImageProcessing(folder = Folder_benign, Xresize = X_new_size, Yresize = Y_new_size, interpolation = Interpolation)
-    Resize_malignant_images = ImageProcessing(folder = Folder_malignant, Xresize = X_new_size, Yresize = Y_new_size, interpolation = Interpolation)
+    Resize_normal_images = ImageProcessing(Folder = Folder_normal, Xresize = X_new_size, Yresize = Y_new_size, Interpolation = Interpolation)
+    Resize_tumor_images = ImageProcessing(Folder = Folder_tumor, Xresize = X_new_size, Yresize = Y_new_size, Interpolation = Interpolation)
+    Resize_benign_images = ImageProcessing(Folder = Folder_benign, Xresize = X_new_size, Yresize = Y_new_size, Interpolation = Interpolation)
+    Resize_malignant_images = ImageProcessing(Folder = Folder_malignant, Xresize = X_new_size, Yresize = Y_new_size, Interpolation = Interpolation)
 
     # * Image processing resize
 

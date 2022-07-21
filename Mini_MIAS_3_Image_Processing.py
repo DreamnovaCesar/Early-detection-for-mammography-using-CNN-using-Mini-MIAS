@@ -31,37 +31,37 @@ class ImageProcessing:
   def __init__(self, **kwargs):
 
     # * General parameters
-    self.Folder = kwargs.get('folder', None)
-    self.Newfolder = kwargs.get('newfolder', None)
-    self.Severity = kwargs.get('severity', None)
-    self.Label = kwargs.get('label', None)
+    self.Folder = kwargs.get('Folder', None)
+    self.Newfolder = kwargs.get('Newfolder', None)
+    self.Severity = kwargs.get('Severity', None)
+    self.Label = kwargs.get('Label', None)
 
     # * Parameters for resizing
-    self.Interpolation = kwargs.get('interpolation', cv2.INTER_CUBIC)
+    self.Interpolation = kwargs.get('Interpolation', cv2.INTER_CUBIC)
     self.Xresize = kwargs.get('Xresize', 224)
     self.Yresize = kwargs.get('Yresize', 224)
 
     # * Parameters for median filter
-    self.Division = kwargs.get('division', 3)
+    self.Division = kwargs.get('Division', 3)
 
     # * Parameters for CLAHE
-    self.Cliplimit = kwargs.get('cliplimit', 0.01)
+    self.Cliplimit = kwargs.get('Cliplimit', 0.01)
 
     # * Parameters for unsharp masking
-    self.Radius = kwargs.get('radius', 1)
-    self.Amount = kwargs.get('amount', 1)
+    self.Radius = kwargs.get('Radius', 1)
+    self.Amount = kwargs.get('Amount', 1)
 
     if self.Folder == None:
       raise ValueError("Folder does not exist") #! Alert
 
-    if self.ewfolder == None:
-      raise ValueError("Folder destination does not exist") #! Alert
+    #if self.Newfolder == None:
+      #raise ValueError("Folder destination does not exist") #! Alert
 
-    if self.Severity == None:
-      raise ValueError("Assign the severity") #! Alert
+    #if self.Severity == None:
+      #raise ValueError("Assign the severity") #! Alert
 
-    if self.Label == None:
-      raise ValueError("Assign the interpolation that will be used") #! Alert
+    #if self.Label == None:
+      #raise ValueError("Assign the interpolation that will be used") #! Alert
 
   # ? Resize technique method
 
@@ -201,7 +201,7 @@ class ImageProcessing:
 
         # * Name the new file
         Filename_and_technique = Filename + '_Normalization'
-        New_name_filename = Filename_and_technique + format
+        New_name_filename = Filename_and_technique + Format
         New_folder = os.path.join(self.Newfolder, New_name_filename)
         
         #Normalization_Imagen = Normalization_Imagen.astype('float32')
@@ -304,7 +304,7 @@ class ImageProcessing:
 
           # * Name the new file
           Filename_and_technique = Filename + '_Median_Filter'
-          New_name_filename = Filename_and_technique + format
+          New_name_filename = Filename_and_technique + Format
           New_folder = os.path.join(self.Newfolder, New_name_filename)
 
           # * Save the image in a new folder
@@ -408,7 +408,7 @@ class ImageProcessing:
 
           # * Name the new file
           Filename_and_technique = Filename + '_CLAHE'
-          New_name_filename = Filename_and_technique + format
+          New_name_filename = Filename_and_technique + Format
           New_folder = os.path.join(self.Newfolder, New_name_filename)
 
           # * Save the image in a new folder
@@ -507,7 +507,7 @@ class ImageProcessing:
 
           # * Name the new file
           Filename_and_technique = Filename + '_HE'
-          New_name_filename = Filename_and_technique + format
+          New_name_filename = Filename_and_technique + Format
           New_folder = os.path.join(self.Newfolder, New_name_filename)
 
           # * Save the image in a new folder
@@ -607,7 +607,7 @@ class ImageProcessing:
 
           # * Name the new file
           Filename_and_technique = Filename + '_UM'
-          New_name_filename = Filename_and_technique + format
+          New_name_filename = Filename_and_technique + Format
           New_folder = os.path.join(self.Newfolder, New_name_filename)
 
           # * Save the image in a new folder
@@ -681,7 +681,7 @@ class ImageProcessing:
           Image = io.imread(Path_file, as_gray = True)
 
           p2, p98 = np.percentile(Image, (2, 98))
-          CS_Image = rescale_intensity(Image, in_range = (p2, p98))
+          CS_image = rescale_intensity(Image, in_range = (p2, p98))
 
           Image = img_as_ubyte(Image)
           CS_image = img_as_ubyte(CS_image)
@@ -706,11 +706,11 @@ class ImageProcessing:
 
           # * Name the new file
           Filename_and_technique = Filename + '_CS'
-          New_name_filename = Filename_and_technique + format
+          New_name_filename = Filename_and_technique + Format
           New_folder = os.path.join(self.Newfolder, New_name_filename)
 
           # * Save the image in a new folder
-          io.imsave(New_folder, CS_Image)
+          io.imsave(New_folder, CS_image)
 
           # * Save the values of labels and each filenames
           #Images.append(Normalization_Imagen)

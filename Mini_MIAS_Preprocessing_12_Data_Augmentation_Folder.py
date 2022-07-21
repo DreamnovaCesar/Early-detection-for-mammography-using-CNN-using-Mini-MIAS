@@ -19,7 +19,7 @@ from Mini_MIAS_1_Folders import Mini_MIAS_CS_Cropped_Images_Biclass
 from Mini_MIAS_1_Folders import Mini_MIAS_CS_Cropped_Images_Multiclass 
 
 
-def split_Folders_Each_Technique():
+def Split_Folders_Each_Technique():
 
     split_folders_train_test_val(Mini_MIAS_NT_Cropped_Images_Biclass)
     split_folders_train_test_val(Mini_MIAS_NT_Cropped_Images_Multiclass)

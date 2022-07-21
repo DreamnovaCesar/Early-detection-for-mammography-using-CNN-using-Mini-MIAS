@@ -74,9 +74,9 @@ def preprocessing_technique_Multiclass(New_technique, Folder_normal, Folder_beni
     # * Problem class
     Multiclass = 'Multiclass' # Multiclass label
 
-    Normalization_Normal = ImageProcessing(folder = Folder_normal, newfolder = New_folder_normal, severity = Label_Normal, label = Normal_images_class)
-    Normalization_Benign = ImageProcessing(folder = Folder_benign, newfolder = New_folder_benign, severity = Label_Benign, label = Benign_images_class)
-    Normalization_Malignant = ImageProcessing(folder = Folder_malignant, newfolder = New_folder_malignant, severity = Label_Malignant, label = Malignant_images_class)
+    Normalization_Normal = ImageProcessing(Folder = Folder_normal, Newfolder = New_folder_normal, Severity = Label_Normal, Label = Normal_images_class)
+    Normalization_Benign = ImageProcessing(Folder = Folder_benign, Newfolder = New_folder_benign, Severity = Label_Benign, Label = Benign_images_class)
+    Normalization_Malignant = ImageProcessing(Folder = Folder_malignant, Newfolder = New_folder_malignant, Severity = Label_Malignant, Label = Malignant_images_class)
 
     if New_technique == 'NO':
         DataFrame_Normal = Normalization_Normal.normalize_technique()
@@ -89,19 +89,19 @@ def preprocessing_technique_Multiclass(New_technique, Folder_normal, Folder_beni
         DataFrame_Malignant = Normalization_Malignant.CLAHE_technique()
 
     elif New_technique == 'HE':
-        DataFrame_Normal = Normalization_Normal.HistogramEqualization()
-        DataFrame_Benign = Normalization_Benign.HistogramEqualization()
-        DataFrame_Malignant = Normalization_Malignant.HistogramEqualization()
+        DataFrame_Normal = Normalization_Normal.histogram_equalization_technique()
+        DataFrame_Benign = Normalization_Benign.histogram_equalization_technique()
+        DataFrame_Malignant = Normalization_Malignant.histogram_equalization_technique()
 
     elif New_technique == 'UM':
-        DataFrame_Normal = Normalization_Normal.UnsharpMasking()
-        DataFrame_Benign = Normalization_Benign.UnsharpMasking()
-        DataFrame_Malignant = Normalization_Malignant.UnsharpMasking()
+        DataFrame_Normal = Normalization_Normal.unsharp_masking_technique()
+        DataFrame_Benign = Normalization_Benign.unsharp_masking_technique()
+        DataFrame_Malignant = Normalization_Malignant.unsharp_masking_technique()
 
     elif New_technique == 'CS':
-        DataFrame_Normal = Normalization_Normal.ContrastStretching()
-        DataFrame_Benign = Normalization_Benign.ContrastStretching()
-        DataFrame_Malignant = Normalization_Malignant.ContrastStretching()
+        DataFrame_Normal = Normalization_Normal.contrast_stretching_technique()
+        DataFrame_Benign = Normalization_Benign.contrast_stretching_technique()
+        DataFrame_Malignant = Normalization_Malignant.contrast_stretching_technique()
 
     else:
         raise ValueError("Choose a new technique")    #! Alert

@@ -119,7 +119,7 @@ class featureExtraction():
     Energy = []
     Entropy = []
 
-    os.chdir(self.folder)
+    os.chdir(self.Folder)
 
     # * Using sort function
     Sorted_files, Total_images = sort_images(self.Folder)
@@ -178,7 +178,7 @@ class featureExtraction():
             print('Cannot convert %s ❌' % File)
 
     # * Return the new dataframe with the new data
-    Dataset = pd.DataFrame({'REFNUM':Filename, 'Mean':Mean, 'Var':Var, 'Kurtosis':Kurtosis, 'Energy':Energy, 'Skew':Skew, 'Entropy':Entropy, 'Labels':Labels})
+    Dataset = pd.DataFrame({'REFNUM':All_filename, 'Mean':Mean, 'Var':Var, 'Kurtosis':Kurtosis, 'Energy':Energy, 'Skew':Skew, 'Entropy':Entropy, 'Labels':Labels})
 
     # * Return a dataframe with only the data without the labels
     X = Dataset.iloc[:, [1, 2, 3, 4, 5, 6]].values
@@ -208,7 +208,7 @@ class featureExtraction():
     RLU = []  # Run Length Uniformity
     RPC = []  # Run Percentage
 
-    os.chdir(self.folder)
+    os.chdir(self.Folder)
 
     # * Using sort function
     Sorted_files, Total_images = sort_images(self.Folder)
@@ -225,7 +225,7 @@ class featureExtraction():
             count += 1
 
             # * Reading the image
-            Path_File = os.path.join(self.folder, File)
+            Path_File = os.path.join(self.Folder, File)
             Imagen = cv2.imread(Path_File)
             Imagen = cv2.cvtColor(Imagen, cv2.COLOR_BGR2GRAY)
 
@@ -247,7 +247,7 @@ class featureExtraction():
             print('Cannot convert %s ❌' % File)
 
     # * Return the new dataframe with the new data
-    Dataset = pd.DataFrame({'REFNUM':Filename, 'SRE':SRE, 'LRE':LRE, 'GLU':GLU, 'RLU':RLU, 'RPC':RPC, 'Labels':Labels})
+    Dataset = pd.DataFrame({'REFNUM':All_filename, 'SRE':SRE, 'LRE':LRE, 'GLU':GLU, 'RLU':RLU, 'RPC':RPC, 'Labels':Labels})
 
     # * Return a dataframe with only the data without the labels
     X = Dataset.iloc[:, [1, 2, 3, 4, 5]].values
@@ -278,7 +278,7 @@ class featureExtraction():
     Contrast = []
     ASM = []
 
-    os.chdir(self.folder)
+    os.chdir(self.Folder)
 
     # * Using sort function
     sorted_files, images = sort_images(self.Folder)
@@ -294,7 +294,7 @@ class featureExtraction():
             count += 1
 
             # * Reading the image
-            Path_File = os.path.join(self.folder, File)
+            Path_File = os.path.join(self.Folder, File)
             Imagen = cv2.imread(Path_File)
             Imagen = cv2.cvtColor(Imagen, cv2.COLOR_BGR2GRAY)
 
@@ -314,7 +314,7 @@ class featureExtraction():
             print('Cannot convert %s ❌' % File)
 
     # * Return the new dataframe with the new data
-    Dataset = pd.DataFrame({'REFNUM':Filename, 'Energy':Energy, 'Correlation':Correlation, 'Homogeneity':Homogeneity, 'Dissimilarity':Dissimilarity, 'Contrast':Contrast, 'ASM':ASM, 'Labels':Labels})
+    Dataset = pd.DataFrame({'REFNUM':All_filename, 'Energy':Energy, 'Correlation':Correlation, 'Homogeneity':Homogeneity, 'Dissimilarity':Dissimilarity, 'Contrast':Contrast, 'ASM':ASM, 'Labels':Labels})
     
     # * Return a dataframe with only the data without the labels
     X = Dataset.iloc[:, [1, 2, 3, 4, 5, 6]].values

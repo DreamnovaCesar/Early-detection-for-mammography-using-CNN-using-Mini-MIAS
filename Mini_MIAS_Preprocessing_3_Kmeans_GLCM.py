@@ -21,9 +21,10 @@ def preprocessing_Kmeans_GLCM_Tumor():
     Cluster_to_remove = 1
 
     # * With this class we extract the features using GLCM
-    Feature_extraction = featureExtraction(folder = Mini_MIAS_NT_Cropped_Images_Tumor, label = Tumor_images_label, extension = PNG_format)
-    Tumor_dataframe_GLCM, Tumor_X_GLCM, All_filenames = Feature_extraction.textures_Feature_GLCM_from_images()
+    Feature_extraction = featureExtraction(Folder = Mini_MIAS_NT_Cropped_Images_Tumor, Label = Tumor_images_label, Format = PNG_format)
+    Tumor_dataframe_GLCM, Tumor_X_GLCM, All_filenames = Feature_extraction.textures_Feature_GLCM_from_folder()
 
+    print(Tumor_dataframe_GLCM)
     #pd.set_option('display.max_rows', benign_dataframe_GLCM.shape[0] + 1)
     Tumor_dataframe_name = str(Features_extraction_technique) + '_Features_' + str(Tumor_images_string) + '.csv'
     Tumor_dataframe_path = os.path.join(General_Data_CSV, Tumor_dataframe_name)

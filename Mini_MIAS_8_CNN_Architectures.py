@@ -94,8 +94,8 @@ class pretrainedModels:
 
 def configuration_models(All_images, All_labels, Dataframe_save, Folder_path, DL_model, Enhancement_technique, Class_labels, Column_names, X_size, Y_size, Vali_split, Epochs, Folder_data, Folder_models, Folder_models_esp):
 
-    print(X_size)
-    print(Y_size)
+    #print(X_size)
+    #print(Y_size)
 
     for Index, Model in enumerate(DL_model):
 
@@ -122,27 +122,11 @@ def configuration_models(All_images, All_labels, Dataframe_save, Folder_path, DL
 
       X_train, X_test, y_train, y_test = train_test_split(np.array(All_images), np.array(All_labels), test_size = 0.20, random_state = 42)
 
-      # convert from integers to floats
-      #X_train = X_train.astype('float64')
-      #X_test = X_test.astype('float64')
-      # normalize to range 0-1
-      #X_train = X_train / 200.0
-      #X_test = X_test / 200.0
-
-      #print(X_train[0])
-      # convert from integers to floats
-      #X_train = X_train.astype('float32')
-      #X_test = X_test.astype('float32')
-      # normalize to range 0-1
-      #X_train = X_train / 255.0
-      #X_test = X_test / 255.0
-
       Info_model = deep_learning_models(Model, Enhancement_technique, Class_labels, X_size, Y_size, Vali_split, Epochs, X_train, y_train, X_test, y_test, Folder_models, Folder_models_esp)
       
-      overwrite_row_CSV(Dataframe_save, Folder_path, Info_model, Column_names, Index)
+      Info_dataframe = overwrite_row_CSV(Dataframe_save, Folder_path, Info_model, Column_names, Index)
 
-    return Info_model
-
+    return Info_dataframe
 # Pretrained model configurations
 
 def deep_learning_models(Pretrained_model_function, Enhancement_technique, Class_labels, X_size, Y_size, Vali_split, Epochs, X_train, y_train, X_test, y_test, Folder_models, Folder_models_Esp):
@@ -196,8 +180,6 @@ def deep_learning_models(Pretrained_model_function, Enhancement_technique, Class
     elif Class_problem > 2:
       Class_problem_prefix = '_Multiclass_'
 
-
-    
     # * Training fit
 
     Start_training_time = time.time()
@@ -216,7 +198,7 @@ def deep_learning_models(Pretrained_model_function, Enhancement_technique, Class
 
     End_testing_time = time.time()
 
-    """
+    
     # * Total time of training and testing
 
     Total_training_time = End_training_time - Start_training_time 
@@ -347,10 +329,10 @@ def deep_learning_models(Pretrained_model_function, Enhancement_technique, Class
 
       # * Confusion Matrix
       print('Confusion Matrix')
-      Confusion_matrix = confusion_matrix(y_test, y_pred_class)
+      Confusion_matrix = confusion_matrix(y_test, y_pred)
 
       print(Confusion_matrix)
-      print(classification_report(y_test, y_pred_class, target_names = Class_labels))
+      print(classification_report(y_test, y_pred, target_names = Class_labels))
 
       # * Precision
       Precision = precision_score(y_test, y_pred, average = 'weighted')
@@ -463,7 +445,7 @@ def deep_learning_models(Pretrained_model_function, Enhancement_technique, Class
     elif Class_problem > 2:
       for i in range(Class_problem):
         Info.append(Roc_auc[i])
-    """
+    
     return Info
 
 # Update CSV changing value
@@ -491,6 +473,8 @@ def overwrite_row_CSV(Dataframe, Folder_path, Info_list, Column_names, Row):
     Dataframe.to_csv(Folder_path, index = False)
   
     print(Dataframe)
+
+    return Dataframe
     
 # Fine-Tuning MLP
 

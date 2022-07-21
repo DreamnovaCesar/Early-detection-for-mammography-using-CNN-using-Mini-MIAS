@@ -198,11 +198,14 @@ def split_folders_train_test_val(Folder):
 
     splitfolders.ratio(Folder, output = Name_base_mod, seed = 1337, ratio = (0.8, 0.1, 0.1)) 
 
+    print(Name_base_mod)
+    """
     for (root, dirs, files) in os.walk(Name_base_mod, topdown = True):
         print (root)
         print (dirs)
         #print (files)
         print ('--------------------------------')
+    """
 
 # ? Transform initial format to another. (PGM to PNG) / (PGM to TIFF)
 
