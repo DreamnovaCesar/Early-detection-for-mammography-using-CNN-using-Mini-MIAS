@@ -38,15 +38,4 @@ def Testing_CNN_Models_Biclass(Model, Technique, All_images, All_labels):
 
     print(Dataframe_save_mias_folder)
 
-    Images_Normal = All_images[0]
-    Images_Tumor = All_images[1]
-
-    Labels_Normal = All_labels[0]
-    Labels_Tumor = All_labels[1]
-
-    #df = pd.read_csv("D:\Mini-MIAS\Mini-MIAS Final\Biclass_Data_CSV\Biclass_DataFrame_MIAS_Data.csv")
-    #path = "D:\Mini-MIAS\Mini-MIAS Final\Biclass_Data_CSV\Biclass_DataFrame_MIAS_Data.csv"
-
-    #parameters_model = [Model, technique, Labels_biclass, X_size, Y_size, Valid_split, Epochs, Images_Normal, Labels_Normal, Images_Tumor, Labels_Tumor]
-    #configuration_models(All_images, All_labels, Dataframe_save, DL_model, Enhancement_technique, Class_labels, Column_names, X_size, Y_size, Vali_split, Epochs, Folder_path, Folder_models, Folder_models_esp)
     Info_model = configuration_models(All_images, All_labels, Dataframe_save_mias, Dataframe_save_mias_folder, Model, Technique, Labels_biclass, Column_names, X_size, Y_size, Valid_split, Epochs, Biclass_Data_CSV, Biclass_Data_Model, Biclass_Data_Model_Esp)

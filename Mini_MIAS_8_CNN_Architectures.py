@@ -94,6 +94,9 @@ class pretrainedModels:
 
 def configuration_models(All_images, All_labels, Dataframe_save, Folder_path, DL_model, Enhancement_technique, Class_labels, Column_names, X_size, Y_size, Vali_split, Epochs, Folder_data, Folder_models, Folder_models_esp):
 
+    print(X_size)
+    print(Y_size)
+
     for Index, Model in enumerate(DL_model):
 
       #print(All_images)
@@ -102,26 +105,31 @@ def configuration_models(All_images, All_labels, Dataframe_save, Folder_path, DL
       #All_images[0] = np.array(All_images[0])
       #All_images[1] = np.array(All_images[1])
 
-      All_labels[0] = np.array(All_labels[0])
-      All_labels[1] = np.array(All_labels[1])
+      #All_labels[0] = np.array(All_labels[0])
+      #All_labels[1] = np.array(All_labels[1])
 
-      print(len(All_images[0]))
-      print(len(All_images[1]))
+      #print(len(All_images[0]))
+      #print(len(All_images[1]))
 
-      print(len(All_labels[0]))
-      print(len(All_labels[1]))
+      #print(len(All_labels[0]))
+      #print(len(All_labels[1]))
 
-      All_images_CNN = All_images[0] + All_images[1]
-      All_labels_CNN = np.concatenate((All_labels[0], All_labels[1]), axis = None)
+      #All_images_CNN = All_images[0] + All_images[1]
+      #All_labels_CNN = np.concatenate((All_labels[0], All_labels[1]), axis = None)
 
-      print(len(All_images_CNN))
-      print(len(All_labels_CNN))
+      print(len(All_images))
+      print(len(All_labels))
 
-      X_train, X_test, y_train, y_test = train_test_split(np.array(All_images_CNN), np.array(All_labels_CNN), test_size = 0.20, random_state = 42)
+      X_train, X_test, y_train, y_test = train_test_split(np.array(All_images), np.array(All_labels), test_size = 0.20, random_state = 42)
 
-      print(y_train)
-      print(y_test)
+      # convert from integers to floats
+      #X_train = X_train.astype('float64')
+      #X_test = X_test.astype('float64')
+      # normalize to range 0-1
+      #X_train = X_train / 200.0
+      #X_test = X_test / 200.0
 
+      #print(X_train[0])
       # convert from integers to floats
       #X_train = X_train.astype('float32')
       #X_test = X_test.astype('float32')
@@ -188,6 +196,8 @@ def deep_learning_models(Pretrained_model_function, Enhancement_technique, Class
     elif Class_problem > 2:
       Class_problem_prefix = '_Multiclass_'
 
+
+    
     # * Training fit
 
     Start_training_time = time.time()
@@ -197,6 +207,7 @@ def deep_learning_models(Pretrained_model_function, Enhancement_technique, Class
   
     End_training_time = time.time()
 
+    
     # * Test evaluation
 
     Start_testing_time = time.time()
@@ -205,6 +216,7 @@ def deep_learning_models(Pretrained_model_function, Enhancement_technique, Class
 
     End_testing_time = time.time()
 
+    """
     # * Total time of training and testing
 
     Total_training_time = End_training_time - Start_training_time 
@@ -451,7 +463,7 @@ def deep_learning_models(Pretrained_model_function, Enhancement_technique, Class
     elif Class_problem > 2:
       for i in range(Class_problem):
         Info.append(Roc_auc[i])
-  
+    """
     return Info
 
 # Update CSV changing value

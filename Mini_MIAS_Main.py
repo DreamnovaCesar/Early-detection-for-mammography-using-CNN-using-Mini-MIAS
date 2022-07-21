@@ -20,9 +20,15 @@ from Mini_MIAS_Preprocessing_10_Multi_Data_Augmentation import preprocessing_Dat
 from Mini_MIAS_Preprocessing_11_CNN_Models import Testing_CNN_Models_Biclass
 from Mini_MIAS_Preprocessing_11_Multi_CNN_Models import Testing_CNN_Models_Multiclass
 
+from Mini_MIAS_Preprocessing_12_Data_Augmentation_Folder import split_Folders_Each_Technique
+
 from Mini_MIAS_8_CNN_Architectures import MobileNet_Pretrained
 from Mini_MIAS_8_CNN_Architectures import MobileNetV3Small_Pretrained
 from Mini_MIAS_8_CNN_Architectures import MobileNetV3Large_Pretrained
+
+from Mini_MIAS_8_CNN_Architectures import ResNet152_PreTrained
+from Mini_MIAS_8_CNN_Architectures import ResNet152V2_PreTrained
+from Mini_MIAS_8_CNN_Architectures import ResNet50_PreTrained
 
 from Mini_MIAS_ML_FeaturesExtraction import Testing_ML_Models_Biclass_FOF
 from Mini_MIAS_ML_FeaturesExtraction import Testing_ML_Models_Multiclass_FOF
@@ -35,39 +41,121 @@ from Mini_MIAS_ML_Functions import RF
 from Mini_MIAS_ML_Functions import DT
 from Mini_MIAS_ML_Functions import GBC
 
-from Mini_MIAS_1_Folders import Mini_MIAS_NT_Cropped_Images_Biclass
+from Mini_MIAS_1_Folders import Mini_MIAS_NT_Cropped_Images_Biclass 
+from Mini_MIAS_1_Folders import Mini_MIAS_NT_Cropped_Images_Multiclass 
 from Mini_MIAS_1_Folders import Mini_MIAS_NT_Cropped_Images_Normal
 from Mini_MIAS_1_Folders import Mini_MIAS_NT_Cropped_Images_Tumor
 from Mini_MIAS_1_Folders import Mini_MIAS_NT_Cropped_Images_Benign
 from Mini_MIAS_1_Folders import Mini_MIAS_NT_Cropped_Images_Malignant
 
 from Mini_MIAS_1_Folders import Mini_MIAS_NO_Cropped_Images_Biclass
+from Mini_MIAS_1_Folders import Mini_MIAS_NO_Cropped_Images_Multiclass 
 from Mini_MIAS_1_Folders import Mini_MIAS_NO_Cropped_Images_Normal
 from Mini_MIAS_1_Folders import Mini_MIAS_NO_Cropped_Images_Tumor
 from Mini_MIAS_1_Folders import Mini_MIAS_NO_Cropped_Images_Benign
 from Mini_MIAS_1_Folders import Mini_MIAS_NO_Cropped_Images_Malignant
 
+from Mini_MIAS_1_Folders import Mini_MIAS_CLAHE_Cropped_Images_Biclass
+from Mini_MIAS_1_Folders import Mini_MIAS_CLAHE_Cropped_Images_Multiclass 
+from Mini_MIAS_1_Folders import Mini_MIAS_CLAHE_Cropped_Images_Normal
+from Mini_MIAS_1_Folders import Mini_MIAS_CLAHE_Cropped_Images_Tumor
+from Mini_MIAS_1_Folders import Mini_MIAS_CLAHE_Cropped_Images_Benign
+from Mini_MIAS_1_Folders import Mini_MIAS_CLAHE_Cropped_Images_Malignant
+
+from Mini_MIAS_1_Folders import Mini_MIAS_HE_Cropped_Images_Biclass
+from Mini_MIAS_1_Folders import Mini_MIAS_HE_Cropped_Images_Multiclass 
+from Mini_MIAS_1_Folders import Mini_MIAS_HE_Cropped_Images_Normal
+from Mini_MIAS_1_Folders import Mini_MIAS_HE_Cropped_Images_Tumor
+from Mini_MIAS_1_Folders import Mini_MIAS_HE_Cropped_Images_Benign
+from Mini_MIAS_1_Folders import Mini_MIAS_HE_Cropped_Images_Malignant
+
+from Mini_MIAS_1_Folders import Mini_MIAS_UM_Cropped_Images_Biclass
+from Mini_MIAS_1_Folders import Mini_MIAS_UM_Cropped_Images_Multiclass 
+from Mini_MIAS_1_Folders import Mini_MIAS_UM_Cropped_Images_Normal
+from Mini_MIAS_1_Folders import Mini_MIAS_UM_Cropped_Images_Tumor
+from Mini_MIAS_1_Folders import Mini_MIAS_UM_Cropped_Images_Benign
+from Mini_MIAS_1_Folders import Mini_MIAS_UM_Cropped_Images_Malignant
+
+from Mini_MIAS_1_Folders import Mini_MIAS_CS_Cropped_Images_Biclass
+from Mini_MIAS_1_Folders import Mini_MIAS_CS_Cropped_Images_Multiclass 
+from Mini_MIAS_1_Folders import Mini_MIAS_CS_Cropped_Images_Normal
+from Mini_MIAS_1_Folders import Mini_MIAS_CS_Cropped_Images_Tumor
+from Mini_MIAS_1_Folders import Mini_MIAS_CS_Cropped_Images_Benign
+from Mini_MIAS_1_Folders import Mini_MIAS_CS_Cropped_Images_Malignant
+
+from sklearn.model_selection import train_test_split
+
 def main():
 
+    PGM = ".pgm"
+    PNG = ".png"
+    TIFF = ".tiff"
+
     Model_CNN = (MobileNet_Pretrained, MobileNetV3Small_Pretrained, MobileNetV3Large_Pretrained)
-    #Model_ML = [Multi_SVM, MLP, KNN, RF, DT, GBC]
-    #preprocessing_ChangeFormat(pgm, png)
-    #preprocessing_ChangeFormat(pgm, tiff)
+    Model_ML = (Multi_SVM, MLP, KNN, RF, DT, GBC)
+
+    #preprocessing_ChangeFormat(PGM, PNG)
+    #preprocessing_ChangeFormat(PGM, TIFF)
     #preprocessing_Cropped_MIAS_Mammograms()
     #preprocessing_Kmeans_GLCM_Tumor()
     #preprocessing_Kmeans_GLCM_Benign()
     #preprocessing_Kmeans_GLCM_Malignant()
-    #preprocessing_Resize()
+
+    #preprocessing_Resize(Mini_MIAS_NT_Cropped_Images_Normal, Mini_MIAS_NT_Cropped_Images_Tumor, Mini_MIAS_NT_Cropped_Images_Benign, Mini_MIAS_NO_Cropped_Images_Malignant)
+    #preprocessing_Resize(Mini_MIAS_NO_Cropped_Images_Normal, Mini_MIAS_NO_Cropped_Images_Tumor, Mini_MIAS_NO_Cropped_Images_Benign, Mini_MIAS_NO_Cropped_Images_Malignant)
+    #preprocessing_Resize(Mini_MIAS_CLAHE_Cropped_Images_Normal, Mini_MIAS_CLAHE_Cropped_Images_Tumor, Mini_MIAS_CLAHE_Cropped_Images_Benign, Mini_MIAS_CLAHE_Cropped_Images_Malignant)
+    #preprocessing_Resize(Mini_MIAS_HE_Cropped_Images_Normal, Mini_MIAS_HE_Cropped_Images_Tumor, Mini_MIAS_HE_Cropped_Images_Benign, Mini_MIAS_HE_Cropped_Images_Malignant)
+    #preprocessing_Resize(Mini_MIAS_UM_Cropped_Images_Normal, Mini_MIAS_UM_Cropped_Images_Tumor, Mini_MIAS_UM_Cropped_Images_Benign, Mini_MIAS_UM_Cropped_Images_Malignant)
+    #preprocessing_Resize(Mini_MIAS_CS_Cropped_Images_Normal, Mini_MIAS_CS_Cropped_Images_Tumor, Mini_MIAS_CS_Cropped_Images_Benign, Mini_MIAS_CS_Cropped_Images_Malignant)
+
     #preprocessing_technique_Biclass('NO', Mini_MIAS_NT_Cropped_Images_Normal, Mini_MIAS_NT_Cropped_Images_Tumor, Mini_MIAS_NO_Cropped_Images_Normal, Mini_MIAS_NO_Cropped_Images_Tumor)
+    #preprocessing_technique_Biclass('CLAHE', Mini_MIAS_NO_Cropped_Images_Normal, Mini_MIAS_NO_Cropped_Images_Tumor, Mini_MIAS_CLAHE_Cropped_Images_Normal, Mini_MIAS_CLAHE_Cropped_Images_Tumor)
+    #preprocessing_technique_Biclass('HE', Mini_MIAS_NO_Cropped_Images_Normal, Mini_MIAS_NO_Cropped_Images_Tumor, Mini_MIAS_HE_Cropped_Images_Normal, Mini_MIAS_HE_Cropped_Images_Tumor)
+    #preprocessing_technique_Biclass('UM', Mini_MIAS_NO_Cropped_Images_Normal, Mini_MIAS_NO_Cropped_Images_Tumor, Mini_MIAS_UM_Cropped_Images_Normal, Mini_MIAS_UM_Cropped_Images_Tumor)
+    #preprocessing_technique_Biclass('CS', Mini_MIAS_NO_Cropped_Images_Normal, Mini_MIAS_NO_Cropped_Images_Tumor, Mini_MIAS_CS_Cropped_Images_Normal, Mini_MIAS_CS_Cropped_Images_Tumor)
+   
+
     #preprocessing_technique_Multiclass( 'NO', Mini_MIAS_NT_Cropped_Images_Normal, Mini_MIAS_NT_Cropped_Images_Benign, Mini_MIAS_NT_Cropped_Images_Malignant, 
     #                                        Mini_MIAS_NO_Cropped_Images_Normal, Mini_MIAS_NO_Cropped_Images_Benign, Mini_MIAS_NO_Cropped_Images_Malignant)
+    #preprocessing_technique_Multiclass( 'CLAHE', Mini_MIAS_NT_Cropped_Images_Normal, Mini_MIAS_NT_Cropped_Images_Benign, Mini_MIAS_NT_Cropped_Images_Malignant, 
+    #                                        Mini_MIAS_CLAHE_Cropped_Images_Normal, Mini_MIAS_CLAHE_Cropped_Images_Benign, Mini_MIAS_CLAHE_Cropped_Images_Malignant)
+    #preprocessing_technique_Multiclass( 'HE', Mini_MIAS_NT_Cropped_Images_Normal, Mini_MIAS_NT_Cropped_Images_Benign, Mini_MIAS_NT_Cropped_Images_Malignant, 
+    #                                        Mini_MIAS_HE_Cropped_Images_Normal, Mini_MIAS_HE_Cropped_Images_Benign, Mini_MIAS_HE_Cropped_Images_Malignant)
+    #preprocessing_technique_Multiclass( 'UM', Mini_MIAS_NT_Cropped_Images_Normal, Mini_MIAS_NT_Cropped_Images_Benign, Mini_MIAS_NT_Cropped_Images_Malignant, 
+    #                                        Mini_MIAS_UM_Cropped_Images_Normal, Mini_MIAS_UM_Cropped_Images_Benign, Mini_MIAS_UM_Cropped_Images_Malignant)
+    #preprocessing_technique_Multiclass( 'CS', Mini_MIAS_NT_Cropped_Images_Normal, Mini_MIAS_NT_Cropped_Images_Benign, Mini_MIAS_NT_Cropped_Images_Malignant, 
+    #                                        Mini_MIAS_CS_Cropped_Images_Normal, Mini_MIAS_CS_Cropped_Images_Benign, Mini_MIAS_CS_Cropped_Images_Malignant)
 
     Images, Labels = preprocessing_DataAugmentation_Biclass(Mini_MIAS_NT_Cropped_Images_Normal, Mini_MIAS_NT_Cropped_Images_Tumor, Mini_MIAS_NT_Cropped_Images_Biclass)
-    split_folders_train_test_val(Mini_MIAS_NT_Cropped_Images_Biclass)
-    #Images, Labels = preprocessing_DataAugmentation_Biclass(Mini_MIAS_NO_Cropped_Images_Normal, Mini_MIAS_NO_Cropped_Images_Tumor, Mini_MIAS_NO_Cropped_Images_Biclass)
+    Testing_CNN_Models_Biclass(Model_CNN, 'NT', Images, Labels)
 
-    #Testing_ML_Models_Biclass_FOF(Models, 'NO', Images, Labels)
-    #Testing_CNN_Models_Biclass(Model_CNN, 'NO', Images, Labels)
+    Images, Labels = preprocessing_DataAugmentation_Biclass(Mini_MIAS_NO_Cropped_Images_Normal, Mini_MIAS_NO_Cropped_Images_Tumor, Mini_MIAS_NO_Cropped_Images_Biclass)
+    Testing_CNN_Models_Biclass(Model_CNN, 'NO', Images, Labels)
+
+    Images, Labels = preprocessing_DataAugmentation_Biclass(Mini_MIAS_CLAHE_Cropped_Images_Normal, Mini_MIAS_CLAHE_Cropped_Images_Tumor, Mini_MIAS_CLAHE_Cropped_Images_Biclass)
+    Testing_CNN_Models_Biclass(Model_CNN, 'CLAHE', Images, Labels)
+
+    Images, Labels = preprocessing_DataAugmentation_Biclass(Mini_MIAS_CLAHE_Cropped_Images_Normal, Mini_MIAS_CLAHE_Cropped_Images_Tumor, Mini_MIAS_CLAHE_Cropped_Images_Biclass)
+    Testing_CNN_Models_Biclass(Model_CNN, 'HE', Images, Labels)
+
+    Images, Labels = preprocessing_DataAugmentation_Biclass(Mini_MIAS_CLAHE_Cropped_Images_Normal, Mini_MIAS_CLAHE_Cropped_Images_Tumor, Mini_MIAS_CLAHE_Cropped_Images_Biclass)
+    Testing_CNN_Models_Biclass(Model_CNN, 'CLAHE', Images, Labels)
+
+    Images, Labels = preprocessing_DataAugmentation_Biclass(Mini_MIAS_CLAHE_Cropped_Images_Normal, Mini_MIAS_CLAHE_Cropped_Images_Tumor, Mini_MIAS_CLAHE_Cropped_Images_Biclass)
+    Testing_CNN_Models_Biclass(Model_CNN, 'CLAHE', Images, Labels)
+
+
+
+
+    Testing_CNN_Models_Multiclass(Model_CNN, 'NO', Images, Labels)
+
+
+
+    Images, Labels = preprocessing_DataAugmentation_Biclass(Mini_MIAS_NO_Cropped_Images_Normal, Mini_MIAS_NO_Cropped_Images_Tumor, Mini_MIAS_NO_Cropped_Images_Biclass)
+
+
+    #Testing_ML_Models_Biclass_FOF(Model_CNN, 'NO', Images, Labels)
+    Testing_CNN_Models_Biclass(Model_CNN, 'NO', Images, Labels)
 
     #Images, Labels = preprocessing_DataAugmentation_Multiclass(Mini_MIAS_NO_Cropped_Images_Normal, Mini_MIAS_NO_Cropped_Images_Benign, Mini_MIAS_NO_Cropped_Images_Malignant)
     #Testing_ML_Models_Multiclass_FOF(Models, 'NO', Images, Labels)

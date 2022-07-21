@@ -94,8 +94,8 @@ def prepare_model():
     model.compile(loss="binary_crossentropy",optimizer="adam",metrics=['accuracy'])
     return model
 
-model = prepare_model1()
-model.fit_generator(  train_generator,
+model = prepare_model()
+model.fit(  train_generator,
             validation_data = train_generator,
             steps_per_epoch = train_generator.n//train_generator.batch_size,
             validation_steps = valid_generator.n//valid_generator.batch_size,

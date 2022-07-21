@@ -1,6 +1,8 @@
 import os
 import cv2
 import random
+import numpy as np
+import PIL
 import albumentations as A
 
 from skimage import io
@@ -190,8 +192,9 @@ class dataAugmentation:
         # * Resize with the given values
         Path_file = os.path.join(self.Folder, File)
         Image = cv2.imread(Path_file)
-        #Resize_Imagen = cv2.cvtColor(Resize_Imagen, cv2.COLOR_BGR2GRAY)
-        #Resize_Imagen = cv2.resize(Resize_Imagen, dim, interpolation = cv2.INTER_CUBIC)
+
+        #Image = cv2.cvtColor(Image, cv2.COLOR_BGR2RGB)
+        #Imagen = cv2.resize(Resize_Imagen, dim, interpolation = cv2.INTER_CUBIC)
 
         # ? 1) Standard image
 
@@ -206,7 +209,7 @@ class dataAugmentation:
           New_folder = os.path.join(self.newfolder, New_name_filename)
 
           io.imsave(New_folder, Image)
-
+          
         # ? 1.A) Flip horizontal 
 
         Image_flip_horizontal = self.flip_horizontal(Image)
@@ -280,5 +283,7 @@ class dataAugmentation:
             New_folder = os.path.join(self.newfolder, New_name_filename)
 
             io.imsave(New_folder, Image_flip_vertical_rotation)
-        
+
+    Labels = np.array(Labels)
+    
     return Images, Labels
