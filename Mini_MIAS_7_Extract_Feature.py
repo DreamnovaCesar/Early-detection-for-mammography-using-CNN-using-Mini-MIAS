@@ -485,7 +485,7 @@ class featureExtraction():
             count += 1
 
             # * Reading the image
-            self.Images[File] = cv2.cvtColor(self.Images[File], cv2.COLOR_BGR2GRAY)
+            #self.Images[File] = cv2.cvtColor(self.Images[File], cv2.COLOR_BGR2GRAY)
 
             # * Add the value in the lists already created
             GLCM_1_0 = graycomatrix(self.Images[File], [1], [0])

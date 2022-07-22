@@ -457,11 +457,11 @@ def overwrite_row_CSV(Dataframe, Folder_path, Info_list, Column_names, Row):
 
 # ? Folder Configuration of each DCNN model
 
-def configuration_models_folder(Training_data, Validation_data, Test_data, Dataframe_save, Folder_path, DL_model, Enhancement_technique, Class_labels, Column_names, X_size, Y_size, Vali_split, Epochs, Folder_models, Folder_models_esp):
+def configuration_models_folder(Training_data, Validation_data, Test_data, Dataframe_save, Folder_path, DL_model, Enhancement_technique, Class_labels, Column_names, X_size, Y_size, Epochs, Folder_CSV, Folder_models, Folder_models_esp):
 
     for Index, Model in enumerate(DL_model):
 
-      Info_model = deep_learning_models_folder(Training_data, Validation_data, Test_data, Model, Enhancement_technique, Class_labels, X_size, Y_size, Vali_split, Epochs, Folder_models, Folder_models_esp)
+      Info_model = deep_learning_models_folder(Training_data, Validation_data, Test_data, Model, Enhancement_technique, Class_labels, X_size, Y_size, Epochs, Folder_CSV, Folder_models, Folder_models_esp)
       
       Info_dataframe = overwrite_row_CSV_folder(Dataframe_save, Folder_path, Info_model, Column_names, Index)
 
@@ -469,7 +469,7 @@ def configuration_models_folder(Training_data, Validation_data, Test_data, Dataf
 
 # ? Folder Pretrained model configurations
 
-def deep_learning_models_folder(Train_data, Valid_data, Test_data, Pretrained_model_function, Enhancement_technique, Class_labels, X_size, Y_size, Vali_split, Epochs, Folder_models, Folder_models_Esp):
+def deep_learning_models_folder(Train_data, Valid_data, Test_data, Pretrained_model_function, Enhancement_technique, Class_labels, X_size, Y_size, Epochs, Folder_CSV, Folder_models, Folder_models_Esp):
 
     """
 	  General configuration for each model, extracting features and printing theirs values.
@@ -497,7 +497,6 @@ def deep_learning_models_folder(Train_data, Valid_data, Test_data, Pretrained_mo
 
     # * Parameters plt
 
-    batch_size = 32
     Height = 12
     Width = 12
     Annot_kws = 12
@@ -505,6 +504,27 @@ def deep_learning_models_folder(Train_data, Valid_data, Test_data, Pretrained_mo
 
     X_size_figure = 2
     Y_size_figure = 2
+
+    # * Parameters dic classification report
+
+    Macro_avg_label = 'macro avg'
+    Weighted_avg_label = 'weighted avg'
+
+    Classification_report_labels = []
+    Classification_report_metrics_labels = ('precision', 'recall', 'f1-score', 'support')
+
+    for Label in Class_labels:
+      Classification_report_labels.append(Label)
+    
+    Classification_report_labels.append(Macro_avg_label)
+    Classification_report_labels.append(Weighted_avg_label)
+
+    Classification_report_values = []
+
+    #Precision_label = 'precision'
+    #Recall_label = 'recall'
+    #F1_score_label = 'f1-score'
+    #Images_support_label = 'support'
 
     # * Metrics digits
 
@@ -517,9 +537,9 @@ def deep_learning_models_folder(Train_data, Valid_data, Test_data, Pretrained_mo
     Class_problem = len(Class_labels)
 
     if Class_problem == 2:
-      Class_problem_prefix = '_Biclass_'
+      Class_problem_prefix = 'Biclass_'
     elif Class_problem > 2:
-      Class_problem_prefix = '_Multiclass_'
+      Class_problem_prefix = 'Multiclass_'
 
     # * Training fit
 
@@ -527,11 +547,11 @@ def deep_learning_models_folder(Train_data, Valid_data, Test_data, Pretrained_mo
 
     Pretrained_model, Pretrained_model_name, Pretrained_model_name_letters = Pretrained_model_function(X_size, Y_size, Class_problem)
 
-    Pretrained_Model_History = Pretrained_model.fit_generator(  Train_data,
+    Pretrained_Model_History = Pretrained_model.fit(  Train_data,
                                                       validation_data = Valid_data,
                                                       steps_per_epoch = Train_data.n//Train_data.batch_size,
                                                       validation_steps = Valid_data.n//Valid_data.batch_size,
-                                                      epochs = 8)
+                                                      epochs = Epochs)
   
     End_training_time = time.time()
 
@@ -540,7 +560,7 @@ def deep_learning_models_folder(Train_data, Valid_data, Test_data, Pretrained_mo
 
     Start_testing_time = time.time()
 
-    Loss_Test, Accuracy_Test = Pretrained_model.evaluate_generator(Test_data)
+    Loss_Test, Accuracy_Test = Pretrained_model.evaluate(Test_data)
 
     End_testing_time = time.time()
 
@@ -561,34 +581,47 @@ def deep_learning_models_folder(Train_data, Valid_data, Test_data, Pretrained_mo
 
       # * Get the data from the model chosen
 
-      Predict = Pretrained_model.predict_generator(Test_data)
-      y_classes = Predict.argmax(axis = -1)
+      Predict = Pretrained_model.predict(Test_data)
+      y_pred = Pretrained_model.predict(Test_data).ravel()
 
-      y_pred = Pretrained_model.predict(X_test)
-      y_pred = Pretrained_model.predict(X_test).ravel()
-
+      print(Test_data.classes)
+      print(y_pred)
+      
+      #y_pred = Pretrained_model.predict(X_test)
+      #y_pred = Pretrained_model.predict(X_test).ravel()
+      
       # * Biclass labeling
       y_pred_class = np.where(y_pred < 0.5, 0, 1)
       
       # * Confusion Matrix
       print('Confusion Matrix')
-      Confusion_matrix = confusion_matrix(y_test, y_pred_class)
-
+      Confusion_matrix = confusion_matrix(Test_data.classes, y_pred_class)
+      
       print(Confusion_matrix)
-      print(classification_report(y_test, y_pred_class, target_names = Class_labels))
+      print(classification_report(Test_data.classes, y_pred_class, target_names = Class_labels))
+      
+      Report = classification_report(Test_data.classes, y_pred_class, target_names = Class_labels)
+      Dict = classification_report(Test_data.classes, y_pred_class, target_names = Class_labels, output_dict = True)
+      
+      for i, Report_labels in enumerate(Classification_report_labels):
+        for i, Metric_labels in enumerate(Classification_report_metrics_labels):
+
+          print(Dict[Report_labels][Metric_labels])
+          Classification_report_values.append(Dict[Report_labels][Metric_labels])
+          print("\n")
 
       # * Precision
-      Precision = precision_score(y_test, y_pred_class)
+      Precision = precision_score(Test_data.classes, y_pred_class)
       print(f"Precision: {round(Precision, Digits)}")
       print("\n")
 
       # * Recall
-      Recall = recall_score(y_test, y_pred_class)
+      Recall = recall_score(Test_data.classes, y_pred_class)
       print(f"Recall: {round(Recall, Digits)}")
       print("\n")
 
       # * F1-score
-      F1_score = f1_score(y_test, y_pred_class)
+      F1_score = f1_score(Test_data.classes, y_pred_class)
       print(f"F1: {round(F1_score, Digits)}")
       print("\n")
 
@@ -622,7 +655,7 @@ def deep_learning_models_folder(Train_data, Valid_data, Test_data, Pretrained_mo
       Validation_loss = Pretrained_Model_History.history['val_loss']
 
       # * FPR and TPR values for the ROC curve
-      FPR, TPR, _ = roc_curve(y_test, y_pred)
+      FPR, TPR, _ = roc_curve(Test_data.classes, y_pred_class)
       Auc = auc(FPR, TPR)
 
       # * Subplot Training accuracy
@@ -667,35 +700,45 @@ def deep_learning_models_folder(Train_data, Valid_data, Test_data, Pretrained_mo
         Labels_multiclass_number.append(i)
 
       # * Get the data from the model chosen
-      Predict = Pretrained_model.predict_generator(Test_data)
-      y_classes = Predict.argmax(axis = -1)
+      Predict = Pretrained_model.predict(Test_data)
+      y_pred = Predict.argmax(axis = 1)
 
       # * Multiclass labeling
       y_pred_roc = label_binarize(y_pred, classes = Labels_multiclass_number)
-      y_test_roc = label_binarize(y_test, classes = Labels_multiclass_number)
+      y_test_roc = label_binarize(Test_data.classes, classes = Labels_multiclass_number)
 
       #print(y_pred)
       #print(y_test)
 
       # * Confusion Matrix
       print('Confusion Matrix')
-      Confusion_matrix = confusion_matrix(y_test, y_pred)
+      Confusion_matrix = confusion_matrix(Test_data.classes, y_pred)
 
       print(Confusion_matrix)
-      print(classification_report(y_test, y_pred, target_names = Class_labels))
+      print(classification_report(Test_data.classes, y_pred, target_names = Class_labels))
+      
+      #Report = classification_report(Test_data.classes, y_pred, target_names = Class_labels)
+      Dict = classification_report(Test_data.classes, y_pred, target_names = Class_labels, output_dict = True)
+
+      for i, Report_labels in enumerate(Classification_report_labels):
+        for i, Metric_labels in enumerate(Classification_report_metrics_labels):
+
+          print(Dict[Report_labels][Metric_labels])
+          Classification_report_values.append(Dict[Report_labels][Metric_labels])
+          print("\n")
 
       # * Precision
-      Precision = precision_score(y_test, y_pred, average = 'weighted')
+      Precision = precision_score(Test_data.classes, y_pred, average = 'weighted')
       print(f"Precision: {round(Precision, Digits)}")
       print("\n")
 
       # * Recall
-      Recall = recall_score(y_test, y_pred, average = 'weighted')
+      Recall = recall_score(Test_data.classes, y_pred, average = 'weighted')
       print(f"Recall: {round(Recall, Digits)}")
       print("\n")
 
       # * F1-score
-      F1_score = f1_score(y_test, y_pred, average = 'weighted')
+      F1_score = f1_score(Test_data.classes, y_pred, average = 'weighted')
       print(f"F1: {round(F1_score, Digits)}")
       print("\n")
 
@@ -768,7 +811,7 @@ def deep_learning_models_folder(Train_data, Valid_data, Test_data, Pretrained_mo
 
       plt.savefig(Class_problem_folder)
       #plt.show()
-
+    
     Info.append(Pretrained_model_name_technique)
     Info.append(Pretrained_model_name)
     Info.append(Accuracy[Epochs - 1])
@@ -776,11 +819,16 @@ def deep_learning_models_folder(Train_data, Valid_data, Test_data, Pretrained_mo
     Info.append(Accuracy_Test)
     Info.append(Loss[Epochs - 1])
     Info.append(Loss_Test)
-    Info.append(len(y_train))
-    Info.append(len(y_test))
+    Info.append(len(Train_data.classes))
+    Info.append(len(Valid_data.classes))
+    Info.append(len(Test_data.classes))
     Info.append(Precision)
     Info.append(Recall)
     Info.append(F1_score)
+
+    for i, value in enumerate(Classification_report_values):
+      Info.append(value)
+
     Info.append(Total_training_time)
     Info.append(Total_testing_time)
     Info.append(Enhancement_technique)
@@ -828,7 +876,7 @@ def overwrite_row_CSV_folder(Dataframe, Folder_path, Info_list, Column_names, Ro
 
 # ? Fine-Tuning MLP
 
-def MLPClassificadorTL(x, units, activation):
+def MLP_classificador(x, units, activation):
 
     """
 	  Fine tuning configuration using only MLP.
@@ -846,14 +894,14 @@ def MLPClassificadorTL(x, units, activation):
     x = Flatten()(x)
     x = Dense(128, activation = 'relu')(x)
     x = Dropout(0.5)(x)
-    x = BatchNormalization()(x)
+    #x = BatchNormalization()(x)
     x = Dense(units, activation = activation)(x)
 
     return x
   
 # ? ResNet50
 
-def ResNet50_PreTrained(Xsize, Ysize, num_classes):
+def ResNet50_pretrained(Xsize, Ysize, num_classes):
   
     """
 	  ResNet50 configuration.
@@ -886,9 +934,9 @@ def ResNet50_PreTrained(Xsize, Ysize, num_classes):
     else:
       activation = 'softmax'
       units = num_classes
-      loss = "SparseCategoricalCrossentropy"
+      loss = "categorical_crossentropy"
 
-    x = MLPClassificadorTL(ResNet50_Model.output, units, activation)
+    x = MLP_classificador(ResNet50_Model.output, units, activation)
 
     ResNet50_model = Model(ResNet50_Model.input, x)
 
@@ -900,7 +948,7 @@ def ResNet50_PreTrained(Xsize, Ysize, num_classes):
 
     return ResNet50_model, Model_name, Model_name_letters
 
-def ResNet50V2_PreTrained(Xsize, Ysize, num_classes):
+def ResNet50V2_pretrained(Xsize, Ysize, num_classes):
 
     """
 	  ResNet50V2 configuration.
@@ -916,8 +964,8 @@ def ResNet50V2_PreTrained(Xsize, Ysize, num_classes):
     
    	"""
 
-    ModelName = 'ResNet50V2_Model'
-    ModelNameLetters = 'RN50V2'
+    Model_name = 'ResNet50V2_Model'
+    Model_name_letters = 'RN50V2'
 
     ResNet50V2_Model = ResNet50V2(input_shape = (Xsize, Ysize, 3), 
                                   include_top = False, 
@@ -933,10 +981,10 @@ def ResNet50V2_PreTrained(Xsize, Ysize, num_classes):
     else:
       activation = 'softmax'
       units = num_classes
-      loss = "SparseCategoricalCrossentropy"
+      loss = "categorical_crossentropy"
       #loss = "KLDivergence"
 
-    x = MLPClassificadorTL(ResNet50V2_Model.output, units, activation)
+    x = MLP_classificador(ResNet50V2_Model.output, units, activation)
 
     ResNet50V2Model = Model(ResNet50V2_Model.input, x)
 
@@ -946,9 +994,9 @@ def ResNet50V2_PreTrained(Xsize, Ysize, num_classes):
         metrics = ['accuracy']
     )
 
-    return ResNet50V2Model, ModelName, ModelNameLetters
+    return ResNet50V2Model, Model_name, Model_name_letters
 
-def ResNet152_PreTrained(Xsize, Ysize, num_classes):
+def ResNet152_pretrained(Xsize, Ysize, num_classes):
   
     """
 	  ResNet152 configuration.
@@ -964,8 +1012,8 @@ def ResNet152_PreTrained(Xsize, Ysize, num_classes):
     
    	"""
 
-    ModelName = 'ResNet152_Model'
-    ModelNameLetters = 'RN152'
+    Model_name = 'ResNet152_Model'
+    Model_name_letters = 'RN152'
 
     ResNet152_Model = ResNet152(input_shape = (Xsize, Ysize, 3), 
                               include_top = False, 
@@ -981,10 +1029,10 @@ def ResNet152_PreTrained(Xsize, Ysize, num_classes):
     else:
       activation = 'softmax'
       units = num_classes
-      loss = "SparseCategoricalCrossentropy"
+      loss = "categorical_crossentropy"
       #loss = "KLDivergence"
 
-    x = MLPClassificadorTL(ResNet152_Model.output, units, activation)
+    x = MLP_classificador(ResNet152_Model.output, units, activation)
 
     ResNet152Model = Model(ResNet152_Model.input, x)
 
@@ -994,9 +1042,9 @@ def ResNet152_PreTrained(Xsize, Ysize, num_classes):
         metrics = ['accuracy']
     )
 
-    return ResNet152Model, ModelName, ModelNameLetters
+    return ResNet152Model, Model_name, Model_name_letters
 
-def ResNet152V2_PreTrained(Xsize, Ysize, num_classes):
+def ResNet152V2_pretrained(Xsize, Ysize, num_classes):
   
     """
 	  ResNet152V2 configuration.
@@ -1012,8 +1060,8 @@ def ResNet152V2_PreTrained(Xsize, Ysize, num_classes):
     
    	"""
      
-    ModelName = 'ResNet152V2_Model'
-    ModelNameLetters = 'RN152V2'
+    Model_name = 'ResNet152V2_Model'
+    Model_name_letters = 'RN152V2'
 
     ResNet152V2_Model = ResNet152V2(input_shape = (Xsize, Ysize, 3), 
                                     include_top = False, 
@@ -1029,10 +1077,10 @@ def ResNet152V2_PreTrained(Xsize, Ysize, num_classes):
     else:
       activation = 'softmax'
       units = num_classes
-      loss = "SparseCategoricalCrossentropy"
+      loss = "categorical_crossentropy"
       #loss = "KLDivergence"
 
-    x = MLPClassificadorTL(ResNet152V2_Model.output, units, activation)
+    x = MLP_classificador(ResNet152V2_Model.output, units, activation)
 
     ResNet152V2Model = Model(ResNet152V2_Model.input, x)
 
@@ -1042,41 +1090,11 @@ def ResNet152V2_PreTrained(Xsize, Ysize, num_classes):
         metrics = ['accuracy']
     )
 
-    return ResNet152V2Model, ModelName, ModelNameLetters
-
-# ? ResNet50 folder
-
-def ResNet50_pretrained_folder(Xsize, Ysize, num_classes):
-
-    Model_name = 'ResNet50_Model'
-    Model_name_letters = 'RN50'
-    
-    conv_base = ResNet50(weights = 'imagenet', include_top = False, input_shape = (Xsize, Ysize, 3))
-    model = Sequential()
-    model.add(conv_base)
-
-    if num_classes == 2:
-      activation = 'sigmoid'
-      loss = "binary_crossentropy"
-      units = 1
-    else:
-      activation = 'softmax'
-      units = num_classes
-      loss = "categorical_crossentropy"
-
-    model.add(Flatten())
-    model.add(Dense(128, activation = 'relu'))
-    model.add(Dense(units, activation = activation))
-
-    conv_base.trainable = False
-
-    model.compile(loss = loss, optimizer = tf.keras.optimizers.Adam(learning_rate = 0.0001), metrics = ['accuracy'])
-
-    return model, Model_name, Model_name_letters
+    return ResNet152V2Model, Model_name, Model_name_letters
 
 # ? MobileNet
 
-def MobileNet_Pretrained(Xsize, Ysize, num_classes):
+def MobileNet_pretrained(Xsize, Ysize, num_classes):
   
     """
 	  MobileNet configuration.
@@ -1092,8 +1110,8 @@ def MobileNet_Pretrained(Xsize, Ysize, num_classes):
     
    	"""
 
-    ModelName = 'MobileNet_Model'
-    ModelNameLetters = 'MN'
+    Model_name = 'MobileNet_Model'
+    Model_name_letters = 'MN'
 
     MobileNet_Model = MobileNet(input_shape = (Xsize, Ysize, 3), 
                                               include_top = False, 
@@ -1109,10 +1127,10 @@ def MobileNet_Pretrained(Xsize, Ysize, num_classes):
     else:
       activation = 'softmax'
       units = num_classes
-      loss = "SparseCategoricalCrossentropy"
+      loss = "categorical_crossentropy"
       #loss = "KLDivergence"
 
-    x = MLPClassificadorTL(MobileNet_Model.output, units, activation)
+    x = MLP_classificador(MobileNet_Model.output, units, activation)
 
     MobileNetModel = Model(MobileNet_Model.input, x)
 
@@ -1122,9 +1140,9 @@ def MobileNet_Pretrained(Xsize, Ysize, num_classes):
         metrics = ["accuracy"]
     )
 
-    return MobileNetModel, ModelName, ModelNameLetters
+    return MobileNetModel, Model_name, Model_name_letters
 
-def MobileNetV3Small_Pretrained(Xsize, Ysize, num_classes):
+def MobileNetV3Small_pretrained(Xsize, Ysize, num_classes):
 
     """
 	  MobileNetV3Small configuration.
@@ -1140,8 +1158,8 @@ def MobileNetV3Small_Pretrained(Xsize, Ysize, num_classes):
     
    	"""
 
-    ModelName = 'MobileNetV3Small_Model'
-    ModelNameLetters = 'MNV3S'
+    Model_name = 'MobileNetV3Small_Model'
+    Model_name_letters = 'MNV3S'
 
     MobileNetV3Small_Model = MobileNetV3Small(input_shape = (Xsize, Ysize, 3), 
                                               include_top = False, 
@@ -1157,10 +1175,10 @@ def MobileNetV3Small_Pretrained(Xsize, Ysize, num_classes):
     else:
       activation = 'softmax'
       units = num_classes
-      loss = "SparseCategoricalCrossentropy"
+      loss = "categorical_crossentropy"
       #loss = "KLDivergence"
 
-    x = MLPClassificadorTL(MobileNetV3Small_Model.output, units, activation)
+    x = MLP_classificador(MobileNetV3Small_Model.output, units, activation)
 
     MobileNetV3SmallModel = Model(MobileNetV3Small_Model.input, x)
 
@@ -1170,9 +1188,9 @@ def MobileNetV3Small_Pretrained(Xsize, Ysize, num_classes):
         metrics = ["accuracy"]
     )
 
-    return MobileNetV3SmallModel, ModelName, ModelNameLetters
+    return MobileNetV3SmallModel, Model_name, Model_name_letters
 
-def MobileNetV3Large_Pretrained(Xsize, Ysize, num_classes):
+def MobileNetV3Large_pretrained(Xsize, Ysize, num_classes):
 
     """
 	  MobileNetV3Large configuration.
@@ -1188,8 +1206,8 @@ def MobileNetV3Large_Pretrained(Xsize, Ysize, num_classes):
     
    	"""
 
-    ModelName = 'MobileNetV3Large_Model'
-    ModelNameLetters = 'MNV3L'
+    Model_name = 'MobileNetV3Large_Model'
+    Model_name_letters = 'MNV3L'
 
     MobileNetV3Large_Model = MobileNetV3Large(input_shape = (Xsize, Ysize, 3), 
                                               include_top = False, 
@@ -1205,10 +1223,10 @@ def MobileNetV3Large_Pretrained(Xsize, Ysize, num_classes):
     else:
       activation = 'softmax'
       units = num_classes
-      loss = "SparseCategoricalCrossentropy"
+      loss = "categorical_crossentropy"
       #loss = "KLDivergence"
       
-    x = MLPClassificadorTL(MobileNetV3Large_Model.output, units, activation)
+    x = MLP_classificador(MobileNetV3Large_Model.output, units, activation)
 
     MobileNetV3LargeModel = Model(MobileNetV3Large_Model.input, x)
 
@@ -1218,54 +1236,11 @@ def MobileNetV3Large_Pretrained(Xsize, Ysize, num_classes):
         metrics = ["accuracy"]
     )
 
-    return MobileNetV3LargeModel, ModelName, ModelNameLetters
+    return MobileNetV3LargeModel, Model_name, Model_name_letters
 
-# ? MobileNet folder
+# ? Xception
 
-def MobileNet_pretrained_folder(Xsize, Ysize, num_classes):
-
-    Model_name = 'MobileNet_Model'
-    Model_name_letters = 'MN'
-    
-    conv_base = MobileNet(weights = 'imagenet', include_top = False, input_shape = (Xsize, Ysize, 3))
-    model = Sequential()
-    model.add(conv_base)
-
-    if num_classes == 2:
-      activation = 'sigmoid'
-      loss = "binary_crossentropy"
-      units = 1
-    else:
-      activation = 'softmax'
-      units = num_classes
-      loss = "categorical_crossentropy"
-
-    model.add(Flatten())
-    model.add(Dense(128, activation = 'relu'))
-    model.add(Dense(units, activation = activation))
-
-    conv_base.trainable = False
-
-    model.compile(loss = loss, optimizer = tf.keras.optimizers.Adam(learning_rate = 0.0001), metrics = ['accuracy'])
-
-    return model, Model_name, Model_name_letters
-
-def MobileNetV3Small_pretrained_folder():
-    conv_base = MobileNetV3Small(weights = 'imagenet', include_top = False, input_shape = (224, 224, 3))
-    model = Sequential()
-    model.add(conv_base)
-
-    model.add(Flatten())
-    model.add(Dense(128, activation = 'relu'))
-    model.add(Dense(3, activation = 'softmax'))
-
-    conv_base.trainable = False
-    model.compile(loss = "categorical_crossentropy", optimizer = "adam", metrics = ['accuracy'])
-    return model
-
-# Xception
-
-def Xception_Pretrained(Xsize, Ysize, num_classes):
+def Xception_pretrained(Xsize, Ysize, num_classes):
 
     """
 	  Xception configuration.
@@ -1281,8 +1256,8 @@ def Xception_Pretrained(Xsize, Ysize, num_classes):
     
    	"""
 
-    ModelName = 'Xception_Model'
-    ModelNameLetters = 'Xc'
+    Model_name = 'Xception_Model'
+    Model_name_letters = 'Xc'
 
     Xception_Model = Xception(input_shape = (Xsize, Ysize, 3), 
                               include_top = False, 
@@ -1298,10 +1273,10 @@ def Xception_Pretrained(Xsize, Ysize, num_classes):
     else:
       activation = 'softmax'
       units = num_classes
-      loss = "SparseCategoricalCrossentropy"
+      loss = "categorical_crossentropy"
       #loss = "KLDivergence"
 
-    x = MLPClassificadorTL(Xception_Model.output, units, activation)
+    x = MLP_classificador(Xception_Model.output, units, activation)
 
     XceptionModel = Model(Xception_Model.input, x)
 
@@ -1311,11 +1286,11 @@ def Xception_Pretrained(Xsize, Ysize, num_classes):
         metrics = ["accuracy"]
     )
 
-    return XceptionModel, ModelName, ModelNameLetters
+    return XceptionModel, Model_name, Model_name_letters
 
-# VGG
+# ? VGG
 
-def VGG16_PreTrained(Xsize, Ysize, num_classes):
+def VGG16_pretrained(Xsize, Ysize, num_classes):
 
     """
 	  VGG16 configuration.
@@ -1331,8 +1306,8 @@ def VGG16_PreTrained(Xsize, Ysize, num_classes):
     
    	"""
 
-    ModelName = 'VGG16_Model'
-    ModelNameLetters = 'VGG16'
+    Model_name = 'VGG16_Model'
+    Model_name_letters = 'VGG16'
 
     VGG16_Model = VGG16(input_shape = (Xsize, Ysize, 3), 
                         include_top = False, 
@@ -1348,10 +1323,10 @@ def VGG16_PreTrained(Xsize, Ysize, num_classes):
     else:
       activation = 'softmax'
       units = num_classes
-      loss = "SparseCategoricalCrossentropy"
+      loss = "categorical_crossentropy"
       #loss = "KLDivergence"
 
-    x = MLPClassificadorTL(VGG16_Model.output, units, activation)
+    x = MLP_classificador(VGG16_Model.output, units, activation)
 
     VGG16Model = Model(VGG16_Model.input, x)
 
@@ -1361,9 +1336,9 @@ def VGG16_PreTrained(Xsize, Ysize, num_classes):
         metrics = ["accuracy"]
     )
 
-    return VGG16Model, ModelName, ModelNameLetters
+    return VGG16Model, Model_name, Model_name_letters
 
-def VGG19_PreTrained(Xsize, Ysize, num_classes):
+def VGG19_pretrained(Xsize, Ysize, num_classes):
 
     """
 	  VGG19 configuration.
@@ -1379,8 +1354,8 @@ def VGG19_PreTrained(Xsize, Ysize, num_classes):
     
    	"""
 
-    ModelName = 'VGG19_Model'
-    ModelNameLetters = 'VGG19'
+    Model_name = 'VGG19_Model'
+    Model_name_letters = 'VGG19'
 
     VGG19_Model = VGG19(input_shape = (Xsize, Ysize, 3), 
                         include_top = False, 
@@ -1396,10 +1371,10 @@ def VGG19_PreTrained(Xsize, Ysize, num_classes):
     else:
       activation = 'softmax'
       units = num_classes
-      loss = "SparseCategoricalCrossentropy"
+      loss = "categorical_crossentropy"
       #loss = "KLDivergence"
 
-    x = MLPClassificadorTL(VGG19_Model.output, units, activation)
+    x = MLP_classificador(VGG19_Model.output, units, activation)
     
     VGG19Model = Model(VGG19_Model.input, x)
 
@@ -1409,11 +1384,11 @@ def VGG19_PreTrained(Xsize, Ysize, num_classes):
         metrics = ["accuracy"]
     )
 
-    return VGG19Model, ModelName, ModelNameLetters
+    return VGG19Model, Model_name, Model_name_letters
 
-# InceptionV3
+# ? InceptionV3
 
-def InceptionV3_PreTrained(Xsize, Ysize, num_classes):
+def InceptionV3_pretrained(Xsize, Ysize, num_classes):
 
     """
 	  InceptionV3 configuration.
@@ -1429,8 +1404,8 @@ def InceptionV3_PreTrained(Xsize, Ysize, num_classes):
     
    	"""
 
-    ModelName = 'InceptionV3_Model'
-    ModelNameLetters = 'IV3'
+    Model_name = 'InceptionV3_Model'
+    Model_name_letters = 'IV3'
 
     InceptionV3_Model = InceptionV3(input_shape = (Xsize, Ysize, 3), 
                                     include_top = False, 
@@ -1446,10 +1421,10 @@ def InceptionV3_PreTrained(Xsize, Ysize, num_classes):
     else:
       activation = 'softmax'
       units = num_classes
-      loss = "SparseCategoricalCrossentropy"
+      loss = "categorical_crossentropy"
       #loss = "KLDivergence"
 
-    x = MLPClassificadorTL(InceptionV3_Model.output, units, activation)
+    x = MLP_classificador(InceptionV3_Model.output, units, activation)
 
     InceptionV3Model = Model(InceptionV3_Model.input, x)
 
@@ -1459,11 +1434,11 @@ def InceptionV3_PreTrained(Xsize, Ysize, num_classes):
         metrics = ["accuracy"]
     )
 
-    return InceptionV3Model, ModelName, ModelNameLetters
+    return InceptionV3Model, Model_name, Model_name_letters
 
-# DenseNet
+# ? DenseNet
 
-def DenseNet121_PreTrained(Xsize, Ysize, num_classes):
+def DenseNet121_pretrained(Xsize, Ysize, num_classes):
 
     """
 	  DenseNet121 configuration.
@@ -1479,8 +1454,8 @@ def DenseNet121_PreTrained(Xsize, Ysize, num_classes):
     
    	"""
 
-    ModelName = 'DenseNet121_Model'
-    ModelNameLetters = 'DN121'
+    Model_name = 'DenseNet121_Model'
+    Model_name_letters = 'DN121'
 
     DenseNet121_Model = DenseNet121(input_shape = (Xsize, Ysize, 3), 
                                     include_top = False, 
@@ -1496,10 +1471,10 @@ def DenseNet121_PreTrained(Xsize, Ysize, num_classes):
     else:
       activation = 'softmax'
       units = num_classes
-      loss = "SparseCategoricalCrossentropy"
+      loss = "categorical_crossentropy"
       #loss = "KLDivergence"
 
-    x = MLPClassificadorTL(DenseNet121_Model.output, units, activation)
+    x = MLP_classificador(DenseNet121_Model.output, units, activation)
 
     DenseNet121Model = Model(DenseNet121_Model.input, x)
 
@@ -1509,9 +1484,9 @@ def DenseNet121_PreTrained(Xsize, Ysize, num_classes):
         metrics = ["accuracy"]
     )
 
-    return DenseNet121Model, ModelName, ModelNameLetters
+    return DenseNet121Model, Model_name, Model_name_letters
 
-def DenseNet201_PreTrained(Xsize, Ysize, num_classes):
+def DenseNet201_pretrained(Xsize, Ysize, num_classes):
 
     """
 	  DenseNet201 configuration.
@@ -1527,8 +1502,8 @@ def DenseNet201_PreTrained(Xsize, Ysize, num_classes):
     
    	"""
 
-    ModelName = 'DenseNet201_Model'
-    ModelNameLetters = 'DN201'
+    Model_name = 'DenseNet201_Model'
+    Model_name_letters = 'DN201'
 
     DenseNet201_Model = DenseNet201(input_shape = (Xsize, Ysize, 3), 
                                     include_top = False, 
@@ -1544,10 +1519,10 @@ def DenseNet201_PreTrained(Xsize, Ysize, num_classes):
     else:
       activation = 'softmax'
       units = num_classes
-      loss = "SparseCategoricalCrossentropy"
+      loss = "categorical_crossentropy"
       #loss = "KLDivergence"
 
-    x = MLPClassificadorTL(DenseNet201_Model.output, units, activation)
+    x = MLP_classificador(DenseNet201_Model.output, units, activation)
 
     DenseNet201Model = Model(DenseNet201_Model.input, x)
 
@@ -1557,9 +1532,9 @@ def DenseNet201_PreTrained(Xsize, Ysize, num_classes):
         metrics = ["accuracy"]
     )
 
-    return DenseNet201Model, ModelName, ModelNameLetters
+    return DenseNet201Model, Model_name, Model_name_letters
 
-# Custom AlexNet12
+# ? Custom AlexNet12
 
 def CustomCNNAlexNet12_Model(Xsize, Ysize, num_classes):
 
@@ -1577,8 +1552,8 @@ def CustomCNNAlexNet12_Model(Xsize, Ysize, num_classes):
     
    	"""
 
-    ModelName = 'CustomAlexNet12_Model'
-    ModelNameLetters = 'CAN12'
+    Model_name = 'CustomAlexNet12_Model'
+    Model_name_letters = 'CAN12'
 
     if num_classes == 2:
       activation = 'sigmoid'
@@ -1587,7 +1562,7 @@ def CustomCNNAlexNet12_Model(Xsize, Ysize, num_classes):
     else:
       activation = 'softmax'
       units = num_classes
-      loss = "SparseCategoricalCrossentropy"
+      loss = "categorical_crossentropy"
       #loss = "KLDivergence"
 
     CustomCNN_Model = Input(shape = (Xsize, Ysize, 3))
@@ -1630,7 +1605,7 @@ def CustomCNNAlexNet12_Model(Xsize, Ysize, num_classes):
         metrics = ["accuracy"]
     )
 
-    return CustomLeNet5Model, ModelName, ModelNameLetters
+    return CustomLeNet5Model, Model_name, Model_name_letters
 
 def CustomCNNAlexNet12Tunner_Model(Xsize, Ysize, num_classes, hp):
 
@@ -1648,8 +1623,8 @@ def CustomCNNAlexNet12Tunner_Model(Xsize, Ysize, num_classes, hp):
     
    	"""
 
-    ModelName = 'CustomAlexNet12_Model'
-    ModelNameLetters = 'CAN12'
+    Model_name = 'CustomAlexNet12_Model'
+    Model_name_letters = 'CAN12'
 
     if num_classes == 2:
       activation = 'sigmoid'
@@ -1658,7 +1633,7 @@ def CustomCNNAlexNet12Tunner_Model(Xsize, Ysize, num_classes, hp):
     else:
       activation = 'softmax'
       units = num_classes
-      loss = "SparseCategoricalCrossentropy"
+      loss = "categorical_crossentropy"
       #loss = "KLDivergence"
 
     CustomCNN_Model = Input(shape = (Xsize, Ysize, 3))
@@ -1701,4 +1676,4 @@ def CustomCNNAlexNet12Tunner_Model(Xsize, Ysize, num_classes, hp):
         metrics = ["accuracy"]
     )
 
-    return CustomLeNet5Model, ModelName, ModelNameLetters
+    return CustomLeNet5Model, Model_name, Model_name_letters
