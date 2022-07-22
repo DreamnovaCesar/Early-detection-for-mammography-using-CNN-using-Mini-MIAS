@@ -3,7 +3,7 @@ import numpy as np
 from Mini_MIAS_2_General_Functions import concat_dataframe
 
 from Mini_MIAS_2_General_Functions import split_folders_train_test_val
-from Mini_MIAS_Preprocessing_1_ChangeExtension import preprocessing_ChangeFormat
+from Mini_MIAS_Preprocessing_1_Change_Format import preprocessing_ChangeFormat
 
 from Mini_MIAS_Preprocessing_2_Cropped_MIAS_Mammograms import preprocessing_Cropped_MIAS_Mammograms
 
