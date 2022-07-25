@@ -21,20 +21,21 @@ from Mini_MIAS_1_Folders import Mini_MIAS_CS_Cropped_Images_Multiclass
 
 def Split_Folders_Each_Technique():
 
-    split_folders_train_test_val(Mini_MIAS_NT_Cropped_Images_Biclass)
-    split_folders_train_test_val(Mini_MIAS_NT_Cropped_Images_Multiclass)
+    split_folders_train_test_val("D:\Mini-MIAS\Mini-MIAS Final\Mini_MIAS_NO_Cropped_Images_Biclass_Test")
+    #split_folders_train_test_val(Mini_MIAS_NT_Cropped_Images_Biclass)
+    #split_folders_train_test_val(Mini_MIAS_NT_Cropped_Images_Multiclass)
 
-    split_folders_train_test_val(Mini_MIAS_NO_Cropped_Images_Biclass)
-    split_folders_train_test_val(Mini_MIAS_NO_Cropped_Images_Multiclass)
+    #split_folders_train_test_val(Mini_MIAS_NO_Cropped_Images_Biclass)
+    #split_folders_train_test_val(Mini_MIAS_NO_Cropped_Images_Multiclass)
 
-    split_folders_train_test_val(Mini_MIAS_CLAHE_Cropped_Images_Biclass)
-    split_folders_train_test_val(Mini_MIAS_CLAHE_Cropped_Images_Multiclass)
+    #split_folders_train_test_val(Mini_MIAS_CLAHE_Cropped_Images_Biclass)
+    #split_folders_train_test_val(Mini_MIAS_CLAHE_Cropped_Images_Multiclass)
 
-    split_folders_train_test_val(Mini_MIAS_HE_Cropped_Images_Biclass)
-    split_folders_train_test_val(Mini_MIAS_HE_Cropped_Images_Multiclass)
+    #split_folders_train_test_val(Mini_MIAS_HE_Cropped_Images_Biclass)
+    #split_folders_train_test_val(Mini_MIAS_HE_Cropped_Images_Multiclass)
 
-    split_folders_train_test_val(Mini_MIAS_UM_Cropped_Images_Biclass)
-    split_folders_train_test_val(Mini_MIAS_UM_Cropped_Images_Multiclass)
+    #split_folders_train_test_val(Mini_MIAS_UM_Cropped_Images_Biclass)
+    #split_folders_train_test_val(Mini_MIAS_UM_Cropped_Images_Multiclass)
 
-    split_folders_train_test_val(Mini_MIAS_CS_Cropped_Images_Biclass)
-    split_folders_train_test_val(Mini_MIAS_CS_Cropped_Images_Multiclass)
+    #split_folders_train_test_val(Mini_MIAS_CS_Cropped_Images_Biclass)
+    #split_folders_train_test_val(Mini_MIAS_CS_Cropped_Images_Multiclass)

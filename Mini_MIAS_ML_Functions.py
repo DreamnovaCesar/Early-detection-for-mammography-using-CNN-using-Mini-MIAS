@@ -142,6 +142,22 @@ def Machine_learning_models(ML_model, Enhancement_technique, Class_labels, X_tra
     X_size_figure = 1
     Y_size_figure = 2
 
+    # * Parameters dic classification report
+
+    Macro_avg_label = 'macro avg'
+    Weighted_avg_label = 'weighted avg'
+
+    Classification_report_labels = []
+    Classification_report_metrics_labels = ('precision', 'recall', 'f1-score', 'support')
+
+    for Label in Class_labels:
+      Classification_report_labels.append(Label)
+    
+    Classification_report_labels.append(Macro_avg_label)
+    Classification_report_labels.append(Weighted_avg_label)
+
+    Classification_report_values = []
+
     # * Metrics digits
 
     Digits = 4
@@ -172,6 +188,15 @@ def Machine_learning_models(ML_model, Enhancement_technique, Class_labels, X_tra
 
         print(Confusion_matrix)
         print(classification_report(y_test, Y_pred, target_names = Class_labels))
+
+        Dict = classification_report(y_test, Y_pred, target_names = Class_labels, output_dict = True)
+
+        for i, Report_labels in enumerate(Classification_report_labels):
+            for i, Metric_labels in enumerate(Classification_report_metrics_labels):
+
+                print(Dict[Report_labels][Metric_labels])
+                Classification_report_values.append(Dict[Report_labels][Metric_labels])
+                print("\n")
 
         # * Accuracy
         Accuracy = accuracy_score(y_test, Y_pred)

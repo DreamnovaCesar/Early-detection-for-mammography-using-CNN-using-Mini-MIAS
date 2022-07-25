@@ -103,7 +103,7 @@ def main():
     PNG = ".png"
     TIFF = ".tiff"
 
-    Model_CNN = (MobileNet_pretrained, MobileNetV3Small_pretrained, MobileNetV3Large_pretrained, ResNet50_pretrained)
+    Model_CNN = (MobileNet_pretrained, MobileNetV3Small_pretrained, ResNet50_pretrained)
     Model_CNN_R = (ResNet50_pretrained, ResNet152_pretrained)
 
     Model_ML_Biclass = (SVM, MLP, KNN, RF, DT, GBC)
@@ -147,7 +147,7 @@ def main():
     
     """
 
-    #"""
+    """
 
     Images, Labels = preprocessing_DataAugmentation_Biclass_ML(Mini_MIAS_NT_Cropped_Images_Normal, Mini_MIAS_NT_Cropped_Images_Tumor, Mini_MIAS_NT_Cropped_Images_Biclass)
     Testing_ML_Models_Biclass_FOF(Model_ML_Biclass, 'NT', Images, Labels)
@@ -175,9 +175,9 @@ def main():
 
     #concat_dataframe(Dataframe_final_NT, Dataframe_final_NO, Dataframe_final_CLAHE, Dataframe_final_HE, Dataframe_final_UM, Dataframe_final_CS, Folder = Biclass_Data_CSV, Class = 'Biclass', Technique = 'All techniques')
 
-    #"""
+    """
 
-    #"""
+    """
 
     Images, Labels = preprocessing_DataAugmentation_Multiclass_ML(Mini_MIAS_NT_Cropped_Images_Normal, Mini_MIAS_NT_Cropped_Images_Benign, Mini_MIAS_NT_Cropped_Images_Malignant, Mini_MIAS_NT_Cropped_Images_Multiclass)
     Testing_ML_Models_Multiclass_FOF(Model_ML_Multiclass, 'NT', Images, Labels)
@@ -205,14 +205,14 @@ def main():
 
     #concat_dataframe(Dataframe_final_NT, Dataframe_final_NO, Dataframe_final_CLAHE, Dataframe_final_HE, Dataframe_final_UM, Dataframe_final_CS, Folder = Multiclass_Data_CSV, Class = 'Multiclass', Technique = 'All techniques')
     
-    #"""
+    """
 
     #"""
 
     #Images, Labels = preprocessing_DataAugmentation_Biclass_CNN(Mini_MIAS_NT_Cropped_Images_Normal, Mini_MIAS_NT_Cropped_Images_Tumor, Mini_MIAS_NT_Cropped_Images_Biclass)
     #Dataframe_final_NT = Testing_CNN_Models_Biclass(Model_CNN, 'NT', Images, Labels)
 
-    #Images, Labels = preprocessing_DataAugmentation_Biclass_CNN(Mini_MIAS_NO_Cropped_Images_Normal, Mini_MIAS_NO_Cropped_Images_Tumor, Mini_MIAS_NO_Cropped_Images_Biclass)
+    #Images, Labels = preprocessing_DataAugmentation_Biclass_CNN("D:\Mini-MIAS\Mini-MIAS Final\Mini_MIAS_NO_Cropped_Images_Normal_Test", "D:\Mini-MIAS\Mini-MIAS Final\Mini_MIAS_NO_Cropped_Images_Tumor_Test", "D:\Mini-MIAS\Mini-MIAS Final\Mini_MIAS_NO_Cropped_Images_Biclass_Test")
     #Dataframe_final_NO = Testing_CNN_Models_Biclass(Model_CNN, 'NO', Images, Labels)
 
     #Images, Labels = preprocessing_DataAugmentation_Biclass_CNN(Mini_MIAS_CLAHE_Cropped_Images_Normal, Mini_MIAS_CLAHE_Cropped_Images_Tumor, Mini_MIAS_CLAHE_Cropped_Images_Biclass)
@@ -259,8 +259,10 @@ def main():
 
     #training_testing_validation_from_directory(Mini_MIAS_NO_Cropped_Images_Biclass + '_Split')
     
+    #Testing_CNN_Models_Biclass_From_Folder(Model_CNN_R, "D:\Mini-MIAS\Mini-MIAS Final\Mini_MIAS_NO_Cropped_Images_Biclass_Test" + '_Split', 'NO')
+
     #Testing_CNN_Models_Biclass_From_Folder(Model_CNN, Mini_MIAS_NT_Cropped_Images_Biclass + '_Split', 'NT')
-    #Testing_CNN_Models_Biclass_From_Folder(Model_CNN, Mini_MIAS_NO_Cropped_Images_Biclass + '_Split', 'NO')
+    Testing_CNN_Models_Biclass_From_Folder(Model_CNN_R, Mini_MIAS_NO_Cropped_Images_Biclass + '_Split', 'NO')
     #Testing_CNN_Models_Biclass_From_Folder(Model_CNN, Mini_MIAS_CLAHE_Cropped_Images_Biclass + '_Split', 'CLAHE')
     #Testing_CNN_Models_Biclass_From_Folder(Model_CNN, Mini_MIAS_HE_Cropped_Images_Biclass + '_Split', 'HE')
     #Testing_CNN_Models_Biclass_From_Folder(Model_CNN, Mini_MIAS_UM_Cropped_Images_Biclass + '_Split', 'UM')

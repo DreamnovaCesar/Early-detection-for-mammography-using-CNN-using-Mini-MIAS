@@ -1,6 +1,7 @@
 import os
 import sys
 import time
+from turtle import st
 import numpy as np
 import pandas as pd
 import seaborn as sns
@@ -848,153 +849,123 @@ def deep_learning_models_folder(Train_data, Valid_data, Test_data, Pretrained_mo
 
 # ? Folder Update CSV changing value
 
-def overwrite_row_CSV_folder(Dataframe, Folder_path, Info_list, Column_names, Row):
+def overwrite_row_CSV_folder(Dataframe:pd.DataFrame, Folder_path, Info_list, Column_names, Row):
 
-    """
-	  Updates final CSV dataframe to see all values
+  """_summary_
 
-    Parameters:
-    argument1 (list): All values.
-    argument2 (dataframe): dataframe that will be updated
-    argument3 (list): Names of each column
-    argument4 (folder): Folder path to save the dataframe
-    argument5 (int): The index.
+  Returns:
+      _type_: _description_
+  """
 
-    Returns:
-	  void
-    
-   	"""
+  for i in range(len(Info_list)):
+      Dataframe.loc[Row, Column_names[i]] = Info_list[i]
 
-    for i in range(len(Info_list)):
-        Dataframe.loc[Row, Column_names[i]] = Info_list[i]
-  
-    Dataframe.to_csv(Folder_path, index = False)
-  
-    print(Dataframe)
+  Dataframe.to_csv(Folder_path, index = False)
 
-    return Dataframe
+  print(Dataframe)
+
+  return Dataframe
 
 # ? Fine-Tuning MLP
 
-def MLP_classificador(x, units, activation):
+def MLP_classificador(x, Units:int, Activation:str):
 
-    """
-	  Fine tuning configuration using only MLP.
+  """_summary_
 
-    Parameters:
-    argument1 (list): Layers.
-    argument2 (int): The number of units for last layer.
-    argument3 (str): Activation used.
+  Returns:
+      _type_: _description_
+  """
 
-    Returns:
-	  int:Returning dataframe with all data.
-    
-   	"""
+  x = Flatten()(x)
+  x = BatchNormalization()(x)
+  x = Dense(128, activation = 'relu')(x)
+  x = BatchNormalization()(x)
+  x = Dropout(0.5)(x)
+  #x = BatchNormalization()(x)
+  x = Dense(Units, activation = Activation)(x)
 
-    x = Flatten()(x)
-    x = Dense(128, activation = 'relu')(x)
-    x = Dropout(0.5)(x)
-    #x = BatchNormalization()(x)
-    x = Dense(units, activation = activation)(x)
-
-    return x
+  return x
   
 # ? ResNet50
 
 def ResNet50_pretrained(Xsize, Ysize, num_classes):
   
-    """
-	  ResNet50 configuration.
+  """_summary_
 
-    Parameters:
-    argument1 (int): X's size value.
-    argument2 (int): Y's size value.
-    argument3 (int): Number total of classes.
+  Returns:
+      _type_: _description_
+  """
 
-    Returns:
-	  int:Returning ResNet50 model.
-    int:Returning ResNet50 Name.
-    
-   	"""
+  Model_name = 'ResNet50_Model'
+  Model_name_letters = 'RN50'
 
-    Model_name = 'ResNet50_Model'
-    Model_name_letters = 'RN50'
+  ResNet50_Model = ResNet50(input_shape = (Xsize, Ysize, 3), 
+                            include_top = False, 
+                            weights = "imagenet")
 
-    ResNet50_Model = ResNet50(input_shape = (Xsize, Ysize, 3), 
-                              include_top = False, 
-                              weights = "imagenet")
+  for layer in ResNet50_Model.layers:
+    layer.trainable = False
 
-    for layer in ResNet50_Model.layers:
-      layer.trainable = False
+  if num_classes == 2:
+    activation = 'sigmoid'
+    loss = "binary_crossentropy"
+    units = 1
+  else:
+    activation = 'softmax'
+    units = num_classes
+    loss = "categorical_crossentropy"
 
-    if num_classes == 2:
-      activation = 'sigmoid'
-      loss = "binary_crossentropy"
-      units = 1
-    else:
-      activation = 'softmax'
-      units = num_classes
-      loss = "categorical_crossentropy"
+  x = MLP_classificador(ResNet50_Model.output, units, activation)
 
-    x = MLP_classificador(ResNet50_Model.output, units, activation)
+  ResNet50_model = Model(ResNet50_Model.input, x)
 
-    ResNet50_model = Model(ResNet50_Model.input, x)
+  ResNet50_model.compile(
+      optimizer = tf.keras.optimizers.Adam(learning_rate = 0.0001),
+      loss = loss,
+      metrics = ['accuracy']
+  )
 
-    ResNet50_model.compile(
-        optimizer = tf.keras.optimizers.Adam(learning_rate = 0.0001),
-        loss = loss,
-        metrics = ['accuracy']
-    )
-
-    return ResNet50_model, Model_name, Model_name_letters
+  return ResNet50_model, Model_name, Model_name_letters
 
 def ResNet50V2_pretrained(Xsize, Ysize, num_classes):
 
-    """
-	  ResNet50V2 configuration.
+  """_summary_
 
-    Parameters:
-    argument1 (int): X's size value.
-    argument2 (int): Y's size value.
-    argument3 (int): Number total of classes.
+  Returns:
+      _type_: _description_
+  """
 
-    Returns:
-	  int:Returning ResNet50V2 model.
-    int:Returning ResNet50V2 Name.
-    
-   	"""
+  Model_name = 'ResNet50V2_Model'
+  Model_name_letters = 'RN50V2'
 
-    Model_name = 'ResNet50V2_Model'
-    Model_name_letters = 'RN50V2'
+  ResNet50V2_Model = ResNet50V2(input_shape = (Xsize, Ysize, 3), 
+                                include_top = False, 
+                                weights = "imagenet")
 
-    ResNet50V2_Model = ResNet50V2(input_shape = (Xsize, Ysize, 3), 
-                                  include_top = False, 
-                                  weights = "imagenet")
+  for layer in ResNet50V2_Model.layers:
+    layer.trainable = False
 
-    for layer in ResNet50V2_Model.layers:
-      layer.trainable = False
-  
-    if num_classes == 2:
-      activation = 'sigmoid'
-      loss = "binary_crossentropy"
-      units = 1
-    else:
-      activation = 'softmax'
-      units = num_classes
-      loss = "categorical_crossentropy"
-      #loss = "KLDivergence"
+  if num_classes == 2:
+    activation = 'sigmoid'
+    loss = "binary_crossentropy"
+    units = 1
+  else:
+    activation = 'softmax'
+    units = num_classes
+    loss = "categorical_crossentropy"
+    #loss = "KLDivergence"
 
-    x = MLP_classificador(ResNet50V2_Model.output, units, activation)
+  x = MLP_classificador(ResNet50V2_Model.output, units, activation)
 
-    ResNet50V2Model = Model(ResNet50V2_Model.input, x)
+  ResNet50V2Model = Model(ResNet50V2_Model.input, x)
 
-    ResNet50V2Model.compile(
-        optimizer = tf.keras.optimizers.Adam(learning_rate = 0.0001),
-        loss = loss,
-        metrics = ['accuracy']
-    )
+  ResNet50V2Model.compile(
+      optimizer = tf.keras.optimizers.Adam(learning_rate = 0.0001),
+      loss = loss,
+      metrics = ['accuracy']
+  )
 
-    return ResNet50V2Model, Model_name, Model_name_letters
+  return ResNet50V2Model, Model_name, Model_name_letters
 
 def ResNet152_pretrained(Xsize, Ysize, num_classes):
   

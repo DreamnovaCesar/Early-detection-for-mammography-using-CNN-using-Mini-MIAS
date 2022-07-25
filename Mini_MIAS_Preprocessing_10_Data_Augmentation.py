@@ -3,13 +3,6 @@ import numpy as np
 
 from Mini_MIAS_4_Data_Augmentation import dataAugmentation
 
-from Mini_MIAS_1_Folders import Mini_MIAS_NO_Cropped_Images_Biclass
-from Mini_MIAS_1_Folders import Mini_MIAS_NO_Cropped_Images_Multiclass 
-from Mini_MIAS_1_Folders import Mini_MIAS_NO_Cropped_Images_Normal
-from Mini_MIAS_1_Folders import Mini_MIAS_NO_Cropped_Images_Tumor
-from Mini_MIAS_1_Folders import Mini_MIAS_NO_Cropped_Images_Benign
-from Mini_MIAS_1_Folders import Mini_MIAS_NO_Cropped_Images_Malignant
-
 def preprocessing_DataAugmentation_Biclass_ML(Folder_normal, Folder_tumor, Folder_destination):
 
     # * List to add images and labels.

@@ -13,6 +13,7 @@ class cropImages():
 
   def __init__(self, **kwargs):
     
+    
     # * This algorithm outputs crop values for images based on the coordinates of the CSV file.
     # * General parameters
     self.Folder = kwargs.get('Folder', None)
